@@ -1,0 +1,63 @@
+buildscript {
+    ext{
+        springBootVersion = '2.1.7.RELEASE'
+    }
+    repositories {
+        mavenCentral() // maven 중앙 저장소
+        jcenter() // jCenter 저장소
+    }
+    dependencies { // 저장소에 필요한 라이브러리를 사용하기 위한 문장
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin : 'java'
+apply plugin : 'eclipse'
+apply plugin : 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.semiclone'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 타임리프
+    implementation 'org.springframework.boot:spring-boot-starter-web' // spring boot
+    compileOnly 'org.projectlombok:lombok' // 롬북 : 멤버변수 접근
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발환경 편의
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' //JPA
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc' // JDBC
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client' // mariaDB
+    //    implementation 'org.springframework.boot:spring-boot-starter-security' //Security
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor' // config 자동 검사
+    annotationProcessor 'org.projectlombok:lombok' //멤버변수 접근 어노테이션 검사
+    testImplementation('org.springframework.boot:spring-boot-starter-test') { //junit 테스트
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.security:spring-security-test' //Security 테스트용
+    compile 'com.h2database:h2' //h2-database(메모리용)
+}
+
+test {
+    useJUnitPlatform()
+}
