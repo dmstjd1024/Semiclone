@@ -1,4 +1,6 @@
-package com.semiclone.springboot.domain.test;
+package com.semiclone.springboot.repository;
+
+import com.semiclone.springboot.repository.entity.Test;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

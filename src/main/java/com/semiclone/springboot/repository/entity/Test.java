@@ -1,4 +1,4 @@
-package com.semiclone.springboot.domain.test;
+package com.semiclone.springboot.repository.entity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

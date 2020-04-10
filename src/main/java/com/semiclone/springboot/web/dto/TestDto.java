@@ -1,6 +1,7 @@
 package com.semiclone.springboot.web.dto;
 
-import com.semiclone.springboot.domain.test.Test;
+import com.semiclone.springboot.repository.entity.Test;
+
 import lombok.Getter;
 
 @Getter
