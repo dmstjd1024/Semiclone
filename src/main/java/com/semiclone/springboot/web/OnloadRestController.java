@@ -3,8 +3,12 @@ package com.semiclone.springboot.web;
 import java.util.List;
 
 import com.semiclone.springboot.repository.CinemaRepository;
+import com.semiclone.springboot.repository.MovieRepository;
 import com.semiclone.springboot.repository.entity.Cinema;
+import com.semiclone.springboot.repository.entity.Movie;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,13 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 */
 @RestController
 @RequestMapping("onload")
-public class OnloadRestController {
+public class OnloadRestController{
 
     @Autowired
     private CinemaRepository cinemaRepository;
 
+    @Autowired
+    private MovieRepository movieRepository;
+
     @RequestMapping(value = "/constructor", method = RequestMethod.GET)
-    public String constructor(){
+    public String constructor() throws Throwable{
 
         /* 강원 */
         cinemaRepository.save(new Cinema("강원", "강릉"));
@@ -222,13 +229,109 @@ public class OnloadRestController {
         cinemaRepository.save(new Cinema("충청", "충북혁신"));
         cinemaRepository.save(new Cinema("충청", "홍성"));
         
-        /*  DB Table Cinema 데이터 모두 가져와서 화면에 출력   */
-        List<Cinema> cinemaList = cinemaRepository.findAll();
-        String resultMessage = "";
-        for(Object obj : cinemaList){
-            resultMessage += obj.toString() + "<br/>";
-        }
+        /*  
+        *   영화 상세정보 크롤링
+        *   1. 영화리스트에서 영화상세 페이지 Url 정보를 얻는다.
+        *   2. 영화상세 페이지에서 DB Table Movie의 정보를 얻는다.
+        *   3. DB Table Movie에 Data INSERT
+        */
+        int listNo = 1;
+        Document movieList = Jsoup.connect("http://www.cgv.co.kr/reserve/show-times/movies.aspx").get();
+        while(true){
+             
+            /* 영화상세 페이지 URL 유효성 검사 */
+            String movieidx;
+            if(!(movieidx = movieList.select("#movie_list > ul > li:nth-child("+listNo+") > a").attr("data-movieidx")).equals("")){
+                Document movieDetail =  Jsoup.connect("http://www.cgv.co.kr/movies/detail-view/?midx="+movieidx).get();
+                
+                /* 영화만 저장 */
+                if(movieDetail.select(".spec > dl").text().substring(0,2).equals("감독")){
+
+                    /* 영화 개봉정보 :: 개봉날짜, 영화 개봉종류 */
+                    String movieRelease = movieDetail.select(".spec > dl > dd:nth-child(11)").text();
+
+                    String releaseDate;
+                    if( movieRelease.length() > 0 ){
+                        releaseDate = movieRelease.substring(0,4) + movieRelease.substring(5,7) + movieRelease.substring(8,10);
+                    }else{
+                        releaseDate = "0";   
+                    }   //  개봉날짜
+
+                    String releaseType;
+                    if( movieRelease.length() > 10 ){
+                        releaseType = movieRelease.substring(10,15);
+                    }else{
+                        releaseType = "(개봉)";
+                    }   //  개봉종류
+                    
+                    /* 영화 주요정보 :: 영화 소개글 */
+                    String movieIntro = movieDetail.select(".sect-story-movie").toString();
+                    if( movieIntro.length() > 38 ){
+                        movieIntro = movieIntro.substring(33, movieIntro.length()-8).trim();
+                    }else{
+                        movieIntro = "";
+                    }
+                    
+                    /* 영화 장르 */
+                    String genre = movieDetail.select(".spec > dl > dt:nth-child(6)").text();
+                    if( genre.length() > 4 ){
+                        genre = genre.substring(5, genre.length());
+                    }else{
+                        genre = "";
+                    }
+
+                    /* 영화 기본정보 :: 영화 배우, 영화 상영시간, 영화 관람등급, 영화 제작국가 */
+                    int movieBaseLocation;
+                    int movieActorLocation;
+                    String actor;
+                    String movieTime;
+                    String movieRating;
+                    String movieCountry;
+                    if( movieDetail.select(".spec > dl > dd:nth-child(4)").text().equals("") ){
+                        movieActorLocation = 5;
+                        movieBaseLocation = 9;                       
+                    }else{                     
+                        movieActorLocation = 6;
+                        movieBaseLocation = 10;
+                    }   //  배열 위치
+                                 
+                    actor = movieDetail.select(".spec > dl > dd:nth-child("+movieActorLocation+")").text();
+                    movieTime = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[1].trim();
+                    movieRating = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[0].trim();  
+                    if( movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",").length < 3 ){
+                        movieCountry = "";
+                    }else{
+                        movieCountry = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[2].trim();
+                    }
+
+                    /* DB INSERT */
+                    movieRepository.save(Movie.builder()
+                                                .movieRating(movieRating)
+                                                .movieTitle(movieDetail.select(".title > strong").text())
+                                                .movieTitleEng(movieDetail.select(".title > p").text())
+                                                .movieGenre(genre)
+                                                .movieTime(movieTime)
+                                                .movieImage(movieDetail.select(".box-image > a > span > img").attr("src"))
+                                                .movieDrector(movieDetail.select(".spec > dl > dd:nth-child(2) > a").text())
+                                                .movieActor(actor)
+                                                .movieCountry(movieCountry)
+                                                .movieIntro(new javax.sql.rowset.serial.SerialClob(movieIntro.toCharArray()))
+                                                .releaseDate((long)Integer.parseInt(releaseDate))
+                                                .releaseType(releaseType).build());
+                                                
+                    
+                }//end of save
+            }else{
+                break;    // 영화상세 페이지 URL이 없을 경우 정지
+            }     
+            listNo++;
+        }//end of while
+
+        /*  DB Table COLUMN 개수 화면에 출력   */
+        String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 
+                                        +"<p>TABLE MOVIE row = "+movieRepository.count()+"개\t(정상 출력값 : 72개)</p>"
+                                        +"<p><br/>출력값이 비정상일 경우 DB TABLE DROP 후에 재실행 (이유 : 중복제거)</p>";
         return resultMessage;
-    }
+    }//end of Method
 
 }//end of RestController

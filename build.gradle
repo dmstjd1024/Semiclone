@@ -60,6 +60,9 @@ dependencies {
     // Swagger 2 
 	compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0' 
 	compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+
+    // Jsoup
+    compile 'org.jsoup:jsoup:1.11.3'
 }
 
 test {
