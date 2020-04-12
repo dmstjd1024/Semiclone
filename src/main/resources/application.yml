@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/test?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mariadb://localhost:3306/semiclone?characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password : 1234
@@ -14,4 +14,9 @@ spring:
       enabled: true
   thymeleaf:
     cache: false
+  messages:
+    basename: validation
 
+
+server:
+  port: 80

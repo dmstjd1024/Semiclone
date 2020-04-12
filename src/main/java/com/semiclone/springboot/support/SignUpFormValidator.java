@@ -1,0 +1,45 @@
+package com.semiclone.springboot.support;
+
+import com.semiclone.springboot.domain.form.SignUpForm;
+import com.semiclone.springboot.domain.account.Account;
+import com.semiclone.springboot.domain.account.AccountRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
+
+
+@Component
+@RequiredArgsConstructor
+public class SignUpFormValidator implements Validator {
+
+    private final AccountRepository accountRepository;
+
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return Account.class.equals(clazz);
+    }
+
+    @Override
+    public void validate(Object target, Errors errors) {
+        SignUpForm signUpForm = (SignUpForm)target;
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "accountId", "NotEmpty");
+
+        if(signUpForm.getAccountId().length() < 3 || signUpForm.getAccountId().length() > 32)
+            errors.rejectValue("userId", "Size.userForm.username");
+
+        if(accountRepository.findByAccountId(signUpForm.getAccountId()) != null)
+            errors.rejectValue("userId", "Duplicate.userForm.username");
+
+        if(accountRepository.findByEmail(signUpForm.getEmail()) != null)
+            errors.rejectValue("email", "Duplicate.userFrom.email");
+
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
+        if(signUpForm.getPassword().length() < 7 || signUpForm.getPassword().length() > 32)
+            errors.rejectValue("password", "Size.userForm.password");
+
+    }
+
+}

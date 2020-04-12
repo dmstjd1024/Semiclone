@@ -48,14 +48,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' //JPA
     implementation 'org.springframework.boot:spring-boot-starter-jdbc' // JDBC
     implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client' // mariaDB
-    //    implementation 'org.springframework.boot:spring-boot-starter-security' //Security
+    implementation 'org.springframework.boot:spring-boot-starter-security' //Security
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor' // config 자동 검사
     annotationProcessor 'org.projectlombok:lombok' //멤버변수 접근 어노테이션 검사
     testImplementation('org.springframework.boot:spring-boot-starter-test') { //junit 테스트
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test' //Security 테스트용
-    compile 'com.h2database:h2' //h2-database(메모리용)
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+    compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+
 }
 
 test {
