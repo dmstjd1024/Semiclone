@@ -1,7 +1,5 @@
 package com.semiclone.springboot.web;
 
-import java.util.List;
-
 import com.semiclone.springboot.repository.CinemaRepository;
 import com.semiclone.springboot.repository.MovieRepository;
 import com.semiclone.springboot.repository.entity.Cinema;
