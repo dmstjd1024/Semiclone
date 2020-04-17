@@ -2,11 +2,11 @@ package com.semiclone.springboot.web.dto;
 
 import java.sql.Clob;
 
-import lombok.AllArgsConstructor;
+import com.semiclone.springboot.domain.movie.Movie;
+
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class MovieDto {
 
     private Long Id;    // 영화 고유번호
@@ -25,5 +25,24 @@ public class MovieDto {
     private int movieGradeId;    // 영화 한줄평
     private Long releaseDate;    // 개봉날짜
     private String releaseType;    // 개봉종류
+
+    public MovieDto(Movie movie){
+        this.Id = movie.getId();
+        this.movieRating = movie.getMovieRating();
+        this.movieTitle = movie.getMovieTitle();
+        this.movieTitleEng = movie.getMovieTitleEng();
+        this.movieGenre = movie.getMovieGenre();
+        this.movieTime = movie.getMovieTime();
+        this.movieImage = movie.getMovieImage();
+        this.movieDrector = movie.getMovieDrector();
+        this.movieActor = movie.getMovieActor();
+        this.movieCountry = movie.getMovieCountry();
+        this.movieIntro = movie.getMovieIntro();
+        this.reservationRate = movie.getReservationRate();
+        this.audienceCount = movie.getAudienceCount();
+        this.movieGradeId = movie.getMovieGradeId();
+        this.releaseDate = movie.getReleaseDate();
+        this.releaseType = movie.getReleaseType();
+    }
 
 }
