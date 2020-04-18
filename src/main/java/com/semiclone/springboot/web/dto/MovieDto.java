@@ -5,8 +5,10 @@ import java.sql.Clob;
 import com.semiclone.springboot.domain.movie.Movie;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class MovieDto {
 
     private Long Id;    // 영화 고유번호

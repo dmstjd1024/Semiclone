@@ -3,8 +3,10 @@ package com.semiclone.springboot.web.dto;
 import com.semiclone.springboot.domain.screen.Screen;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class ScreenDto {
 
     private Long id;    //  상영관 고유번호

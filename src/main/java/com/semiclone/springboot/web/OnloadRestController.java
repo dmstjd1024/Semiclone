@@ -8,6 +8,8 @@ import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.Screen;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.seat.Seat;
+import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 
@@ -34,6 +36,7 @@ public class OnloadRestController{
     private final MovieRepository movieRepository;
     private final ScreenRepository screenRepository;
     private final TimeTableRepository timeTableRepository;
+    private final SeatRepository seatRepository;
 
     //Method
     @RequestMapping(value = "/constructor", method = RequestMethod.GET)
@@ -445,16 +448,14 @@ public class OnloadRestController{
 
                                                         String dimension = screenList.select(".info-hall > ul > li:nth-child(1)").text();    //  상영 방식
                                                         String name = screenList.select(".info-hall > ul > li:nth-child(2)").text();    //  상영관 이름
-                                                        Short totalSeat = (short)Integer.parseInt(screenList.select(".info-hall > ul > li:nth-child(3)").text().split("총 ")[1]
-                                                                                    .substring(0, screenList.select(".info-hall > ul > li:nth-child(3)").text().split("총 ")[1].length()-1));    //  총 좌석수     
+                                                        Short totalSeat = (short)30;    //  총 좌석수     
                                                         
                                                         /* DB TABLE SCREEN INSERT */
                                                         if(  !saveTimetable && screenRepository.findByName(name).size() == 0 ){    //  먼저, 상영관 테이블 데이터 추가 후 시간표 테이블 데이터 추가를 위한 boolean값
                                                             Long cinemaId = (long)cinemaRepository.findByCinemaName(cinemaName).get(0).getId();
-                                                            System.out.println(name);
                                                             screenRepository.save(new Screen(cinemaId, name, totalSeat, dimension));
                                                         }
-
+                                                        
                                                         if( saveTimetable ){
                                                             /* 시간표 정보 리스트 */
                                                             int timeTableInfoNo = 1;
@@ -484,10 +485,10 @@ public class OnloadRestController{
                                                                     }
 
                                                                     /* DB TABLE TIMETABLE INSERT */
-                                                                    if(timeTableRepository.findByScreenIdAndMovieIdAndTurningNoAndDateAndStartTimeAndEndTimeAndEmptySeat(
-                                                                            screenId, movieId, turningNo, date, startTime, endTime, 1).size() == 0){
+                                                                    if(timeTableRepository.findByScreenIdAndMovieIdAndTurningNoAndDateAndStartTimeAndEndTime(
+                                                                            screenId, movieId, turningNo, date, startTime, endTime).size() == 0){
                                                                         timeTableRepository.save(TimeTable.builder().screenId(screenId).movieId(movieId).turningNo(turningNo)
-                                                                                                        .date(date).startTime(startTime).endTime(endTime).emptySeat(1).build());
+                                                                                                        .date(date).startTime(startTime).endTime(endTime).build());
                                                                     }
 
                                                                 }else{
@@ -529,16 +530,34 @@ public class OnloadRestController{
                 listNum++;
             }//end of while  ::  영화 리스트
             saveTimetable = true;
+            
         }//end of for  ::  상영관 테이블, 시간표 테이블 데이터 추가 용도
+        
+        
+        /* DB TABLE SEAT INSERT
+         * 좌석 label = A, B, C, D, E (행)
+         * 좌석 no = 1, 2, 3, 4, 5, 6 (열)
+         * 총 좌석수 : 30개
+         */
+        for(int screenId=1; screenId<=screenRepository.count(); screenId++){
 
+            char label = 65;    //  좌석 label
+            for(int line=1; line<=5; line++){
+                for(int no=1; no<=6; no++){    //  좌석 no
+                    seatRepository.save(new Seat((long)screenId, String.valueOf(label)+no, "Standard Zone"));
+                }
+                label++;
+            }
+
+        }
 
         /*  DB Table COLUMN 개수 화면에 출력   */
         String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 
                                         +"<p>TABLE MOVIE row = "+movieRepository.count()+"개\t(정상 출력값 : 69개)</p>"
-                                        +"<p>TABLE SCREEN row = "+screenRepository.count()+"개\t(정상 출력값 : 294개)</p>"
+                                        +"<p>TABLE SCREEN row = "+screenRepository.count()+"개\t(정상 출력값 : 291개)</p>"
                                         +"<p>TABLE TIMETABLE row = "+timeTableRepository.count()+"개\t(정상 출력값 : 16,477개)</p>"
                                         +"<p><br/>출력값이 비정상일 경우 DB TABLE DROP 후에 재실행 (이유 : 중복제거)</p>"
-                                        +"<p>적용 기준일 : 2020.04.18 00:16</p>";
+                                        +"<p>적용 기준일 : 2020.04.18 22:16</p>";
         return resultMessage;
     }//end of Method
 

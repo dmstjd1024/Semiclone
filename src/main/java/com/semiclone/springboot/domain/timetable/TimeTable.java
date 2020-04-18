@@ -37,18 +37,14 @@ public class TimeTable {
     @Column(length = 10, nullable = false)
     private Long endTime;    //  상영 종료시간
 
-    @Column(nullable = false)
-    private int emptySeat;    //  남은 좌석 수
-
     @Builder
-    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime, int emptySeat){
+    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime){
         this.screenId = screenId;
         this.movieId = movieId;
         this.turningNo = turningNo;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.emptySeat = emptySeat;
     }
 
 }//end of class

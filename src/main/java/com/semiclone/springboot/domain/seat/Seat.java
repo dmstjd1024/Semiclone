@@ -21,19 +21,15 @@ public class Seat {
     @Column(nullable = false)
     private Long screenId;    //  상영관 고유번호
 
-    @Column( nullable = false)
-    private Long cinemaId;    //  극장 고유번호
-
-    @Column(nullable = false)
+    @Column(length = 10, nullable = false)
     private String seatNo;    //  좌석 번호
 
-    @Column(nullable = false)
+    @Column(length = 50, nullable = false)
     private String seatName;    //  좌석 이름
 
     //Constructor
-    public Seat(Long screenId, Long cinemaId, String seatNo, String seatName){
+    public Seat(Long screenId,String seatNo, String seatName){
         this.screenId = screenId;
-        this.cinemaId = cinemaId;
         this.seatNo = seatNo;
         this.seatName = seatName;
     }

@@ -3,8 +3,10 @@ package com.semiclone.springboot.web.dto;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class TimeTableDto {
 
     private Long id;    //  시간표 고유번호
@@ -14,7 +16,6 @@ public class TimeTableDto {
     private Long date;    //  상영 날짜
     private Long startTime;    //  상영 시작시간
     private Long endTime;    //  상영 종료시간
-    private int emptySeat;    //  남은 좌석 수
 
     public TimeTableDto(TimeTable timeTable){
         this.id = timeTable.getId();
@@ -24,7 +25,6 @@ public class TimeTableDto {
         this.date = timeTable.getDate();
         this.startTime = timeTable.getStartTime();
         this.endTime = timeTable.getEndTime();
-        this.emptySeat = timeTable.getEmptySeat();
     }
 
 }
