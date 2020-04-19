@@ -10,6 +10,8 @@ import com.semiclone.springboot.domain.screen.Screen;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.Seat;
 import com.semiclone.springboot.domain.seat.SeatRepository;
+import com.semiclone.springboot.domain.ticket.Ticket;
+import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 
@@ -37,11 +39,15 @@ public class OnloadRestController{
     private final ScreenRepository screenRepository;
     private final TimeTableRepository timeTableRepository;
     private final SeatRepository seatRepository;
+    private final TicketRepository ticketRepository;
 
     //Method
     @RequestMapping(value = "/constructor", method = RequestMethod.GET)
     public String constructor() throws Throwable{
         
+        System.out.println("-- INSERT DB Data Start... 1. Cinema, 2. Movie, 3. Screen, 4. TimeTable, 5. Seat, 6. Ticket");
+        System.out.println("Table Cinema(극장) Data 넣는 중...");
+
         /* 강원 */
         cinemaRepository.save(new Cinema("강원", "강릉"));
         cinemaRepository.save(new Cinema("강원", "원주"));
@@ -240,14 +246,16 @@ public class OnloadRestController{
         cinemaRepository.save(new Cinema("충청", "충북혁신"));
         cinemaRepository.save(new Cinema("충청", "홍성"));
         
-
-
+        System.out.println("Table Cinema(극장) Data 작업 완료\n");
+        
         /*  
         *   영화 상세정보 크롤링
         *   1. 영화리스트에서 영화상세 페이지 Url 정보를 얻는다.
         *   2. 영화상세 페이지에서 DB Table Movie의 정보를 얻는다.
         *   3. DB Table Movie에 Data INSERT
         */
+        System.out.println("Table Movie(영화) Data 넣는 중...");
+
         int listNo = 1;
         Document movieList = Jsoup.connect("http://www.cgv.co.kr/reserve/show-times/movies.aspx").get();
         while(true){
@@ -354,7 +362,7 @@ public class OnloadRestController{
                     if( movieCountry.equals("") ){
                         movieCountry = "(공백)";
                     }
-                    
+   
                     /* DB INSERT */
                     if(movieRepository.findByMovieTitle(movieDetail.select(".title > strong").text()).size() == 0){
                         movieRepository.save(Movie.builder()
@@ -370,7 +378,7 @@ public class OnloadRestController{
                                                     .movieIntro(new javax.sql.rowset.serial.SerialClob(movieIntro.toCharArray()))
                                                     .releaseDate((long)Integer.parseInt(releaseDate))
                                                     .releaseType(releaseType).build());
-                    }                            
+                    }                             
                     
                 }//end of save
             }else{
@@ -378,15 +386,21 @@ public class OnloadRestController{
             }     
             listNo++;
         }//end of while
-
-
-
+        System.out.println("Table Movie(영화) Data 작업 완료...\n");
 
         /*   
         *   극장별 상영시간표 크롤링 
         */
         boolean saveTimetable = false;
         for(int i=0; i<2; i++){
+            
+            /* 콘솔 모니터링용 */
+            if(!saveTimetable){
+                System.out.println("Table Screen(상영관) Data 넣는 중...");
+            }else{
+                System.out.println("Table TimeTable(상영 시간표) Data 넣는 중...");
+            }
+
             int listNum = 1;
             Document moviesList = Jsoup.connect("http://www.cgv.co.kr/reserve/show-times/movies.aspx").get();
             while(true){
@@ -529,16 +543,24 @@ public class OnloadRestController{
                 }     
                 listNum++;
             }//end of while  ::  영화 리스트
-            saveTimetable = true;
             
+            /* 콘솔 모니터링용 */
+            if(!saveTimetable){
+                System.out.println("Table Screen(상영관) Data 작업 완료...\n");
+            }else{
+                System.out.println("Table TimeTable(상영 시간표) Data 작업 완료...\n");
+            }
+            saveTimetable = true;    //  Screen정보 저장 후 Timetable 작업을 위한 용도
+
         }//end of for  ::  상영관 테이블, 시간표 테이블 데이터 추가 용도
-        
-        
+
         /* DB TABLE SEAT INSERT
          * 좌석 label = A, B, C, D, E (행)
          * 좌석 no = 1, 2, 3, 4, 5, 6 (열)
          * 총 좌석수 : 30개
          */
+        System.out.println("Table Seat(좌석)에 Data 넣는 중...");
+
         for(int screenId=1; screenId<=screenRepository.count(); screenId++){
 
             char label = 65;    //  좌석 label
@@ -550,14 +572,35 @@ public class OnloadRestController{
             }
 
         }
+        System.out.println("Table Seat(좌석)에 Data 작업 완료...\n");
+
+        /* DB TABLE TICKET INSERT 
+         * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
+         */
+        System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
+
+            for(int timeTableId=1; timeTableId<=10; timeTableId++){
+  
+                Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
+                for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
+                    ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
+                                                .screenId(screenId)
+                                                .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
+                                                .timeTableId((long)timeTableId).build());
+                }
+            }
+
+        // }
+        System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
 
         /*  DB Table COLUMN 개수 화면에 출력   */
         String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 
-                                        +"<p>TABLE MOVIE row = "+movieRepository.count()+"개\t(정상 출력값 : 69개)</p>"
-                                        +"<p>TABLE SCREEN row = "+screenRepository.count()+"개\t(정상 출력값 : 291개)</p>"
-                                        +"<p>TABLE TIMETABLE row = "+timeTableRepository.count()+"개\t(정상 출력값 : 16,477개)</p>"
-                                        +"<p><br/>출력값이 비정상일 경우 DB TABLE DROP 후에 재실행 (이유 : 중복제거)</p>"
-                                        +"<p>적용 기준일 : 2020.04.18 22:16</p>";
+                                        +"<p>TABLE MOVIE row = "+movieRepository.count()+"개</p>"
+                                        +"<p>TABLE SCREEN row = "+screenRepository.count()+"개</p>"
+                                        +"<p>TABLE TIMETABLE row = "+timeTableRepository.count()+"개</p>"
+                                        +"<p><br/>출력값이 비정상일 경우 DB TABLE DROP 후에 재실행 (이유 : 중복제거)</p>";
+        System.out.println("모든 Table 작업 완료");
+
         return resultMessage;
     }//end of Method
 

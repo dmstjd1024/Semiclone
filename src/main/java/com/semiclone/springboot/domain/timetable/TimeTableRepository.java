@@ -10,6 +10,7 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     List<TimeTable> findByScreenIdAndMovieIdAndTurningNoAndDateAndStartTimeAndEndTime(
             Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime);
 
+    List<TimeTable> findByScreenId(Long screenId);
   
 
 }//end of interface
