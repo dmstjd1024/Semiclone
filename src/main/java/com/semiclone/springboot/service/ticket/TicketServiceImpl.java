@@ -74,6 +74,24 @@ public class TicketServiceImpl implements TicketService{
     }
 
     public Map<String, Object> getSelectMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception{
+
+        /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
+        if(movieId == 123890){
+            movieId = null;
+        }
+        if(cinemaId == 123890){
+            cinemaId = null;
+        }
+        if(date == 123890){
+            date = null;
+        }
+        if(timeTableId == 123890){
+            timeTableId = null;
+        }
+        if(group.equals("123890")){
+            group = "0";
+        }
+
         /* 모든 Param이 null일 때 전체값 return */
         if(movieId == null && cinemaId == null && date == null && timeTableId == null && group.equals("")){
             return this.getSelectMap();
