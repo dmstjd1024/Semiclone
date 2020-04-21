@@ -22,7 +22,7 @@ public class MovieDto {
     private String movieActor;    // 영화 배우
     private String movieCountry;    // 영화 제작국가
     private Clob movieIntro;    // 영화 소개글
-    private int reservationRate;    // 예매율
+    private Float reservationRate;    // 예매율
     private int audienceCount;    // 관람객 수
     private int movieGradeId;    // 영화 한줄평
     private Long releaseDate;    // 개봉날짜

@@ -7,7 +7,6 @@ import com.semiclone.springboot.service.ticket.TicketService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -19,17 +18,16 @@ public class TicketRestController {
 
     private final TicketService ticketService;
                
-    @ResponseBody
-    @GetMapping(value = "/selects")
-    public Map<String, String> select() throws Exception{
+    @GetMapping(value = "/select")
+    public Map<String, Object> select() throws Exception{
         return ticketService.getSelectMap();
     }
 
-    @GetMapping(value = "/select")
-    public Map<String, String> select(@RequestParam("movieId") Long movieId, @RequestParam("dimension") String dimension, 
-                                        @RequestParam("cinemaId") Long cinemaId, @RequestParam("date") Long date, 
-                                        @RequestParam String group) throws Exception{
-        return ticketService.getSelectMap(movieId, dimension, cinemaId, date, group);
+    @GetMapping(value = "/select/")
+    public Map<String, Object> select(@RequestParam("movieId") Long movieId, @RequestParam("cinemaId") Long cinemaId, 
+                                        @RequestParam("date") Long date, @RequestParam("timeTableId") Long timeTableId, 
+                                        @RequestParam("group") String group) throws Exception{
+        return ticketService.getSelectMap(movieId, cinemaId, date, timeTableId, group);
     }
 
 }//end of class

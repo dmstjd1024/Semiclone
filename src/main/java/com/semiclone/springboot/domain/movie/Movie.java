@@ -11,9 +11,11 @@ import javax.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Movie {
 
@@ -51,7 +53,7 @@ public class Movie {
     @Column(nullable = false)
     private Clob movieIntro;    // 영화 소개글
 
-    private int reservationRate;    // 예매율
+    private Float reservationRate;    // 예매율
 
     private int audienceCount;    // 관람객 수
     
@@ -66,7 +68,7 @@ public class Movie {
     @Builder                                                        
     public Movie(String movieRating, String movieTitle, String movieTitleEng, 
                 String movieGenre, String movieTime, String movieImage, String movieDrector, 
-                String movieActor, String movieCountry, Clob movieIntro, int reservationRate, 
+                String movieActor, String movieCountry, Clob movieIntro, Float reservationRate, 
                 int audienceCount, int movieGradeId, Long releaseDate, String releaseType){
         this.movieRating = movieRating;
         this.movieTitle = movieTitle;

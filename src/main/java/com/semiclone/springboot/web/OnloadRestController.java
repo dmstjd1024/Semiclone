@@ -362,6 +362,10 @@ public class OnloadRestController{
                     if( movieCountry.equals("") ){
                         movieCountry = "(공백)";
                     }
+
+                    /* 예매율 */
+                    String reservation = movieDetail.select(".box-contents > div.score > strong.percent > span").text();
+                    Float reservationRate = Float.valueOf(reservation.substring(0, reservation.length()-1)).floatValue();
    
                     /* DB INSERT */
                     if(movieRepository.findByMovieTitle(movieDetail.select(".title > strong").text()).size() == 0){
@@ -376,6 +380,7 @@ public class OnloadRestController{
                                                     .movieActor(actor)
                                                     .movieCountry(movieCountry)
                                                     .movieIntro(new javax.sql.rowset.serial.SerialClob(movieIntro.toCharArray()))
+                                                    .reservationRate(reservationRate)
                                                     .releaseDate((long)Integer.parseInt(releaseDate))
                                                     .releaseType(releaseType).build());
                     }                             
