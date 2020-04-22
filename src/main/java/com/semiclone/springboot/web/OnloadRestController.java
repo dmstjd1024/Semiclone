@@ -22,12 +22,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 /*  FileName : onloadRestController.java
 *   DB Table에 더미 데이터 셋팅
 *   Return : Client에 DB Table 실제 데이터 출력
 */
+@Api(tags = "INSERT DB Data")
 @RestController
 @RequestMapping("onload")
 @RequiredArgsConstructor
@@ -42,6 +45,7 @@ public class OnloadRestController{
     private final TicketRepository ticketRepository;
 
     //Method
+    @ApiOperation(value = "CGV 크롤링해서 DB에 Data 저장")
     @RequestMapping(value = "/constructor", method = RequestMethod.GET)
     public String constructor() throws Throwable{
         

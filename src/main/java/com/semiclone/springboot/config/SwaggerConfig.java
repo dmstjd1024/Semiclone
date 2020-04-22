@@ -35,7 +35,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("SemiClone") // Swagger 제목
-                .description("swagger2 사용해 봅시다.") // Swagger 설명
+                .description("프로젝트 주제 : Mini CGV Clone") // Swagger 설명
                 .build();
  
     }
