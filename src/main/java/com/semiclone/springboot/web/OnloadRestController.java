@@ -265,7 +265,8 @@ public class OnloadRestController{
         *   2. 영화상세 페이지에서 DB Table Movie의 정보를 얻는다.
         *   3. DB Table Movie에 Data INSERT
         */
-        System.out.println("Table Movie(영화) Data 넣는 중...");
+        int movieTableCount = (int)movieRepository.count();
+        System.out.println("Table Movie(영화) Data 넣는 중... (시작 Data 개수 : "+movieTableCount+"개)");
 
         int listNo = 1;
         Document movieList = Jsoup.connect("http://www.cgv.co.kr/reserve/show-times/movies.aspx").get();
@@ -401,20 +402,22 @@ public class OnloadRestController{
                 break;    // 영화상세 페이지 URL이 없을 경우 정지
             }     
             listNo++;
-        }//end of while
-        System.out.println("Table Movie(영화) Data 작업 완료...\n");
+        }//end of while 
+        System.out.println("Table Movie(영화) Data 작업 완료... (총 "+
+                (movieRepository.count()-movieTableCount)+"개 등록완료, 현재 Data : "+movieRepository.count()+"개)\n");
 
         /*   
         *   극장별 상영시간표 크롤링 
         */
         boolean saveTimetable = false;
+        int screenTableCount = (int)screenRepository.count();
+        int timeTableTableCount = (int)timeTableRepository.count();
         for(int i=0; i<2; i++){
-            
             /* 콘솔 모니터링용 */
             if(!saveTimetable){
-                System.out.println("Table Screen(상영관) Data 넣는 중...");
+                System.out.println("Table Screen(상영관) Data 넣는 중... (시작 Data 개수 : "+screenTableCount+"개)");
             }else{
-                System.out.println("Table TimeTable(상영 시간표) Data 넣는 중...");
+                System.out.println("Table TimeTable(상영 시간표) Data 넣는 중... (시작 Data 개수 : "+timeTableTableCount+"개)");
             }
 
             int listNum = 1;
@@ -562,9 +565,11 @@ public class OnloadRestController{
             
             /* 콘솔 모니터링용 */
             if(!saveTimetable){
-                System.out.println("Table Screen(상영관) Data 작업 완료...\n");
+                System.out.println("Table Screen(상영관) Data 작업 완료... (총 "+
+                        (screenRepository.count()-screenTableCount)+"개 등록완료, 현재 Data : "+screenRepository.count()+"개)\n");
             }else{
-                System.out.println("Table TimeTable(상영 시간표) Data 작업 완료...\n");
+                System.out.println("Table TimeTable(상영 시간표) Data 작업 완료... (총 "+
+                        (timeTableRepository.count()- timeTableTableCount)+"개 등록완료, 현재 Data : "+timeTableRepository.count()+"개)\n");
             }
             saveTimetable = true;    //  Screen정보 저장 후 Timetable 작업을 위한 용도
 
