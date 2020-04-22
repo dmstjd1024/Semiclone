@@ -50,208 +50,215 @@ public class OnloadRestController{
     public String constructor() throws Throwable{
         
         System.out.println("-- INSERT DB Data Start... 1. Cinema, 2. Movie, 3. Screen, 4. TimeTable, 5. Seat, 6. Ticket");
-        System.out.println("Table Cinema(극장) Data 넣는 중...");
-
-        /* 강원 */
-        cinemaRepository.save(new Cinema("강원", "강릉"));
-        cinemaRepository.save(new Cinema("강원", "원주"));
-        cinemaRepository.save(new Cinema("강원", "인제"));
-        cinemaRepository.save(new Cinema("강원", "춘천"));
-        cinemaRepository.save(new Cinema("강원", "춘천명동"));
-
-        /* 경기 */
-        cinemaRepository.save(new Cinema("경기", "경기광주"));
-        cinemaRepository.save(new Cinema("경기", "광교"));
-        cinemaRepository.save(new Cinema("경기", "광교상현"));
-        cinemaRepository.save(new Cinema("경기", "구리"));
-        cinemaRepository.save(new Cinema("경기", "김포운양"));
-        cinemaRepository.save(new Cinema("경기", "김포풍무"));
-        cinemaRepository.save(new Cinema("경기", "김포한강"));
-        cinemaRepository.save(new Cinema("경기", "동백"));
-        cinemaRepository.save(new Cinema("경기", "동수원"));
-        cinemaRepository.save(new Cinema("경기", "동탄"));
-        cinemaRepository.save(new Cinema("경기", "동탄역"));
-        cinemaRepository.save(new Cinema("경기", "동탄호수공원"));
-        cinemaRepository.save(new Cinema("경기", "배곧"));
-        cinemaRepository.save(new Cinema("경기", "범계"));
-        cinemaRepository.save(new Cinema("경기", "부천"));
-        cinemaRepository.save(new Cinema("경기", "부천역"));
-        cinemaRepository.save(new Cinema("경기", "부천옥길"));
-        cinemaRepository.save(new Cinema("경기", "북수원"));
-        cinemaRepository.save(new Cinema("경기", "산본"));
-        cinemaRepository.save(new Cinema("경기", "서현"));
-        cinemaRepository.save(new Cinema("경기", "성남모란"));
-        cinemaRepository.save(new Cinema("경기", "소풍"));
-        cinemaRepository.save(new Cinema("경기", "수원"));
-        cinemaRepository.save(new Cinema("경기", "스타필드시티위례"));
-        cinemaRepository.save(new Cinema("경기", "시흥"));
-        cinemaRepository.save(new Cinema("경기", "안산"));
-        cinemaRepository.save(new Cinema("경기", "안성"));
-        cinemaRepository.save(new Cinema("경기", "야탑"));
-        cinemaRepository.save(new Cinema("경기", "역곡"));
-        cinemaRepository.save(new Cinema("경기", "오리"));
-        cinemaRepository.save(new Cinema("경기", "오산"));
-        cinemaRepository.save(new Cinema("경기", "오산중앙"));
-        cinemaRepository.save(new Cinema("경기", "용인"));
-        cinemaRepository.save(new Cinema("경기", "의정부"));
-        cinemaRepository.save(new Cinema("경기", "의정부태흥"));
-        cinemaRepository.save(new Cinema("경기", "이천"));
-        cinemaRepository.save(new Cinema("경기", "일산"));
-        cinemaRepository.save(new Cinema("경기", "죽전"));
-        cinemaRepository.save(new Cinema("경기", "파주문산"));
-        cinemaRepository.save(new Cinema("경기", "판교"));
-        cinemaRepository.save(new Cinema("경기", "평촌"));
-        cinemaRepository.save(new Cinema("경기", "평택"));
-        cinemaRepository.save(new Cinema("경기", "평택소사"));
-        cinemaRepository.save(new Cinema("경기", "화성봉담"));
-        cinemaRepository.save(new Cinema("경기", "화정"));
-        cinemaRepository.save(new Cinema("경기", "CINE KIDS 북수원"));
-
-        /* 경상 */
-        cinemaRepository.save(new Cinema("경상", "거제"));
-        cinemaRepository.save(new Cinema("경상", "구미"));
-        cinemaRepository.save(new Cinema("경상", "김천율곡"));
-        cinemaRepository.save(new Cinema("경상", "김해"));
-        cinemaRepository.save(new Cinema("경상", "김해율하"));
-        cinemaRepository.save(new Cinema("경상", "김해장유"));
-        cinemaRepository.save(new Cinema("경상", "마산"));
-        cinemaRepository.save(new Cinema("경상", "북포항"));
-        cinemaRepository.save(new Cinema("경상", "안동"));
-        cinemaRepository.save(new Cinema("경상", "양산물금"));
-        cinemaRepository.save(new Cinema("경상", "양산삼호"));
-        cinemaRepository.save(new Cinema("경상", "창원"));
-        cinemaRepository.save(new Cinema("경상", "창원더시티"));
-        cinemaRepository.save(new Cinema("경상", "통영"));
-        cinemaRepository.save(new Cinema("경상", "포항"));
-
-        /* 광주 */
-        cinemaRepository.save(new Cinema("광주", "광주금남로"));
-        cinemaRepository.save(new Cinema("광주", "광주상무"));
-        cinemaRepository.save(new Cinema("광주", "광주용봉"));
-        cinemaRepository.save(new Cinema("광주", "광주첨단"));
-        cinemaRepository.save(new Cinema("광주", "광주충장로"));
-        cinemaRepository.save(new Cinema("광주", "광주터미널"));
-        cinemaRepository.save(new Cinema("광주", "광주하남"));
-
-        /* 대구 */
-        cinemaRepository.save(new Cinema("대구", "대구"));
-        cinemaRepository.save(new Cinema("대구", "대구수성"));
-        cinemaRepository.save(new Cinema("대구", "대구스타디음"));
-        cinemaRepository.save(new Cinema("대구", "대구아카데미"));
-        cinemaRepository.save(new Cinema("대구", "대구월성"));
-        cinemaRepository.save(new Cinema("대구", "대구이시아"));
-        cinemaRepository.save(new Cinema("대구", "대구칠곡"));
-        cinemaRepository.save(new Cinema("대구", "대구한일"));
-        cinemaRepository.save(new Cinema("대구", "대구현대"));
-        cinemaRepository.save(new Cinema("대전", "대전"));
-        cinemaRepository.save(new Cinema("대전", "대전가수원"));
-        cinemaRepository.save(new Cinema("대전", "대전가오"));
-        cinemaRepository.save(new Cinema("대전", "대전탄방"));
-        cinemaRepository.save(new Cinema("대전", "대전터미널"));
-        cinemaRepository.save(new Cinema("대전", "유성노은"));
-
-        /* 부산 */
-        cinemaRepository.save(new Cinema("부산", "남포"));
-        cinemaRepository.save(new Cinema("부산", "대연"));
-        cinemaRepository.save(new Cinema("부산", "대한"));
-        cinemaRepository.save(new Cinema("부산", "동래"));
-        cinemaRepository.save(new Cinema("부산", "서면"));
-        cinemaRepository.save(new Cinema("부산", "서면삼정타워"));
-        cinemaRepository.save(new Cinema("부산", "센텀시티"));
-        cinemaRepository.save(new Cinema("부산", "아시아드"));
-        cinemaRepository.save(new Cinema("부산", "정관"));
-        cinemaRepository.save(new Cinema("부산", "하단아트몰링"));
-        cinemaRepository.save(new Cinema("부산", "해운대"));
-        cinemaRepository.save(new Cinema("부산", "화명"));
-        cinemaRepository.save(new Cinema("부산", "CINE DE CHEF 센텀"));
-
-        /* 서울 */
-        cinemaRepository.save(new Cinema("서울", "강남"));
-        cinemaRepository.save(new Cinema("서울", "강변"));
-        cinemaRepository.save(new Cinema("서울", "건대입구"));
-        cinemaRepository.save(new Cinema("서울", "구로"));
-        cinemaRepository.save(new Cinema("서울", "대학로"));
-        cinemaRepository.save(new Cinema("서울", "동대문"));
-        cinemaRepository.save(new Cinema("서울", "등촌"));
-        cinemaRepository.save(new Cinema("서울", "명동"));
-        cinemaRepository.save(new Cinema("서울", "명동역 씨네라이브러리"));
-        cinemaRepository.save(new Cinema("서울", "목동"));
-        cinemaRepository.save(new Cinema("서울", "미아"));
-        cinemaRepository.save(new Cinema("서울", "불광"));
-        cinemaRepository.save(new Cinema("서울", "상봉"));
-        cinemaRepository.save(new Cinema("서울", "성신여대입구"));
-        cinemaRepository.save(new Cinema("서울", "송파"));
-        cinemaRepository.save(new Cinema("서울", "수유"));
-        cinemaRepository.save(new Cinema("서울", "신촌아트레온"));
-        cinemaRepository.save(new Cinema("서울", "압구정"));
-        cinemaRepository.save(new Cinema("서울", "여의도"));
-        cinemaRepository.save(new Cinema("서울", "영등포"));
-        cinemaRepository.save(new Cinema("서울", "왕십리"));
-        cinemaRepository.save(new Cinema("서울", "용산아이파크몰"));
-        cinemaRepository.save(new Cinema("서울", "중계"));
-        cinemaRepository.save(new Cinema("서울", "천호"));
-        cinemaRepository.save(new Cinema("서울", "청담씨네시티"));
-        cinemaRepository.save(new Cinema("서울", "피카다리 1958"));
-        cinemaRepository.save(new Cinema("서울", "하계"));
-        cinemaRepository.save(new Cinema("서울", "홍대"));
-        cinemaRepository.save(new Cinema("서울", "CINE DE CHEF 압구정"));
-        cinemaRepository.save(new Cinema("서울", "CINE DE CHEF 용산아이파크몰"));
-
-        /* 울산 */
-        cinemaRepository.save(new Cinema("울산", "울산삼산"));
-        cinemaRepository.save(new Cinema("울산", "울산신천"));
-        cinemaRepository.save(new Cinema("울산", "울산진장"));
-
-        /* 인천 */
-        cinemaRepository.save(new Cinema("인천", "계양"));
-        cinemaRepository.save(new Cinema("인천", "남주안"));
-        cinemaRepository.save(new Cinema("인천", "부평"));
-        cinemaRepository.save(new Cinema("인천", "연수역"));
-        cinemaRepository.save(new Cinema("인천", "인천"));
-        cinemaRepository.save(new Cinema("인천", "인천공항"));
-        cinemaRepository.save(new Cinema("인천", "인천논현"));
-        cinemaRepository.save(new Cinema("인천", "인천연수"));
-        cinemaRepository.save(new Cinema("인천", "주안역"));
-        cinemaRepository.save(new Cinema("인천", "청라"));
-
-        /* 전라 */
-        cinemaRepository.save(new Cinema("전라", "광양"));
-        cinemaRepository.save(new Cinema("전라", "광양 엘에프스퀘어"));
-        cinemaRepository.save(new Cinema("전라", "군산"));
-        cinemaRepository.save(new Cinema("전라", "나주"));
-        cinemaRepository.save(new Cinema("전라", "목포"));
-        cinemaRepository.save(new Cinema("전라", "목포평화광장"));
-        cinemaRepository.save(new Cinema("전라", "서전주"));
-        cinemaRepository.save(new Cinema("전라", "순천"));
-        cinemaRepository.save(new Cinema("전라", "순천신대"));
-        cinemaRepository.save(new Cinema("전라", "여수웅천"));
-        cinemaRepository.save(new Cinema("전라", "익산"));
-        cinemaRepository.save(new Cinema("전라", "전주고사"));
-        cinemaRepository.save(new Cinema("전라", "전주효자"));
-        cinemaRepository.save(new Cinema("전라", "정읍"));
-
-        /* 제주 */
-        cinemaRepository.save(new Cinema("제주", "제주"));
-        cinemaRepository.save(new Cinema("제주", "제주노형"));
-
-        /* 충청 */
-        cinemaRepository.save(new Cinema("충청", "당진"));
-        cinemaRepository.save(new Cinema("충청", "보령"));
-        cinemaRepository.save(new Cinema("충청", "서산"));
-        cinemaRepository.save(new Cinema("충청", "세종"));
-        cinemaRepository.save(new Cinema("충청", "천안"));
-        cinemaRepository.save(new Cinema("충청", "천안터미널"));
-        cinemaRepository.save(new Cinema("충청", "천안펜타포트"));
-        cinemaRepository.save(new Cinema("충청", "청주(서문)"));
-        cinemaRepository.save(new Cinema("충청", "청주성안길"));
-        cinemaRepository.save(new Cinema("충청", "청주율량"));
-        cinemaRepository.save(new Cinema("충청", "청주지웰시티"));
-        cinemaRepository.save(new Cinema("충청", "청주터미널"));
-        cinemaRepository.save(new Cinema("충청", "충북혁신"));
-        cinemaRepository.save(new Cinema("충청", "홍성"));
         
-        System.out.println("Table Cinema(극장) Data 작업 완료\n");
-        
+
+        /* Table Cinema에 Data가 없을 경우에만 실행  */
+        if(cinemaRepository.count()==0){
+
+            System.out.println("Table Cinema(극장) Data 넣는 중...");
+
+            /* 강원 */
+            cinemaRepository.save(new Cinema("강원", "강릉"));
+            cinemaRepository.save(new Cinema("강원", "원주"));
+            cinemaRepository.save(new Cinema("강원", "인제"));
+            cinemaRepository.save(new Cinema("강원", "춘천"));
+            cinemaRepository.save(new Cinema("강원", "춘천명동"));
+
+            /* 경기 */
+            cinemaRepository.save(new Cinema("경기", "경기광주"));
+            cinemaRepository.save(new Cinema("경기", "광교"));
+            cinemaRepository.save(new Cinema("경기", "광교상현"));
+            cinemaRepository.save(new Cinema("경기", "구리"));
+            cinemaRepository.save(new Cinema("경기", "김포운양"));
+            cinemaRepository.save(new Cinema("경기", "김포풍무"));
+            cinemaRepository.save(new Cinema("경기", "김포한강"));
+            cinemaRepository.save(new Cinema("경기", "동백"));
+            cinemaRepository.save(new Cinema("경기", "동수원"));
+            cinemaRepository.save(new Cinema("경기", "동탄"));
+            cinemaRepository.save(new Cinema("경기", "동탄역"));
+            cinemaRepository.save(new Cinema("경기", "동탄호수공원"));
+            cinemaRepository.save(new Cinema("경기", "배곧"));
+            cinemaRepository.save(new Cinema("경기", "범계"));
+            cinemaRepository.save(new Cinema("경기", "부천"));
+            cinemaRepository.save(new Cinema("경기", "부천역"));
+            cinemaRepository.save(new Cinema("경기", "부천옥길"));
+            cinemaRepository.save(new Cinema("경기", "북수원"));
+            cinemaRepository.save(new Cinema("경기", "산본"));
+            cinemaRepository.save(new Cinema("경기", "서현"));
+            cinemaRepository.save(new Cinema("경기", "성남모란"));
+            cinemaRepository.save(new Cinema("경기", "소풍"));
+            cinemaRepository.save(new Cinema("경기", "수원"));
+            cinemaRepository.save(new Cinema("경기", "스타필드시티위례"));
+            cinemaRepository.save(new Cinema("경기", "시흥"));
+            cinemaRepository.save(new Cinema("경기", "안산"));
+            cinemaRepository.save(new Cinema("경기", "안성"));
+            cinemaRepository.save(new Cinema("경기", "야탑"));
+            cinemaRepository.save(new Cinema("경기", "역곡"));
+            cinemaRepository.save(new Cinema("경기", "오리"));
+            cinemaRepository.save(new Cinema("경기", "오산"));
+            cinemaRepository.save(new Cinema("경기", "오산중앙"));
+            cinemaRepository.save(new Cinema("경기", "용인"));
+            cinemaRepository.save(new Cinema("경기", "의정부"));
+            cinemaRepository.save(new Cinema("경기", "의정부태흥"));
+            cinemaRepository.save(new Cinema("경기", "이천"));
+            cinemaRepository.save(new Cinema("경기", "일산"));
+            cinemaRepository.save(new Cinema("경기", "죽전"));
+            cinemaRepository.save(new Cinema("경기", "파주문산"));
+            cinemaRepository.save(new Cinema("경기", "판교"));
+            cinemaRepository.save(new Cinema("경기", "평촌"));
+            cinemaRepository.save(new Cinema("경기", "평택"));
+            cinemaRepository.save(new Cinema("경기", "평택소사"));
+            cinemaRepository.save(new Cinema("경기", "화성봉담"));
+            cinemaRepository.save(new Cinema("경기", "화정"));
+            cinemaRepository.save(new Cinema("경기", "CINE KIDS 북수원"));
+
+            /* 경상 */
+            cinemaRepository.save(new Cinema("경상", "거제"));
+            cinemaRepository.save(new Cinema("경상", "구미"));
+            cinemaRepository.save(new Cinema("경상", "김천율곡"));
+            cinemaRepository.save(new Cinema("경상", "김해"));
+            cinemaRepository.save(new Cinema("경상", "김해율하"));
+            cinemaRepository.save(new Cinema("경상", "김해장유"));
+            cinemaRepository.save(new Cinema("경상", "마산"));
+            cinemaRepository.save(new Cinema("경상", "북포항"));
+            cinemaRepository.save(new Cinema("경상", "안동"));
+            cinemaRepository.save(new Cinema("경상", "양산물금"));
+            cinemaRepository.save(new Cinema("경상", "양산삼호"));
+            cinemaRepository.save(new Cinema("경상", "창원"));
+            cinemaRepository.save(new Cinema("경상", "창원더시티"));
+            cinemaRepository.save(new Cinema("경상", "통영"));
+            cinemaRepository.save(new Cinema("경상", "포항"));
+
+            /* 광주 */
+            cinemaRepository.save(new Cinema("광주", "광주금남로"));
+            cinemaRepository.save(new Cinema("광주", "광주상무"));
+            cinemaRepository.save(new Cinema("광주", "광주용봉"));
+            cinemaRepository.save(new Cinema("광주", "광주첨단"));
+            cinemaRepository.save(new Cinema("광주", "광주충장로"));
+            cinemaRepository.save(new Cinema("광주", "광주터미널"));
+            cinemaRepository.save(new Cinema("광주", "광주하남"));
+
+            /* 대구 */
+            cinemaRepository.save(new Cinema("대구", "대구"));
+            cinemaRepository.save(new Cinema("대구", "대구수성"));
+            cinemaRepository.save(new Cinema("대구", "대구스타디음"));
+            cinemaRepository.save(new Cinema("대구", "대구아카데미"));
+            cinemaRepository.save(new Cinema("대구", "대구월성"));
+            cinemaRepository.save(new Cinema("대구", "대구이시아"));
+            cinemaRepository.save(new Cinema("대구", "대구칠곡"));
+            cinemaRepository.save(new Cinema("대구", "대구한일"));
+            cinemaRepository.save(new Cinema("대구", "대구현대"));
+            cinemaRepository.save(new Cinema("대전", "대전"));
+            cinemaRepository.save(new Cinema("대전", "대전가수원"));
+            cinemaRepository.save(new Cinema("대전", "대전가오"));
+            cinemaRepository.save(new Cinema("대전", "대전탄방"));
+            cinemaRepository.save(new Cinema("대전", "대전터미널"));
+            cinemaRepository.save(new Cinema("대전", "유성노은"));
+
+            /* 부산 */
+            cinemaRepository.save(new Cinema("부산", "남포"));
+            cinemaRepository.save(new Cinema("부산", "대연"));
+            cinemaRepository.save(new Cinema("부산", "대한"));
+            cinemaRepository.save(new Cinema("부산", "동래"));
+            cinemaRepository.save(new Cinema("부산", "서면"));
+            cinemaRepository.save(new Cinema("부산", "서면삼정타워"));
+            cinemaRepository.save(new Cinema("부산", "센텀시티"));
+            cinemaRepository.save(new Cinema("부산", "아시아드"));
+            cinemaRepository.save(new Cinema("부산", "정관"));
+            cinemaRepository.save(new Cinema("부산", "하단아트몰링"));
+            cinemaRepository.save(new Cinema("부산", "해운대"));
+            cinemaRepository.save(new Cinema("부산", "화명"));
+            cinemaRepository.save(new Cinema("부산", "CINE DE CHEF 센텀"));
+
+            /* 서울 */
+            cinemaRepository.save(new Cinema("서울", "강남"));
+            cinemaRepository.save(new Cinema("서울", "강변"));
+            cinemaRepository.save(new Cinema("서울", "건대입구"));
+            cinemaRepository.save(new Cinema("서울", "구로"));
+            cinemaRepository.save(new Cinema("서울", "대학로"));
+            cinemaRepository.save(new Cinema("서울", "동대문"));
+            cinemaRepository.save(new Cinema("서울", "등촌"));
+            cinemaRepository.save(new Cinema("서울", "명동"));
+            cinemaRepository.save(new Cinema("서울", "명동역 씨네라이브러리"));
+            cinemaRepository.save(new Cinema("서울", "목동"));
+            cinemaRepository.save(new Cinema("서울", "미아"));
+            cinemaRepository.save(new Cinema("서울", "불광"));
+            cinemaRepository.save(new Cinema("서울", "상봉"));
+            cinemaRepository.save(new Cinema("서울", "성신여대입구"));
+            cinemaRepository.save(new Cinema("서울", "송파"));
+            cinemaRepository.save(new Cinema("서울", "수유"));
+            cinemaRepository.save(new Cinema("서울", "신촌아트레온"));
+            cinemaRepository.save(new Cinema("서울", "압구정"));
+            cinemaRepository.save(new Cinema("서울", "여의도"));
+            cinemaRepository.save(new Cinema("서울", "영등포"));
+            cinemaRepository.save(new Cinema("서울", "왕십리"));
+            cinemaRepository.save(new Cinema("서울", "용산아이파크몰"));
+            cinemaRepository.save(new Cinema("서울", "중계"));
+            cinemaRepository.save(new Cinema("서울", "천호"));
+            cinemaRepository.save(new Cinema("서울", "청담씨네시티"));
+            cinemaRepository.save(new Cinema("서울", "피카다리 1958"));
+            cinemaRepository.save(new Cinema("서울", "하계"));
+            cinemaRepository.save(new Cinema("서울", "홍대"));
+            cinemaRepository.save(new Cinema("서울", "CINE DE CHEF 압구정"));
+            cinemaRepository.save(new Cinema("서울", "CINE DE CHEF 용산아이파크몰"));
+
+            /* 울산 */
+            cinemaRepository.save(new Cinema("울산", "울산삼산"));
+            cinemaRepository.save(new Cinema("울산", "울산신천"));
+            cinemaRepository.save(new Cinema("울산", "울산진장"));
+
+            /* 인천 */
+            cinemaRepository.save(new Cinema("인천", "계양"));
+            cinemaRepository.save(new Cinema("인천", "남주안"));
+            cinemaRepository.save(new Cinema("인천", "부평"));
+            cinemaRepository.save(new Cinema("인천", "연수역"));
+            cinemaRepository.save(new Cinema("인천", "인천"));
+            cinemaRepository.save(new Cinema("인천", "인천공항"));
+            cinemaRepository.save(new Cinema("인천", "인천논현"));
+            cinemaRepository.save(new Cinema("인천", "인천연수"));
+            cinemaRepository.save(new Cinema("인천", "주안역"));
+            cinemaRepository.save(new Cinema("인천", "청라"));
+
+            /* 전라 */
+            cinemaRepository.save(new Cinema("전라", "광양"));
+            cinemaRepository.save(new Cinema("전라", "광양 엘에프스퀘어"));
+            cinemaRepository.save(new Cinema("전라", "군산"));
+            cinemaRepository.save(new Cinema("전라", "나주"));
+            cinemaRepository.save(new Cinema("전라", "목포"));
+            cinemaRepository.save(new Cinema("전라", "목포평화광장"));
+            cinemaRepository.save(new Cinema("전라", "서전주"));
+            cinemaRepository.save(new Cinema("전라", "순천"));
+            cinemaRepository.save(new Cinema("전라", "순천신대"));
+            cinemaRepository.save(new Cinema("전라", "여수웅천"));
+            cinemaRepository.save(new Cinema("전라", "익산"));
+            cinemaRepository.save(new Cinema("전라", "전주고사"));
+            cinemaRepository.save(new Cinema("전라", "전주효자"));
+            cinemaRepository.save(new Cinema("전라", "정읍"));
+
+            /* 제주 */
+            cinemaRepository.save(new Cinema("제주", "제주"));
+            cinemaRepository.save(new Cinema("제주", "제주노형"));
+
+            /* 충청 */
+            cinemaRepository.save(new Cinema("충청", "당진"));
+            cinemaRepository.save(new Cinema("충청", "보령"));
+            cinemaRepository.save(new Cinema("충청", "서산"));
+            cinemaRepository.save(new Cinema("충청", "세종"));
+            cinemaRepository.save(new Cinema("충청", "천안"));
+            cinemaRepository.save(new Cinema("충청", "천안터미널"));
+            cinemaRepository.save(new Cinema("충청", "천안펜타포트"));
+            cinemaRepository.save(new Cinema("충청", "청주(서문)"));
+            cinemaRepository.save(new Cinema("충청", "청주성안길"));
+            cinemaRepository.save(new Cinema("충청", "청주율량"));
+            cinemaRepository.save(new Cinema("충청", "청주지웰시티"));
+            cinemaRepository.save(new Cinema("충청", "청주터미널"));
+            cinemaRepository.save(new Cinema("충청", "충북혁신"));
+            cinemaRepository.save(new Cinema("충청", "홍성"));
+            
+            System.out.println("Table Cinema(극장) Data 작업 완료\n");
+        }else{
+            System.out.println("Table Cinema(극장) Data가 이미 있습니다. (현재 : "+cinemaRepository.count()+"개)");
+        }
         /*  
         *   영화 상세정보 크롤링
         *   1. 영화리스트에서 영화상세 페이지 Url 정보를 얻는다.
@@ -568,39 +575,49 @@ public class OnloadRestController{
          * 좌석 no = 1, 2, 3, 4, 5, 6 (열)
          * 총 좌석수 : 30개
          */
-        System.out.println("Table Seat(좌석)에 Data 넣는 중...");
+        /* Table Seat에 Data가 없을 경우에만 실행  */
+        if(seatRepository.count()==0){
+            System.out.println("Table Seat(좌석)에 Data 넣는 중...");
 
-        for(int screenId=1; screenId<=screenRepository.count(); screenId++){
+            for(int screenId=1; screenId<=screenRepository.count(); screenId++){
 
-            char label = 65;    //  좌석 label
-            for(int line=1; line<=5; line++){
-                for(int no=1; no<=6; no++){    //  좌석 no
-                    seatRepository.save(new Seat((long)screenId, String.valueOf(label)+no, "Standard Zone"));
+                char label = 65;    //  좌석 label
+                for(int line=1; line<=5; line++){
+                    for(int no=1; no<=6; no++){    //  좌석 no
+                        seatRepository.save(new Seat((long)screenId, String.valueOf(label)+no, "Standard Zone"));
+                    }
+                    label++;
                 }
-                label++;
-            }
 
+            }
+            System.out.println("Table Seat(좌석)에 Data 작업 완료...\n");
+        }else{
+            System.out.println("Table Seat(좌석)에 Data가 이미 있습니다. (현재 : "+seatRepository.count()+"개)");
         }
-        System.out.println("Table Seat(좌석)에 Data 작업 완료...\n");
 
         /* DB TABLE TICKET INSERT 
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
-        System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
+        /* Table Ticket에 Data가 없을 경우에만 실행 */
+        if(ticketRepository.count()==0){
+            System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
-            for(int timeTableId=1; timeTableId<=10; timeTableId++){
-  
-                Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
-                for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
-                    ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
-                                                .screenId(screenId)
-                                                .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
-                                                .timeTableId((long)timeTableId).build());
+                int timeTableCount = 10;    //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
+                for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
+    
+                    Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
+                    for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
+                        ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
+                                                    .screenId(screenId)
+                                                    .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
+                                                    .timeTableId((long)timeTableId)
+                                                    .ticketPrice(5000).build());
+                    }
                 }
-            }
-
-        // }
-        System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
+            System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
+        }else{
+            System.out.println("Table Ticket(티켓) Data가 이미 있습니다. (현재 : "+ticketRepository.count()+"개)");
+        }
 
         /*  DB Table COLUMN 개수 화면에 출력   */
         String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 

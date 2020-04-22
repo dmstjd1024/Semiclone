@@ -11,6 +11,7 @@ import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
@@ -29,11 +30,11 @@ public class TicketServiceImpl implements TicketService{
     private final CinemaRepository cinemaRepository;
     private final TimeTableRepository timeTableRepository;
     private final ScreenRepository screenRepository;
-    //private final TicketRepository ticketRepository;
+    private final TicketRepository ticketRepository;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
-    public Map<String, Object> getSelectMap() throws Exception{        
+    public Map<String, Object> getScreensMap() throws Exception{        
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
         /* Moives */
@@ -71,9 +72,9 @@ public class TicketServiceImpl implements TicketService{
         returnMap.put("dates", new Gson().fromJson(datesJson, datesList.getClass()));
        
         return returnMap;
-    }
+    }//end of getScreensMap
 
-    public Map<String, Object> getSelectMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception{
+    public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception{
 
         /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
         if(movieId == 123890){
@@ -94,7 +95,7 @@ public class TicketServiceImpl implements TicketService{
 
         /* 모든 Param이 null일 때 전체값 return */
         if(movieId == null && cinemaId == null && date == null && timeTableId == null && group.equals("")){
-            return this.getSelectMap();
+            return this.getScreensMap();
         }
 
         /* 정렬방법 세팅 */
@@ -470,6 +471,14 @@ public class TicketServiceImpl implements TicketService{
         }
 
         return returnMap;
+    }//end of getScreensInfoMap
+
+    public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception {
+
+        Long screenId = timeTableRepository.findOneById(timeTableId).getScreenId();
+        
+
+        return null;
     }
 
 }//end of class

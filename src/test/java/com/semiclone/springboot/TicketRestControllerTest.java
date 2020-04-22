@@ -10,6 +10,7 @@ import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
@@ -142,7 +143,7 @@ public class TicketRestControllerTest {
             }
     }
 
-    @Test
+    //@Test
     public void movieAndScreenSelect() throws Exception{
 
         Long movieId = (long)58;
@@ -213,5 +214,15 @@ public class TicketRestControllerTest {
         System.out.println(datesJson);
         
     }
+
+    @Test
+    public void findOneByIdTest() throws Exception {
+
+        Long timeTableId = (long)1;
+        Long screenId = timeTableRepository.findOneById(timeTableId).getScreenId();  
+        System.out.println("\n"+screenId+"\n");
+
+    }
+
 
 }

@@ -46,4 +46,6 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT t FROM TimeTable t WHERE movieId = ?1 AND screenId = ?2 AND date = ?3")
     List<TimeTable> findTimeTableByMovieIdAndScreenIdAndDate(Long movieId, Long screenId, Long date);
 
+    TimeTable findOneById(Long timeTableId);
+
 }//end of interface
