@@ -11,6 +11,8 @@ import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.seat.SeatRepository;
+import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
@@ -31,6 +33,7 @@ public class TicketServiceImpl implements TicketService{
     private final TimeTableRepository timeTableRepository;
     private final ScreenRepository screenRepository;
     private final TicketRepository ticketRepository;
+    private final SeatRepository seatRepository;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -474,10 +477,23 @@ public class TicketServiceImpl implements TicketService{
     }//end of getScreensInfoMap
 
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+       
+        List<Ticket> ticketsList = ticketRepository.findAllByTimeTableId(timeTableId);
+        List<Object> list = new ArrayList<Object>();
+        for(Ticket ticket : ticketsList){
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("ticket", ticket);
+            map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
+            list.add(map);
+        }
+        String screensJson = new Gson().toJson(list);
+        returnMap.put("seats", new Gson().fromJson(screensJson, list.getClass()));
 
-        Long screenId = timeTableRepository.findOneById(timeTableId).getScreenId();
-        
+        return returnMap;
+    }//end of getSeatsMap
 
+    public Map<String, Object> tempTicketPurchase(Long ticketId) throws Exception {
         return null;
     }
 

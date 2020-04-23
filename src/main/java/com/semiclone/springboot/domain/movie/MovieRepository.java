@@ -12,4 +12,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query("SELECT m FROM Movie m WHERE id = ?1")
     Movie findMovieById(Long id);
 
+    @Query("SELECT m FROM Movie m WHERE id = ?1")
+    Movie findOneById(Long movieId);
+
 }//end of interface

@@ -48,4 +48,5 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
 
     TimeTable findOneById(Long timeTableId);
 
+
 }//end of interface

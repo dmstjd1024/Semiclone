@@ -10,12 +10,12 @@ import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
-import com.semiclone.springboot.domain.timetable.TimeTable;
+import com.semiclone.springboot.domain.ticket.Ticket;
+import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,6 +36,9 @@ public class TicketRestControllerTest {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     //@Test
     public void joinQueryTest() throws Exception {
@@ -101,6 +104,7 @@ public class TicketRestControllerTest {
             }
         }
         String datesJson = new Gson().toJson(datesList);
+        System.out.println(moviesJson);
         System.out.println(datesJson);
     }
 
@@ -138,6 +142,7 @@ public class TicketRestControllerTest {
                 cinemasMap.put("cinemaList", new Gson().fromJson(cinemasJson, cinemaList.getClass()));
                 cinemasList.add(cinemasMap);
             }
+            System.out.println(moviesJson);
             for(Object obj : cinemasList){
                 System.out.println(obj);
             }
@@ -215,12 +220,17 @@ public class TicketRestControllerTest {
         
     }
 
-    @Test
+    //@Test
     public void findOneByIdTest() throws Exception {
 
         Long timeTableId = (long)1;
         Long screenId = timeTableRepository.findOneById(timeTableId).getScreenId();  
         System.out.println("\n"+screenId+"\n");
+
+        List<Ticket> ticketList = ticketRepository.findAllByTimeTableId(timeTableId);
+        for(Ticket ticket : ticketList){
+            System.out.println(ticket.getId());
+        }
 
     }
 

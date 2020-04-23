@@ -5,6 +5,7 @@ import java.util.Map;
 import com.semiclone.springboot.service.ticket.TicketService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,12 @@ public class TicketRestController {
     @ApiOperation(value = "좌석 선택 :: Seats(좌석), Ticket(티켓)")
     @GetMapping(value = "/seats")
     public Map<String, Object> seats(@RequestParam("timeTableId") Long timeTableId) throws Exception {
+        return ticketService.getSeatsMap(timeTableId);
+    }
+
+    @ApiOperation(value = "결제 :: 구현안됨")
+    @PatchMapping(value = "/temp")
+    public Map<String, Object> temp() throws Exception {
         return null;
     }
 

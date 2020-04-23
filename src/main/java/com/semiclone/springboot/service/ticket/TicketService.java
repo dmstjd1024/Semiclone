@@ -10,4 +10,6 @@ public interface TicketService {
 
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception;
 
+    public Map<String, Object> tempTicketPurchase(Long ticketId) throws Exception;
+
 }//end of interface
