@@ -16,6 +16,7 @@ import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -231,6 +232,15 @@ public class TicketRestControllerTest {
         for(Ticket ticket : ticketList){
             System.out.println(ticket.getId());
         }
+
+    }
+
+    @Test
+    public void queryTest() throws Exception {
+
+        Long cinemaId = (long)1;
+        //System.out.println(cinemaRepository.findCinemaAreaById(cinemaId));
+        System.out.println(cinemaRepository.findCinemaNameById(cinemaId));
 
     }
 

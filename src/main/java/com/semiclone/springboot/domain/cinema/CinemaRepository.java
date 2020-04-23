@@ -18,6 +18,16 @@ public interface CinemaRepository extends JpaRepository<Cinema, Long> {
 
     List<Cinema> findAllByCinemaAreaAndId(String cinemaArea, Long id);
 
-    Long findIdByCinemaArea(String cinemaArea);
+    @Query("SELECT id FROM Cinema WHERE cinemaArea = ?1")
+    List<Long> findIdsByCinemaArea(String cinemaArea);
+
+    @Query("SELECT cinemaArea FROM Cinema WHERE id = ?1")
+    String findCinemaAreaById(Long cinemaId);
+
+    @Query("SELECT id FROM Cinema WHERE cinemaArea = ?1")
+    List<Long> findIdListByCinemaArea(String cinemaArea);
+
+    @Query("SELECT cinemaName FROM Cinema WHERE id = ?1")
+    String findCinemaNameById(Long cinemaId);
 
 }//end of interface
