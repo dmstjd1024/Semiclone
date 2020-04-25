@@ -1,3 +1,6 @@
+/*
+ * 적용기준일 : 2020.04.25 16:40
+ */
 package com.semiclone.springboot.web;
 
 import java.util.List;
@@ -83,7 +86,7 @@ public class OnloadRestController{
             cinemaRepository.save(new Cinema("서울", "중계"));
             cinemaRepository.save(new Cinema("서울", "천호"));
             cinemaRepository.save(new Cinema("서울", "청담씨네시티"));
-            cinemaRepository.save(new Cinema("서울", "피카다리 1958"));
+            cinemaRepository.save(new Cinema("서울", "피카디리1958"));
             cinemaRepository.save(new Cinema("서울", "하계"));
             cinemaRepository.save(new Cinema("서울", "홍대"));
             cinemaRepository.save(new Cinema("서울", "CINE DE CHEF 압구정"));
@@ -204,7 +207,7 @@ public class OnloadRestController{
             cinemaRepository.save(new Cinema("부산", "하단아트몰링"));
             cinemaRepository.save(new Cinema("부산", "해운대"));
             cinemaRepository.save(new Cinema("부산", "화명"));
-            cinemaRepository.save(new Cinema("부산", "CINE DE CHEF 센텀"));
+            cinemaRepository.save(new Cinema("부산", "CINE DE CHEF 센텀시티"));
 
             /* 울산 */
             cinemaRepository.save(new Cinema("울산", "울산삼산"));

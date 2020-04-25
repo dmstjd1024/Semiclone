@@ -41,6 +41,8 @@ public class Ticket {
     @ColumnDefault("0")
     private char ticketState = '0';    //  티켓 진행상태
 
+    private String ticketToken;
+
     @Builder
     public Ticket(Long seatId, Long screenId, Long movieId, Long timeTableId, int ticketPrice, char ticketState){
         this.seatId = seatId;
@@ -49,6 +51,14 @@ public class Ticket {
         this.timeTableId = timeTableId;
         this.ticketPrice = ticketPrice;
         this.ticketState = ticketState;
+    }
+
+    public void setTicketState(char ticketState){
+        this.ticketState = ticketState;
+    }
+
+    public void setTicketToken(String ticketToken){
+        this.ticketToken = ticketToken;
     }
 
 }//end of class

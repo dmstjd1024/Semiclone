@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import com.google.gson.Gson;
 import com.semiclone.springboot.domain.cinema.Cinema;
@@ -493,8 +494,78 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getSeatsMap
 
-    public Map<String, Object> tempTicketPurchase(Long ticketId) throws Exception {
-        return null;
-    }
+    
+    public Map<String, Object> updateTicketState(Map<String, Object> tickets) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        char ticketState = ((String)tickets.get("state")).charAt(0);
+        boolean transaction = false;
+        String ticketToken = null;
+        List ticketsList = null;
+        
+        /*  
+         * Ticket 유효성 체크
+         * 요청한 Tickets가 예매가능 상태면 로직 처리 후 1 return
+         * 결제대기, 구매완료, 그 외 잘못된 요청일 경우 로직 종류 후 0 return
+         */
+        if(ticketState == '1'){    //  예매진행
+            if((List)tickets.get("tickets") != null){
+                for(Object ticketId : (List)tickets.get("tickets")){
+                    if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '0'){
+                        transaction = true;
+                    }else{
+                        transaction = false;
+                        returnMap.put("result", "0");
+                        break;
+                    }
+                }         
+            }else{
+                transaction = false;
+                returnMap.put("result", "0");
+            }
+        }else if(ticketState == '0'){    //  예매취소
+            if(tickets.get("ticketTokens") != null){    //  토큰 유효성 검사
+                ticketsList = new ArrayList();
+                for(Object token : (List)tickets.get("ticketTokens")){
+                    List list = ticketRepository.findIdByTicketToken((String)token);
+                    if(list.size() != 0){
+                        ticketsList.add(list.get(0));
+                    }else{
+                        break;
+                    }
+                }
+                if(ticketsList.size() > 0){
+                    tickets.put("tickets", ticketsList);
+                    transaction = true;
+                }else{
+                    returnMap.put("result", "0");
+                    transaction = false;
+                }
+            }
+        }else{    //  잘못된 요청
+            returnMap.put("result", "0");
+        }//end of Ticket Validation Check
+
+        if(transaction){    //  정상요청일 경우에 로직 실행
+            Ticket ticket = null;
+            List<String> ticketTokens = new ArrayList<String>();
+            for(Object ticketId : (List)tickets.get("tickets")){
+                ticket = ticketRepository.findOneById((long)((int)ticketId));
+
+                ticket.setTicketState(ticketState);
+                if(ticketState == '1'){    //  예매진행 시 토큰 INSERT
+                    ticketToken = (new Random().nextInt(99999)+100000)+""+System.currentTimeMillis();
+                    ticketTokens.add(ticketToken);
+                    ticket.setTicketToken(ticketToken);
+                }else if(ticketState == '0'){    //  예매취소 시 토큰 DELETE
+                    ticket.setTicketToken(null);
+                }
+                ticketRepository.save(ticket);
+            }
+            returnMap.put("result", "1");
+            returnMap.put("ticketTokens", ticketTokens);
+        }
+        
+        return returnMap;
+    }//end of updateTicketState
 
 }//end of class
