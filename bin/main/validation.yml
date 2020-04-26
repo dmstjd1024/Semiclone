@@ -1,0 +1,12 @@
+NoEmpty : 필수값입니다.
+Size :
+  userForm :
+    userName : 이름은 3글자 이상 32자 미만으로 입력하세요
+    password : 패스워드는 7글자 이상 32글자 미만으로 입력하시오
+Duplicate:
+  userForm:
+    username: 중복된 이름입니다.
+    email : 이미 사용중인 이메일입니다.
+Equal:
+  userForm :
+    password : 패스워드가 값이 일치하지 않습니다.
