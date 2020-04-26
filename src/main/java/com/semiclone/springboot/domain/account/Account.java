@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id")
 @NoArgsConstructor
 public class Account{
 
@@ -18,8 +17,6 @@ public class Account{
     @Column(nullable = false)
     private String accountId;
     @Column(nullable = false)
-    private String residentMember;
-    @Column(nullable = false)
     private String name;
     private String profileImage;
     @Column(nullable = false)
@@ -28,7 +25,7 @@ public class Account{
     private String email;
     @Column(nullable = false)
     private String phoneNumber;
-    @Column(nullable = false)
+
     private String nickname;
     private Long ticket;
     private Long breakdowns;
@@ -39,23 +36,19 @@ public class Account{
     private Long paymentDetail;
     private Long watchedMovieList;
     private Long frequentTheater;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
+    private String userRole;
 
     @Builder
-    public Account(String accountId, String residentMember, String name, String password,
-                   String email, String phoneNumber, String nickname, int point, UserRole role) {
+    public Account(String accountId, String name, String password,
+                   String email, String phoneNumber, String nickname, int point, String userRole) {
         this.accountId = accountId;
-        this.residentMember = residentMember;
         this.name = name;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
         this.point = point;
-        this.role = role;
+        this.userRole = userRole;
     }
 }
 

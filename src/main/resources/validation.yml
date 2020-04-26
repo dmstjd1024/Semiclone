@@ -7,3 +7,6 @@ Duplicate:
   userForm:
     username: 중복된 이름입니다.
     email : 이미 사용중인 이메일입니다.
+Equal:
+  userForm :
+    password : 패스워드가 값이 일치하지 않습니다.

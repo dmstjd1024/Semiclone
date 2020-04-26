@@ -11,13 +11,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,14 +50,15 @@ public class AccountControllerTest {
         mockMvc.perform(post("/sign-up")
                 .param("accountId", "test")
                 .param("name", "전은성")
-                .param("residentMember", "123456-1234567")
-                .param("password", "1234567")
+                .param("password", "111")
                 .param("email", "xe00123@gmail.com")
                 .param("phoneNumber", "010-1234-5678")
                 .param("nickname", "nicktest")
                 .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"));
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated());
+
     }
 
     @DisplayName("회원 가입 처리 - 입력값 정상")
@@ -63,20 +67,26 @@ public class AccountControllerTest {
         mockMvc.perform(post("/sign-up")
                 .param("accountId", "test")
                 .param("name", "전은성")
-                .param("residentMember", "123456-1234567")
                 .param("password", "1234567")
                 .param("email", "xe00123@gmail.com")
                 .param("phoneNumber", "010-1234-5678")
-                .param("nickname", "nicktest")
+                .param("role", "USER")
+                .param("retypePassword", "1234567")
                 .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"))
-                ;
+                .andExpect(authenticated());
 
         Account account = accountRepository.findByAccountId("test");
         assertNotNull(account);
         assertNotEquals(account.getPassword(), "1234567");
 
     }
+
+/*    @DisplayName("로그인 성공 여부 확인")
+    @Test
+    public void login_correct_input() throws Exception {
+        mockMvc.perform(post("/login"))
+    }*/
 
 }

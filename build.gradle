@@ -23,7 +23,7 @@ apply plugin: 'io.spring.dependency-management'
 
 group = 'com.semiclone'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+//sourceCompatibility = '1.8'
 
 configurations {
     developmentOnly
@@ -57,9 +57,12 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test' //Security 테스트용
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
 
+
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
     compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
     compile group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
+
+    compile group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
 
 }
 

@@ -1,6 +1,5 @@
 package com.semiclone.springboot.config;
 
-import com.semiclone.springboot.domain.account.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
 import javax.sql.DataSource;
 
@@ -23,11 +23,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         http
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/**", "/sign-up", "/swagger-ui.html").permitAll()
-//                .antMatchers("/").hasRole(UserRole.USER.getTitle())
+                .antMatchers("/mycgv/**").authenticated()
+                .antMatchers("/admin/**, /popcorn-store/create").hasRole("ADMIN")
+//                .antMatchers("/").hasRole("USER")
                 ;
 
         http
@@ -37,7 +40,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/");
+                .deleteCookies("JSESSIONID")
+                .logoutSuccessUrl("/")
+
+                .invalidateHttpSession(true);
 
         http
                 .rememberMe()
@@ -53,6 +59,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return jdbcTokenRepository;
     }
 
+    @Bean
+    public SpringSecurityDialect springSecurityDialect(){
+       return new SpringSecurityDialect();
+    }
 
 
 
