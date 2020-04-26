@@ -1,5 +1,10 @@
 package com.semiclone.springboot.service.ticket;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +22,17 @@ import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
+import com.semiclone.springboot.web.dto.AuthData;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
-import org.springframework.stereotype.Service;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import lombok.RequiredArgsConstructor;
 
@@ -494,7 +506,7 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getSeatsMap
 
-    
+    /* Ticket 상태값 변경 :: 예매 결제 ~ 결제 취소에서 사용 */
     public Map<String, Object> updateTicketState(Map<String, Object> tickets) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
         char ticketState = ((String)tickets.get("state")).charAt(0);
@@ -506,19 +518,20 @@ public class TicketServiceImpl implements TicketService{
          * Ticket 유효성 체크
          * 요청한 Tickets가 예매가능 상태면 로직 처리 후 1 return
          * 결제대기, 구매완료, 그 외 잘못된 요청일 경우 로직 종류 후 0 return
+         * 잘못된 요청에 대비한 Null Check 완료
          */
         if(ticketState == '1'){    //  예매진행
-            if((List)tickets.get("tickets") != null){
+            if((List)tickets.get("tickets") != null){    //  ticketId Null Check
                 for(Object ticketId : (List)tickets.get("tickets")){
                     if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '0'){
                         transaction = true;
-                    }else{
+                    }else{    //  
                         transaction = false;
                         returnMap.put("result", "0");
                         break;
                     }
                 }         
-            }else{
+            }else{    //  ticketId 값이 없을 경우
                 transaction = false;
                 returnMap.put("result", "0");
             }
@@ -527,16 +540,16 @@ public class TicketServiceImpl implements TicketService{
                 ticketsList = new ArrayList();
                 for(Object token : (List)tickets.get("ticketTokens")){
                     List list = ticketRepository.findIdByTicketToken((String)token);
-                    if(list.size() != 0){
+                    if(list.size() != 0){    //  ticketId 유효성 체크
                         ticketsList.add(list.get(0));
-                    }else{
+                    }else{    //  ticketId 값이 없을 경우
                         break;
                     }
                 }
-                if(ticketsList.size() > 0){
+                if(ticketsList.size() > 0){    //  tickets List Null Check
                     tickets.put("tickets", ticketsList);
                     transaction = true;
-                }else{
+                }else{    //  tickets Lis 값이 없을 경우
                     returnMap.put("result", "0");
                     transaction = false;
                 }
@@ -545,6 +558,7 @@ public class TicketServiceImpl implements TicketService{
             returnMap.put("result", "0");
         }//end of Ticket Validation Check
 
+        /* Ticket 유효성 검사가 모두 완료되고, 안전한 값일 때 DB 로직 실행 */
         if(transaction){    //  정상요청일 경우에 로직 실행
             Ticket ticket = null;
             List<String> ticketTokens = new ArrayList<String>();
@@ -562,10 +576,95 @@ public class TicketServiceImpl implements TicketService{
                 ticketRepository.save(ticket);
             }
             returnMap.put("result", "1");
-            returnMap.put("ticketTokens", ticketTokens);
+            returnMap.put("ticketTokens", ticketTokens);    //  결제 취소를 진행할 때, ticketId 대신에 ticketToken 사용
         }
         
         return returnMap;
     }//end of updateTicketState
+
+    public Map<String, Object> addPurchase(Map<String, Object> purchase) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+
+        // boolean everythingsFine = false;
+		// 	String API_URL = "https://api.iamport.kr";
+		// 	String imp_key = "";
+		// 	String imp_secret = "";
+			
+		// 	//Get AccessToken
+		// 	DefaultHttpClient httpClient = new DefaultHttpClient();
+		// 	String url = "https://api.iamport.kr";
+		// 	HttpPost httpPost = new HttpPost(API_URL+"/users/getToken");
+		// 	httpPost.setHeader("Accept", "application/json");
+		// 	httpPost.setHeader("Connection","keep-alive");
+		// 	httpPost.setHeader("Content-Type", "application/json");
+			
+		// 	ObjectMapper objectMapper = new ObjectMapper();
+		// 	AuthData authData = new AuthData(imp_key, imp_secret);
+		// 	String data = objectMapper.writeValueAsString(authData);
+		// 	StringEntity httpEntity = new StringEntity(data);
+		// 	httpPost.setEntity(httpEntity);
+
+		// 	org.apache.http.HttpResponse httpResponse = httpClient.execute(httpPost);
+		// 	HttpEntity responseHttpEntity = httpResponse.getEntity();
+		// 	InputStream is = responseHttpEntity.getContent();
+		// 	BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
+
+		// 	String temp="";
+		// 	String response="";
+		// 	while( (temp = br.readLine()) != null) {
+		// 		response += temp;
+		// 	}
+		// 	JSONObject jsonObj = (JSONObject)JSONValue.parse(((JSONObject)JSONValue.parse(response)).get("response").toString());
+		// 	String token  = jsonObj.get("access_token").toString();
+			
+		// 	//Get Payment
+		// 	DefaultHttpClient paymentHttpClient = new DefaultHttpClient();
+		// 	String paymentUrl = API_URL+"/payments/"+purchase.get("imp_uid");
+		// 	HttpGet paymentHttpGet = new HttpGet(paymentUrl);
+		// 	paymentHttpGet.addHeader("Accept", "application/json");
+		// 	paymentHttpGet.addHeader("Authorization", token);
+			
+		// 	HttpResponse paymentHttpResponse = (HttpResponse)paymentHttpClient.execute(paymentHttpGet);
+		// 	HttpEntity paymentHttpEntity = paymentHttpResponse.getEntity();
+		// 	InputStream paymentIs = paymentHttpEntity.getContent();
+		// 	BufferedReader paymentBr = new BufferedReader(new InputStreamReader(paymentIs,"UTF-8"));
+			
+		// 	// check everythings_fine
+		// 	if (paymentHttpResponse.getStatusLine().getStatusCode() != 200) {
+		// 		throw new RuntimeException("Failed : HTTP error code : "
+		// 		   + paymentHttpResponse.getStatusLine().getStatusCode());
+		// 	}
+			
+		// 	String paymentTemp="";
+		// 	String paymentResponse="";
+		// 	while( (paymentTemp = paymentBr.readLine()) != null) {
+		// 		paymentResponse+= paymentTemp;
+		// 	}
+		// 	JSONObject jsonObj11 = (JSONObject)JSONValue.parse(paymentResponse);
+		// 	ObjectMapper finalObjectMapper = new ObjectMapper();
+		// 	HashMap paymentMap = finalObjectMapper.readValue(jsonObj11.get("response").toString(), HashMap.class);
+		// 	String payMethod = paymentMap.get("pay_method").toString();
+			
+		// 	if( payMethod.equals("card") ) {
+		// 		payMethod = "0";
+		// 	}else if( payMethod.equals("phone") ) {
+		// 		payMethod = "1";
+		// 	}
+			// purchase.setPayMethod(payMethod);
+			// purchase.setPurchasePrice((Integer)paymentMap.get("amount"));
+			// System.out.println(purchase.toString());
+			
+			// User user = new User();
+			// user.setUserId(((User)session.getAttribute("user")).getUserId());
+			// purchase.setUser(user);
+				
+			// if( purchaseDAO.addPayment(purchase) == 1) {
+			// 	everythingsFine = true;
+			// }
+
+			// return everythingsFine;
+
+        return returnMap;
+    }//end of addPurchase
 
 }//end of class

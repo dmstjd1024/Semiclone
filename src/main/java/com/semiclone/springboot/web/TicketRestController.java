@@ -6,6 +6,7 @@ import com.semiclone.springboot.service.ticket.TicketService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +50,13 @@ public class TicketRestController {
     @PatchMapping(value = "/ticketState")
     public Map<String, Object> ticketState(@RequestBody Map<String, Object> tickets) throws Exception {
         return ticketService.updateTicketState(tickets);
+    }
+
+    @ApiOperation(value = "티켓 결제 :: 추가완료 시 1 return / 실패 시 0 return",
+            notes = "구현 중...")
+    @PostMapping(value = "/purchase")
+    public Map<String, Object> purchase(@RequestBody Map<String, Object> purchase) throws Exception {
+        return ticketService.addPurchase(purchase);
     }
 
 }//end of class

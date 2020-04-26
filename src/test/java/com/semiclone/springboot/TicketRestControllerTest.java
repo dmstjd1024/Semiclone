@@ -15,7 +15,6 @@ import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
-import com.semiclone.springboot.web.dto.TicketDto;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -245,14 +244,16 @@ public class TicketRestControllerTest {
 
     }
 
-    @Test
+    //@Test
     public void updateTest() throws Exception {
         Long ticketId = (long)1;
         Ticket ticket = ticketRepository.findOneById(ticketId);
         ticket.setTicketState('1');
-        System.out.println("=======================================================\n");
         System.out.println(ticketRepository.save(ticket));
-        System.out.println("=======================================================\n");
+    }
+
+    @Test
+    public void HttpClientTest() throws Exception {
         
     }
 
