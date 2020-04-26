@@ -22,17 +22,10 @@ import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
-import com.semiclone.springboot.web.dto.AuthData;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
+import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
