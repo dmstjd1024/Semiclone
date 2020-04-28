@@ -1,7 +1,7 @@
   
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/semiclone?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mariadb://localhost:3307/semiclone?characterEncoding=UTF-8&serverTimezone=UTC
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password : 1234
@@ -20,4 +20,4 @@ spring:
 
 
 server:
-  port: 8080
+  port: 8005

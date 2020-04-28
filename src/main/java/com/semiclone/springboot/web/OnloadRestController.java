@@ -185,7 +185,7 @@ public class OnloadRestController{
             /* 대구 */
             cinemaRepository.save(new Cinema("대구", "대구"));
             cinemaRepository.save(new Cinema("대구", "대구수성"));
-            cinemaRepository.save(new Cinema("대구", "대구스타디음"));
+            cinemaRepository.save(new Cinema("대구", "대구스타디움"));
             cinemaRepository.save(new Cinema("대구", "대구아카데미"));
             cinemaRepository.save(new Cinema("대구", "대구월성"));
             cinemaRepository.save(new Cinema("대구", "대구이시아"));
