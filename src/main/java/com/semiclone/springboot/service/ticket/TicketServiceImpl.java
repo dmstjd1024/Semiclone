@@ -570,6 +570,11 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of updateTicketState
 
+    public Map<String, Object> getUserService(String accountId) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        return returnMap;
+    }//end of getUserService
+
     public Map<String, Object> addPurchase(Map<String, Object> purchase) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
 

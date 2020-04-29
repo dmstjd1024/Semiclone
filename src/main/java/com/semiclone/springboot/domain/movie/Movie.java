@@ -32,7 +32,7 @@ public class Movie {
     @Column(length = 50, nullable = false)
     private String movieTitleEng;    // 영화 영어제목
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 200, nullable = false)
     private String movieGenre;    // 영화 장르
 
     @Column(nullable = false)
