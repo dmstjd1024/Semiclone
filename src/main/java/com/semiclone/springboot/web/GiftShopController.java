@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/popcorn-store")
+@RequestMapping("/GiftShop")
 @RequiredArgsConstructor
 public class GiftShopController {
 
@@ -22,7 +22,7 @@ public class GiftShopController {
     @GetMapping("") // 기프트샵 메인
     private String index(Model model){
         model.addAttribute( "products", productRepository.findAll(new Sort(Sort.Direction.DESC, "sales")) );
-        return "popcorn-store";
+        return "giftshop";
     }
 
     @GetMapping("{categoryIdx}") // 기프트샵 카테고리 선택 시
@@ -32,7 +32,7 @@ public class GiftShopController {
 
         model.addAttribute( "products", products);
 
-        return "popcorn-store";
+        return "giftshop";
     }
 
     @PostMapping("/create") //admin용
@@ -40,7 +40,7 @@ public class GiftShopController {
 
         productService.createProduct(product);
 
-        return "redirect:/popcorn-store";
+        return "redirect:/giftshop";
     }
 
     @GetMapping("/product-detail/{productNo}") //상품 클릭 시
@@ -48,7 +48,7 @@ public class GiftShopController {
 
         model.addAttribute("product", productRepository.findByProductNo(productNo) );
 
-        return "product-Detail";
+        return "giftshop/product-Detail";
 
     }
 

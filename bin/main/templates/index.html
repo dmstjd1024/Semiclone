@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8"/>
-    <title>index</title>
+    <meta charset="UTF-8">
+    <title>Title</title>
 </head>
 <body>
-index
+
+<li sec:authorize="!isAuthenticated()"><a th:href="@{/signup}">회원가입</a></li>
+
+<li sec:authorize="isAuthenticated()"><span sec:authentication="principal.username"></span></li>
+
+
+
+<li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">로그인</a></li>
+<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">로그아웃</a></li>
 </body>
 </html>
