@@ -29,8 +29,6 @@ public class Account{
     private String nickname;
     private Long ticket;
     private Long breakdowns;
-    private Long gifticons;
-    private Long coupons;
     @Column(nullable = false)
     private int point;
     private Long paymentDetail;
