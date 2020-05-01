@@ -24,33 +24,33 @@ public class AccountController {
     private final SignUpFormValidator signUpFormValidator;
 
     @GetMapping("/sign-up")
-    public String signUp(){
+    public String signUp() {
         return "account/sign-up";
     }
 
     @PostMapping("/sign-up")
-    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors){
+    public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors) {
 
         signUpFormValidator.validate(signUpForm, errors);
 
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             return "account/sign-up";
         }
 
         Account account = accountService.processNewAccount(signUpForm);
         accountService.login(account);
-        return "redirect:/";
+        return "redirect :/";
 
     }
 
     @GetMapping("/mycgv")
-    public String myPage(Model model, Principal principal){
+    public String myPage(Model model, Principal principal) {
 
-            Account account = accountRepository.findByAccountId(principal.getName());
+        Account account = accountRepository.findByAccountId(principal.getName());
 
-            model.addAttribute("user", account);
-            return "user/mypage";
+        model.addAttribute("user", account);
 
+        return "user/mypage";
     }
 
 

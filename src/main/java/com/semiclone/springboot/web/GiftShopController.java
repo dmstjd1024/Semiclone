@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/GiftShop")
+@RequestMapping("/giftshop")
 @RequiredArgsConstructor
 public class GiftShopController {
 
@@ -52,9 +52,8 @@ public class GiftShopController {
 
     }
 
-/*
-    @GetMapping("/purchase-confirm") //결제하기 클릭 시 
+/*    @PostMapping("/purchase-confirm") //결제하기 클릭 시
     private String payment(Model model, ){
-    }
-*/
+
+    }*/
 }

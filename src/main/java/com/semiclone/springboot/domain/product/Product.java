@@ -20,14 +20,17 @@ public class Product {
     private Long productNo;
     @Column(unique = true, nullable = false)
     private String name;
+    @Column(nullable = false)
     private int price;
+    @Column(nullable = false)
     private String size;
+    @Column(nullable = false)
     private String product_image;
     @Column (nullable = false)
     private int category;
-    @Column
+    @Column(nullable = false)
     private String kind;
-    @Column
+    @Column(nullable = false)
     private Long sales; // 판매량
 
 }
