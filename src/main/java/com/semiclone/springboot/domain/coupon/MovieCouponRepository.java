@@ -8,7 +8,7 @@ import java.util.List;
 @Repository
 public interface MovieCouponRepository extends JpaRepository<MovieCoupon,Long> {
 
-    List<MovieCoupon> findByAccountId();
+    List<MovieCoupon> findByAccountId(String accountId);
 
 
 

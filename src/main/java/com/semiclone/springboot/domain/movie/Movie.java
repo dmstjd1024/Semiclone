@@ -1,17 +1,12 @@
 package com.semiclone.springboot.domain.movie;
 
-import java.sql.Clob;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.sql.Clob;
 
 @Entity
 @Getter
@@ -32,7 +27,7 @@ public class Movie {
     @Column(length = 50, nullable = false)
     private String movieTitleEng;    // 영화 영어제목
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 200, nullable = false)
     private String movieGenre;    // 영화 장르
 
     @Column(nullable = false)
