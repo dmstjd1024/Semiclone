@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    generate-ddl: true
+
+  devtools:
+    livereload:
+      enabled: true
+  thymeleaf:
+    cache: false
+  messages:
+    basename: validation
+  profiles:
+    include: db
+
+
+server:
+  port: 8080
