@@ -12,6 +12,8 @@ public interface TicketService {
 
     public Map<String, Object> updateTicketState(Map<String, Object> tickets) throws Exception;
 
+    public Map<String, Object> getUserService(String accountId) throws Exception;
+
     public Map<String, Object> addPurchase(Map<String, Object> purchase) throws Exception;
 
 }//end of interface

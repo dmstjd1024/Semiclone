@@ -52,8 +52,7 @@ public class OnloadRestController{
     @RequestMapping(value = "/constructor", method = RequestMethod.GET)
     public String constructor() throws Throwable{
         
-        System.out.println("-- INSERT DB Data Start... 1. Cinema, 2. Movie, 3. Screen, 4. TimeTable, 5. Seat, 6. Ticket");
-        
+        System.out.println("-- INSERT DB Data Start... 1. Cinema, 2. Movie, 3. Screen, 4. TimeTable, 5. Seat, 6. Ticket");   
 
         /* Table Cinema에 Data가 없을 경우에만 실행  */
         if(cinemaRepository.count()==0){
@@ -186,7 +185,7 @@ public class OnloadRestController{
             /* 대구 */
             cinemaRepository.save(new Cinema("대구", "대구"));
             cinemaRepository.save(new Cinema("대구", "대구수성"));
-            cinemaRepository.save(new Cinema("대구", "대구스타디음"));
+            cinemaRepository.save(new Cinema("대구", "대구스타디움"));
             cinemaRepository.save(new Cinema("대구", "대구아카데미"));
             cinemaRepository.save(new Cinema("대구", "대구월성"));
             cinemaRepository.save(new Cinema("대구", "대구이시아"));
@@ -260,12 +259,11 @@ public class OnloadRestController{
             cinemaRepository.save(new Cinema("제주", "제주"));
             cinemaRepository.save(new Cinema("제주", "제주노형"));
 
-            
-            
             System.out.println("Table Cinema(극장) Data 작업 완료\n");
         }else{
             System.out.println("Table Cinema(극장) Data가 이미 있습니다. (현재 : "+cinemaRepository.count()+"개)");
         }
+
         /*  
         *   영화 상세정보 크롤링
         *   1. 영화리스트에서 영화상세 페이지 Url 정보를 얻는다.
@@ -338,7 +336,15 @@ public class OnloadRestController{
                         
                     actor = movieDetail.select(".spec > dl > dd:nth-child("+movieActorLocation+")").text();
                     
-                    movieRating = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[0].trim();  
+                    movieRating = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[0].trim();
+                    if(movieRating.equals("12세 이상")){
+                        movieRating = "12";
+                    }else if(movieRating.equals("15세 이상")){
+                        movieRating = "15";
+                    }else if(movieRating.equals("청소년 관람불가")){
+                        movieRating = "19";
+                    }
+
                     int infoLength = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",").length;
                     if( infoLength < 3 ){
                         movieTime = "(공백)";

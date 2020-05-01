@@ -47,16 +47,22 @@ public class TicketRestController {
     @ApiOperation(value = "티켓 상태 변경 :: 변경완료 시 1 return / 실패 시 0 return",
             notes = "Map에 state(String), tickets(List)를 담아서 JSON으로 Server에 전달 :: ticketId는 List에 담아서 Map에 Put"+
             " / state -> 0 : 구매가능, 1 : 구매대기  /// ==> 티켓 상태를 0으로 바꿀 시(예매취소 시) ticketTokens(String)값을 List에 담아서 Map에 Put")
-    @PatchMapping(value = "/ticketState")
+    @PatchMapping(value = "/ticketstate")
     public Map<String, Object> ticketState(@RequestBody Map<String, Object> tickets) throws Exception {
         return ticketService.updateTicketState(tickets);
     }
 
+    @ApiOperation(value = "기프트콘, 포인트 정보 가져오기 :: GiftCard(기프트콘), User(사용자)")
+    @GetMapping(value = "/user/service")
+    public Map<String, Object> service(@RequestParam("accountid") String accountId) throws Exception {
+        return ticketService.getUserService(accountId);
+    }
+
     @ApiOperation(value = "티켓 결제 :: 추가완료 시 1 return / 실패 시 0 return",
             notes = "구현 중...")
-    @PostMapping(value = "/purchase")
-    public Map<String, Object> purchase(@RequestBody Map<String, Object> purchase) throws Exception {
-        return ticketService.addPurchase(purchase);
+    @PostMapping(value = "/payment")
+    public Map<String, Object> payment(@RequestBody Map<String, Object> payment) throws Exception {
+        return ticketService.addPurchase(payment);
     }
 
 }//end of class

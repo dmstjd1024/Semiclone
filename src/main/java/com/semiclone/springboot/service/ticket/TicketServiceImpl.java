@@ -1,10 +1,5 @@
 package com.semiclone.springboot.service.ticket;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -574,6 +569,11 @@ public class TicketServiceImpl implements TicketService{
         
         return returnMap;
     }//end of updateTicketState
+
+    public Map<String, Object> getUserService(String accountId) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        return returnMap;
+    }//end of getUserService
 
     public Map<String, Object> addPurchase(Map<String, Object> purchase) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
