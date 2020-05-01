@@ -1,11 +1,16 @@
 package com.semiclone.springboot;
 
+import static org.junit.Assert.assertThat;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieRepository;
@@ -13,14 +18,29 @@ import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
+import com.semiclone.springboot.web.dto.AccessToken;
+import com.semiclone.springboot.web.dto.AuthData;
 import com.semiclone.springboot.web.dto.CinemaDto;
+import com.semiclone.springboot.web.dto.IamportResponse;
 import com.semiclone.springboot.web.dto.MovieDto;
+import com.semiclone.springboot.web.dto.Payment;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -252,9 +272,73 @@ public class TicketRestControllerTest {
         System.out.println(ticketRepository.save(ticket));
     }
 
-    @Test
+    //@Test
     public void HttpClientTest() throws Exception {
+
+        String API_URL = "https://api.iamport.kr";
+        String api_key = "";
+        String api_secret = "";
+        HttpClient client = HttpClientBuilder.create().build();
+        Gson gson = new Gson();
+    
+        AuthData authData = new AuthData(api_key, api_secret);
+				
+		String authJsonData = gson.toJson(authData);
+		
+			StringEntity data = new StringEntity(authJsonData);
+			
+			HttpPost postRequest = new HttpPost(API_URL+"/users/getToken");
+			postRequest.setHeader("Accept", "application/json");
+			postRequest.setHeader("Connection","keep-alive");
+			postRequest.setHeader("Content-Type", "application/json");
+			
+			postRequest.setEntity(data);
+			
+			HttpResponse response = client.execute(postRequest);
+			
+			if (response.getStatusLine().getStatusCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+				   + response.getStatusLine().getStatusCode());
+			}
+			
+			ResponseHandler<String> handler = new BasicResponseHandler();
+            String body = handler.handleResponse(response);
+			Type listType = new TypeToken<IamportResponse<AccessToken>>(){}.getType();
+            IamportResponse<AccessToken> auth = gson.fromJson(body, listType);
+            System.out.println("\n=============================================================");
+            System.out.println(auth.getResponse().getToken());
+            System.out.println("=============================================================\n");
+
         
+        String token = auth.getResponse().getToken();
+		
+		if(token != null) {
+			String path = "/payments/"+"";
+
+            HttpGet getRequest = new HttpGet(API_URL+path);
+			getRequest.addHeader("Accept", "application/json");
+			getRequest.addHeader("Authorization", token);
+
+			HttpResponse responses = client.execute(getRequest);
+
+			if (responses.getStatusLine().getStatusCode() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+				   + responses.getStatusLine().getStatusCode());
+			}
+			
+			ResponseHandler<String> handlers = new BasicResponseHandler();
+			String responsed = handlers.handleResponse(responses);
+			
+			Type listTypes = new TypeToken<IamportResponse<Payment>>(){}.getType();
+			IamportResponse<Payment> payment = gson.fromJson(responsed, listTypes);
+            
+            System.out.println("\n==========================================================");
+            System.out.println("==========================================================");
+            System.out.println(payment.getResponse().getBuyerName());
+            System.out.println("==========================================================\n");
+	
+
+       }
     }
 
 
