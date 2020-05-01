@@ -33,3 +33,4 @@ out/
 
 ### Database ###
 src/main/resources/application-db.yml
+bin/main/application-db.yml
