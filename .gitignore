@@ -36,5 +36,5 @@ src/main/resources/application-db.yml
 bin/main/application-db.yml
 
 ### apiKey ###
-src/main/resources/apiKey.properties
-bin/main/apiKey.properties
+src/main/resources/apiKey.yml
+bin/main/apiKey.yml
