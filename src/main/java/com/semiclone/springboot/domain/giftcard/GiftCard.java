@@ -23,9 +23,10 @@ public class GiftCard {
     @Column(nullable = false)
     private String giftCardName;    //  기프트카드 이름
 
+    @Column(nullable = true)
     private int giftCardBalance;    //  기프트카드 잔액
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private long giftCardEndDate;
 
     @Column(length = 1, nullable = false)
@@ -33,5 +34,8 @@ public class GiftCard {
 
     @Column(nullable = false)
     private String accountId;
+
+    @Column(nullable = false)
+    private String giftCardImage;
 
 }//end of class

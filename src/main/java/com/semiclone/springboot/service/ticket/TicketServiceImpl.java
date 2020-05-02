@@ -38,7 +38,6 @@ public class TicketServiceImpl implements TicketService{
     private final ScreenRepository screenRepository;
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
-    private final TimeTableService timeTableService;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -48,7 +47,9 @@ public class TicketServiceImpl implements TicketService{
         /* Moives */
         List<MovieDto> movieList = new ArrayList<MovieDto>();
         for(Movie obj : movieRepository.findAll()){
-            movieList.add(new MovieDto(obj));
+            MovieDto movieDto = new MovieDto(obj);
+            movieDto.setIsVailable(true);
+            movieList.add(movieDto);
         }
         String moviesJson = new Gson().toJson(movieList);
 
@@ -59,7 +60,9 @@ public class TicketServiceImpl implements TicketService{
             List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
             Map<String, Object> cinemasMap = new HashMap<String, Object>();
             for(Object obj : cinemaRepository.findAllByCinemaArea(cinemaArea.toString())){
-                cinemaList.add(new CinemaDto((Cinema)obj));
+                CinemaDto cinemaDto = new CinemaDto((Cinema)obj);
+                cinemaDto.setIsVailable(true);
+                cinemaList.add(cinemaDto);
             }
             String cinemasJson = new Gson().toJson(cinemaList);
 
@@ -69,9 +72,12 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* Dates */
-        List<Long> datesList = new ArrayList<Long>();
-        for(Long obj : timeTableRepository.findDate()){
-            datesList.add(obj);
+        List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+        for(Long dates : timeTableRepository.findDate()){
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("date", dates);
+            map.put("isVailable", true);
+            datesList.add(map);
         }
         String datesJson = new Gson().toJson(datesList);
 
