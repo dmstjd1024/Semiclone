@@ -16,7 +16,7 @@ public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;    // 영화 고유번호
+    private Long id;    // 영화 고유번호
 
     @Column(length = 20, nullable = false)
     private String movieRating;    // 영화 관람등급

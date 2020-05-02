@@ -27,6 +27,7 @@ public class MovieDto {
     private int movieGradeId;    // 영화 한줄평
     private Long releaseDate;    // 개봉날짜
     private String releaseType;    // 개봉종류
+    private boolean isAvailable;
 
     public MovieDto(Movie movie){
         this.Id = movie.getId();
@@ -45,6 +46,10 @@ public class MovieDto {
         this.movieGradeId = movie.getMovieGradeId();
         this.releaseDate = movie.getReleaseDate();
         this.releaseType = movie.getReleaseType();
+    }
+    
+    public void setIsVailable(boolean isAvailable){
+        this.isAvailable = isAvailable;
     }
 
 }

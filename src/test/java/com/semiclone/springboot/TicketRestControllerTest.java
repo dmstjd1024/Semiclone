@@ -1,8 +1,5 @@
 package com.semiclone.springboot;
 
-import static org.junit.Assert.assertThat;
-
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
+import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
@@ -341,5 +339,13 @@ public class TicketRestControllerTest {
        }
     }
 
+    @Test
+    public void rownumTest() throws Exception {
+        String sort = "reservation_rate";
+        // List<Movie> moviesList = movieRepository.findMoviesRankBySort(sort);
+        // for(Movie movie : moviesList){
+        //     System.out.println(movie);
+        // }
+    }
 
 }

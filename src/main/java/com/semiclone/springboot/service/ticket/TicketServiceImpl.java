@@ -17,15 +17,18 @@ import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
+import com.semiclone.springboot.service.timetable.TimeTableService;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
 @Service("ticketServiceImpl")
 @RequiredArgsConstructor
+@Transactional
 public class TicketServiceImpl implements TicketService{
 
     //Field
@@ -35,6 +38,7 @@ public class TicketServiceImpl implements TicketService{
     private final ScreenRepository screenRepository;
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
+    private final TimeTableService timeTableService;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -79,7 +83,7 @@ public class TicketServiceImpl implements TicketService{
     }//end of getScreensMap
 
     public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception{
-
+        
         /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
         if(movieId == 123890){
             movieId = null;
@@ -123,14 +127,23 @@ public class TicketServiceImpl implements TicketService{
             }
             list.sort(null);    //  리스트 정렬
 
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             List<Object> cinemasList = new ArrayList<Object>();
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
+                //List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
+                    //for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                    for(CinemaDto cinemaDto : cinemaList){
+                        //cinemaList.add(new CinemaDto((Cinema)obj));
+                        if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && (cinemaDto.getId() == cineId)){
+                            cinemaDto.setIsVailable(true);
+                        }
                     }
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
@@ -141,9 +154,20 @@ public class TicketServiceImpl implements TicketService{
             }
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findDateByMovieId(movieId)){
-                datesList.add(obj);
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+
+            for(Long dates : timeTableRepository.findDateByMovieId(movieId)){
+                for(Map<String, Object> map : datesList){
+                    if((long)map.get("date") == dates){
+                        map.replace("isVailable", false, true);
+                    }
+                }
             }
             String datesJson = new Gson().toJson(datesList);
 
@@ -166,17 +190,35 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                movieList.add(new MovieDto(movie));
+            }
+
             for(Long id : movieIdList){
-                movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+                for(MovieDto movieDto : movieList){
+                    if(movieDto.getId() == id){
+                        movieDto.setIsVailable(true);
+                    }
+                }
+                //movieList.add(new MovieDto(movieRepository.findMovieById(id)));
             }
             String moviesJson = new Gson().toJson(movieList);
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+            
             for(Long id : screenIdList){
                 for(Long dates : timeTableRepository.findDateByScreenId(id)){
-                    if(!datesList.contains(dates)){
-                        datesList.add(dates);
+                    for(Map<String, Object> map : datesList){
+                        if((long)map.get("date") == dates){
+                            map.replace("isVailable", false, true);
+                        }
                     }
                 }
             }
@@ -189,11 +231,20 @@ public class TicketServiceImpl implements TicketService{
         /* 날짜만 선택했을 때 */
         if(movieId == null && cinemaId == null && date != null && timeTableId == null){
             /* Moives */
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Long id : timeTableRepository.findMovieIdByDate(date)){
-                    movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+            List<MovieDto> moviesList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                moviesList.add(new MovieDto(movie));
             }
-            String moviesJson = new Gson().toJson(movieList);
+
+            for(Long id : timeTableRepository.findMovieIdByDate(date)){
+                for(MovieDto movieDto : moviesList){
+                    if(movieDto.getId() == id){
+                        movieDto.setIsVailable(true);
+                    }
+                }
+                //moviesList.add(new MovieDto(movieRepository.findMovieById(id)));
+            }
+            String moviesJson = new Gson().toJson(moviesList);
 
             /* Cinemas */
             List<Long> list = new ArrayList<Long>();
@@ -206,14 +257,24 @@ public class TicketServiceImpl implements TicketService{
             list.sort(null);    //  리스트 정렬
 
             List<Object> cinemasList = new ArrayList<Object>();
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+                //List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
-                    }
+                    //for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                        for(CinemaDto cinemaDto : cinemaList){
+                            if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && cinemaDto.getId() == cineId){
+                                cinemaDto.setIsVailable(true);
+                            }
+                        }
+                        //cinemaList.add(new CinemaDto((Cinema)obj));
+                    //}
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
 
@@ -222,7 +283,7 @@ public class TicketServiceImpl implements TicketService{
                 cinemasList.add(cinemasMap);
             }
 
-            returnMap.put("movies", new Gson().fromJson(moviesJson, movieList.getClass()));
+            returnMap.put("movies", new Gson().fromJson(moviesJson, moviesList.getClass()));
             returnMap.put("cinemas", cinemasList);
         }
 
@@ -239,14 +300,24 @@ public class TicketServiceImpl implements TicketService{
             list.sort(null);    //  리스트 정렬
 
             List<Object> cinemasList = new ArrayList<Object>();
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+                
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
-                    }
+                    //for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                        for(CinemaDto cinemaDto : cinemaList){
+                            if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && cinemaDto.getId() == cineId){
+                                cinemaDto.setIsVailable(true);
+                            }
+                        }
+                        //cinemaList.add(new CinemaDto((Cinema)obj));
+                    //}
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
 
@@ -268,18 +339,39 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                movieList.add(new MovieDto(movie));
+            }
+
             for(Long id : movieIdList){
-                movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+                for(MovieDto movieDto : movieList){
+                    if(movieDto.getId() == id){
+                        movieDto.setIsVailable(true);
+                    }
+                }
+                //movieList.add(new MovieDto(movieRepository.findMovieById(id)));
             }
             String moviesJson = new Gson().toJson(movieList);
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+
             for(Long id : screenIdList){
                 for(Long dates : timeTableRepository.findDateByScreenIdAndMovieId(id, movieId)){
-                    if(!datesList.contains(dates)){
-                        datesList.add(dates);
+                    for(Map<String, Object> map : datesList){
+                        if((long)map.get("date") == dates){
+                            map.replace("isVailable", false, true);
+                        }
                     }
+                    // if(!datesList.contains(dates)){
+                    //     datesList.add(dates);
+                    // }
                 }
             }
             String datesJson = new Gson().toJson(datesList);
@@ -293,15 +385,35 @@ public class TicketServiceImpl implements TicketService{
         if(movieId != null && cinemaId == null && date != null && timeTableId == null){
             /* Moives */
             List<MovieDto> movieList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                movieList.add(new MovieDto(movie));
+            }
+
             for(Long id : timeTableRepository.findMovieIdByDate(date)){
-                    movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+                    for(MovieDto movieDto : movieList){
+                        if(movieDto.getId() == id){
+                            movieDto.setIsVailable(true);
+                        }
+                    }
+                    //movieList.add(new MovieDto(movieRepository.findMovieById(id)));
             }
             String moviesJson = new Gson().toJson(movieList);
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findDateByMovieId(movieId)){
-                datesList.add(obj);
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+            
+            for(Long dates : timeTableRepository.findDateByMovieId(movieId)){
+                for(Map<String, Object> map : datesList){
+                    if((long)map.get("date") == dates){
+                        map.replace("isVailable", false, true);
+                    }
+                }
             }
             String datesJson = new Gson().toJson(datesList);
 
@@ -315,15 +427,24 @@ public class TicketServiceImpl implements TicketService{
             }
             list.sort(null);    //  리스트 정렬
 
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             List<Object> cinemasList = new ArrayList<Object>();
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
-                    }
+                    //for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                        for(CinemaDto cinemaDto : cinemaList){
+                            if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && cinemaDto.getId() == cineId){
+                                cinemaDto.setIsVailable(true);
+                            }
+                        }
+                        //cinemaList.add(new CinemaDto((Cinema)obj));
+                    //}
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
 
@@ -353,8 +474,17 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                movieList.add(new MovieDto(movie));
+            }
+
             for(Long id : movieIdList){
-                movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+                for(MovieDto movieDto : movieList){
+                    if(movieDto.getId() == id){
+                        movieDto.setIsVailable(true);
+                    }
+                }                
+                //movieList.add(new MovieDto(movieRepository.findMovieById(id)));
             }
             String moviesJson = new Gson().toJson(movieList);
 
@@ -368,14 +498,23 @@ public class TicketServiceImpl implements TicketService{
             }
             list.sort(null);    //  리스트 정렬
 
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             List<Object> cinemasList = new ArrayList<Object>();
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
+                    //for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                        //cinemaList.add(new CinemaDto((Cinema)obj));
+                    //}
+                    for(CinemaDto cinemaDto : cinemaList){
+                        if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && cinemaDto.getId() == cineId){
+                            cinemaDto.setIsVailable(true);
+                        }
                     }
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
@@ -386,12 +525,24 @@ public class TicketServiceImpl implements TicketService{
             }
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+            
             for(Long id : screenIdList){
                 for(Long dates : timeTableRepository.findDateByScreenId(id)){
-                    if(!datesList.contains(dates)){
-                        datesList.add(dates);
+                    for(Map<String, Object> map : datesList){
+                        if((long)map.get("date") == dates){
+                            map.replace("isVailable", false, true);
+                        }
                     }
+                    // if(!datesList.contains(dates)){
+                    //     datesList.add(dates);
+                    // }
                 }
             }
             String datesJson = new Gson().toJson(datesList);
@@ -404,21 +555,20 @@ public class TicketServiceImpl implements TicketService{
         /* 영화, 극장, 날짜가 선택되었을 때 */
         if(movieId != null && cinemaId != null && date != null && timeTableId == null){
             /* Moives */
-            List<Long> movieIdList = new ArrayList<Long>();
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
-            for(Long screenId : screenIdList){
-                for(Long id : timeTableRepository.findMovieIdByScreenIdAndDate(screenId, date)){
-                    if(!movieIdList.contains(id)){
-                        movieIdList.add(id);
-                    }
+ 
+            List<MovieDto> movieList = new ArrayList<MovieDto>();
+            for(Movie movie : movieRepository.findAll()){
+                movieList.add(new MovieDto(movie));
+            }
+
+            for(MovieDto movieDto : movieList){
+                if(movieDto.getId() == movieId){
+                    movieDto.setIsVailable(true);
                 }
             }
-            movieIdList.sort(null);
+                //movieList.add(new MovieDto(movieRepository.findMovieById(id)));
             
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Long id : movieIdList){
-                movieList.add(new MovieDto(movieRepository.findMovieById(id)));
-            }
             String moviesJson = new Gson().toJson(movieList);
 
             /* Cinemas */
@@ -431,14 +581,23 @@ public class TicketServiceImpl implements TicketService{
             }
             list.sort(null);    //  리스트 정렬
 
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAll()){
+                cinemaList.add(new CinemaDto(cinema));
+            }
+
             List<Object> cinemasList = new ArrayList<Object>();
             for(Object cinemaArea : cinemaRepository.findCinemaArea()){
                 
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
                 Map<String, Object> cinemasMap = new HashMap<String, Object>();
                 for(Long cineId : list){
-                    for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
-                        cinemaList.add(new CinemaDto((Cinema)obj));
+                    // for(Object obj : cinemaRepository.findAllByCinemaAreaAndId(cinemaArea.toString(),cineId)){
+                    //     cinemaList.add(new CinemaDto((Cinema)obj));
+                    // }
+                    for(CinemaDto cinemaDto : cinemaList){
+                        if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && cinemaDto.getId() == cineId){
+                            cinemaDto.setIsVailable(true);
+                        }
                     }
                 }
                 String cinemasJson = new Gson().toJson(cinemaList);
@@ -449,29 +608,56 @@ public class TicketServiceImpl implements TicketService{
             }
 
             /* Dates */
-            List<Long> datesList = new ArrayList<Long>();
+            List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            for(Long dates : timeTableRepository.findDate()){
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("date", dates);
+                map.put("isVailable", false);
+                datesList.add(map);
+            }
+            
             for(Long id : screenIdList){
                 for(Long dates : timeTableRepository.findDateByScreenIdAndMovieId(id, movieId)){
-                    if(!datesList.contains(dates)){
-                        datesList.add(dates);
+                    // if(!datesList.contains(dates)){
+                    //     datesList.add(dates);
+                    // }
+                    for(Map<String, Object> map : datesList){
+                        if((long)map.get("date") == dates){
+                            map.replace("isVailable", false, true);
+                        }
                     }
                 }
             }
             String datesJson = new Gson().toJson(datesList);
 
-            /* TimeTables */
-            List<TimeTable> timeTableList = new ArrayList<TimeTable>();
-            for(Long id : screenIdList){
-                for(TimeTable obj : timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, id, date)){
-                    timeTableList.add(obj);
+            /* TimeTables */                                                      
+            /* 극장별 날짜,영화에 해당되는 상영 시간표 */
+            List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
+            for(Long screenId : screenIdList){
+                List<TimeTable> lists = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
+                if(lists.size() != 0){
+                    Map<String, Object> screensMap = new HashMap<String, Object>();
+                    screensMap.put("screen", screenRepository.findOneById(screenId));
+                    screensMap.put("timeTables", lists);
+                    screensList.add(screensMap);
                 }
-            }
-            String timeTablesJson = new Gson().toJson(timeTableList);
+            }  
+            String cinemasJson = new Gson().toJson(screensList);
+
+            ///
+            // List<TimeTable> timeTableList = new ArrayList<TimeTable>();
+            // for(Long id : screenIdList){
+            //     for(TimeTable obj : timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, id, date)){
+            //         timeTableList.add(obj);
+            //     }
+            // }
+            // String timeTablesJson = new Gson().toJson(timeTableList);
 
             returnMap.put("cinemas", cinemasList);
             returnMap.put("movies", new Gson().fromJson(moviesJson, movieList.getClass()));
             returnMap.put("dates", new Gson().fromJson(datesJson, datesList.getClass()));
-            returnMap.put("timeTables", new Gson().fromJson(timeTablesJson, timeTableList.getClass()));
+            //returnMap.put("timeTables", new Gson().fromJson(timeTablesJson, timeTableList.getClass()));
+            returnMap.put("showtimes", new Gson().fromJson(cinemasJson, screensList.getClass()));
         }
 
         return returnMap;

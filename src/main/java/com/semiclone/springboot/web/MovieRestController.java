@@ -2,10 +2,11 @@ package com.semiclone.springboot.web;
 
 import java.util.Map;
 
-import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.service.movie.MovieService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -18,12 +19,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MovieRestController {
 
-    private final MovieRepository movieRepository;
+    private final MovieService movieService;
 
     @ApiOperation(value = "영화 리스트 :: Movies(영화)")
-    @GetMapping(value = "/")
-    public Map<String, Object> d() throws Exception {
-        return null;
+    @GetMapping()
+    public Map<String, Object> movies(@RequestParam("sort") String sort) throws Exception {
+        return movieService.getMoviesMap(sort);
     }
+
+    @ApiOperation(value = "영화 상세정보 :: Movie(영화)")
+    @GetMapping(value = "detail")
+    public Map<String, Object> movies(@RequestParam("movieId") Long movieId) throws Exception {
+        return movieService.getMovieDetailMap(movieId);
+    }
+
+
 
 }//end of class
