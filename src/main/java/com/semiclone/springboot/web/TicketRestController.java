@@ -61,10 +61,11 @@ public class TicketRestController {
     }
 
     @ApiOperation(value = "티켓 결제 :: 추가완료 시 1 return / 실패 시 0 return",
-            notes = "구현 중...")
+            notes = "Server로 보낼 Data {\"imp_uid\":1234, \"movieCoupons\":[1234, 5678], \"tickets\":[1234, 5678], \"giftCards\":[1234, 5678]}"+
+                    "    // movieCoupons, tickes, giftCards가 없을 시 {\"imp_uid\":1234}")
     @PostMapping(value = "/payment")
-    public Map<String, Object> payment(@RequestBody Map<String, Object> payment, HttpSession session) throws Exception {
-        return ticketService.addPurchase(payment, session);
+    public Map<String, Object> payment(@RequestBody Map<String, Object> purchase, HttpSession session) throws Exception {
+        return ticketService.addPurchase(purchase, session);
     }
 
 }//end of class
