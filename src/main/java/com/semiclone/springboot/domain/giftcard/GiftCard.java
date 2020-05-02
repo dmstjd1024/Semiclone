@@ -32,6 +32,6 @@ public class GiftCard {
     private char giftCardState;
 
     @Column(nullable = false)
-    private long accountId;
+    private String accountId;
 
 }//end of class
