@@ -6,9 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpSession;
+
 import com.google.gson.Gson;
+import com.semiclone.springboot.domain.account.Account;
+import com.semiclone.springboot.domain.account.AccountRepository;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
+import com.semiclone.springboot.domain.coupon.MovieCouponRepository;
+import com.semiclone.springboot.domain.giftcard.GiftCardRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
@@ -17,7 +23,6 @@ import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
-import com.semiclone.springboot.service.timetable.TimeTableService;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 
@@ -38,6 +43,9 @@ public class TicketServiceImpl implements TicketService{
     private final ScreenRepository screenRepository;
     private final TicketRepository ticketRepository;
     private final SeatRepository seatRepository;
+    private final AccountRepository accountRepository;
+    private final GiftCardRepository giftCardRepository;
+    private final MovieCouponRepository movieCouponRepository;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -762,92 +770,24 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of updateTicketState
 
-    public Map<String, Object> getUserService(String accountId) throws Exception {
+    public Map<String, Object> getUserService(String accountId, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
+
+        String giftCardJson = new Gson().toJson(giftCardRepository.findAllByAccountId(accountId));
+        String accountJson = new Gson().toJson(accountRepository.findByAccountId(accountId));
+        String movieCouponsJson = new Gson().toJson(movieCouponRepository.findByAccountId(accountId));
+
+        returnMap.put("giftCards", new Gson().fromJson(giftCardJson, List.class));
+        returnMap.put("account", new Gson().fromJson(accountJson, Account.class));
+        returnMap.put("movieCoupons", new Gson().fromJson(movieCouponsJson, List.class));
+
         return returnMap;
     }//end of getUserService
 
-    public Map<String, Object> addPurchase(Map<String, Object> purchase) throws Exception {
+    public Map<String, Object> addPurchase(Map<String, Object> payment, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
-        // boolean everythingsFine = false;
-		// 	String API_URL = "https://api.iamport.kr";
-		// 	String imp_key = "";
-		// 	String imp_secret = "";
-			
-		// 	//Get AccessToken
-		// 	DefaultHttpClient httpClient = new DefaultHttpClient();
-		// 	String url = "https://api.iamport.kr";
-		// 	HttpPost httpPost = new HttpPost(API_URL+"/users/getToken");
-		// 	httpPost.setHeader("Accept", "application/json");
-		// 	httpPost.setHeader("Connection","keep-alive");
-		// 	httpPost.setHeader("Content-Type", "application/json");
-			
-		// 	ObjectMapper objectMapper = new ObjectMapper();
-		// 	AuthData authData = new AuthData(imp_key, imp_secret);
-		// 	String data = objectMapper.writeValueAsString(authData);
-		// 	StringEntity httpEntity = new StringEntity(data);
-		// 	httpPost.setEntity(httpEntity);
-
-		// 	org.apache.http.HttpResponse httpResponse = httpClient.execute(httpPost);
-		// 	HttpEntity responseHttpEntity = httpResponse.getEntity();
-		// 	InputStream is = responseHttpEntity.getContent();
-		// 	BufferedReader br = new BufferedReader(new InputStreamReader(is,"UTF-8"));
-
-		// 	String temp="";
-		// 	String response="";
-		// 	while( (temp = br.readLine()) != null) {
-		// 		response += temp;
-		// 	}
-		// 	JSONObject jsonObj = (JSONObject)JSONValue.parse(((JSONObject)JSONValue.parse(response)).get("response").toString());
-		// 	String token  = jsonObj.get("access_token").toString();
-			
-		// 	//Get Payment
-		// 	DefaultHttpClient paymentHttpClient = new DefaultHttpClient();
-		// 	String paymentUrl = API_URL+"/payments/"+purchase.get("imp_uid");
-		// 	HttpGet paymentHttpGet = new HttpGet(paymentUrl);
-		// 	paymentHttpGet.addHeader("Accept", "application/json");
-		// 	paymentHttpGet.addHeader("Authorization", token);
-			
-		// 	HttpResponse paymentHttpResponse = (HttpResponse)paymentHttpClient.execute(paymentHttpGet);
-		// 	HttpEntity paymentHttpEntity = paymentHttpResponse.getEntity();
-		// 	InputStream paymentIs = paymentHttpEntity.getContent();
-		// 	BufferedReader paymentBr = new BufferedReader(new InputStreamReader(paymentIs,"UTF-8"));
-			
-		// 	// check everythings_fine
-		// 	if (paymentHttpResponse.getStatusLine().getStatusCode() != 200) {
-		// 		throw new RuntimeException("Failed : HTTP error code : "
-		// 		   + paymentHttpResponse.getStatusLine().getStatusCode());
-		// 	}
-			
-		// 	String paymentTemp="";
-		// 	String paymentResponse="";
-		// 	while( (paymentTemp = paymentBr.readLine()) != null) {
-		// 		paymentResponse+= paymentTemp;
-		// 	}
-		// 	JSONObject jsonObj11 = (JSONObject)JSONValue.parse(paymentResponse);
-		// 	ObjectMapper finalObjectMapper = new ObjectMapper();
-		// 	HashMap paymentMap = finalObjectMapper.readValue(jsonObj11.get("response").toString(), HashMap.class);
-		// 	String payMethod = paymentMap.get("pay_method").toString();
-			
-		// 	if( payMethod.equals("card") ) {
-		// 		payMethod = "0";
-		// 	}else if( payMethod.equals("phone") ) {
-		// 		payMethod = "1";
-		// 	}
-			// purchase.setPayMethod(payMethod);
-			// purchase.setPurchasePrice((Integer)paymentMap.get("amount"));
-			// System.out.println(purchase.toString());
-			
-			// User user = new User();
-			// user.setUserId(((User)session.getAttribute("user")).getUserId());
-			// purchase.setUser(user);
-				
-			// if( purchaseDAO.addPayment(purchase) == 1) {
-			// 	everythingsFine = true;
-			// }
-
-			// return everythingsFine;
+        
 
         return returnMap;
     }//end of addPurchase

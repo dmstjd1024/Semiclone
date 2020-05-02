@@ -23,11 +23,11 @@ public class GiftCard {
     @Column(nullable = false)
     private String giftCardName;    //  기프트카드 이름
 
-    @Column(nullable = true)
-    private int giftCardBalance;    //  기프트카드 잔액
+    @Column(nullable = false)
+    private int giftCardBalance = 0;    //  기프트카드 잔액
 
-    @Column(nullable = true)
-    private long giftCardEndDate;
+    @Column(nullable = false)
+    private long giftCardEndDate = 0;
 
     @Column(length = 1, nullable = false)
     private char giftCardState;
