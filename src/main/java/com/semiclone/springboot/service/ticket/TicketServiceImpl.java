@@ -1,6 +1,7 @@
 package com.semiclone.springboot.service.ticket;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.semiclone.springboot.domain.giftcard.GiftCardRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.payment.Payment;
+import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
@@ -62,6 +64,7 @@ public class TicketServiceImpl implements TicketService{
     private final AccountRepository accountRepository;
     private final GiftCardRepository giftCardRepository;
     private final MovieCouponRepository movieCouponRepository;
+    private final PaymentRepository paymentRepository;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -807,6 +810,11 @@ public class TicketServiceImpl implements TicketService{
     public Map<String, Object> addPurchase(Map<String, Object> purchaseMap, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
+        /* 테스트용 session */
+        Account account = new Account();
+        account.setAccountId("admin");
+        session.setAttribute("account", account);
+
         if(purchaseMap.containsKey("imp_uid")){
             
             String API_URL = "https://api.iamport.kr";
@@ -863,9 +871,8 @@ public class TicketServiceImpl implements TicketService{
                 String responsed = handlers.handleResponse(responses);
                 
                 Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
-                IamportResponse<Purchase> purchase = gson.fromJson(responsed, listTypes);
-                
-                System.out.println(purchase.getResponse().getBuyerTel());
+                IamportResponse<Purchase> purchaseData = gson.fromJson(responsed, listTypes);
+                Purchase purchase = purchaseData.getResponse();
 
                 String movieCoupons = "";
                 String tickets = "";
@@ -874,21 +881,32 @@ public class TicketServiceImpl implements TicketService{
                     for(Object movieCoupon : (List)purchaseMap.get("movieCoupons")){
                         movieCoupons += movieCoupon+",";
                     }
-                    movieCoupons.substring(0, movieCoupons.length()-1);
+                    movieCoupons = movieCoupons.substring(0, movieCoupons.length()-1);
                 }
                 if(purchaseMap.containsKey("tickets") && ((List)purchaseMap.get("tickets")).size() > 0){    //  tickets 유효성 검사
                     for(Object ticket : (List)purchaseMap.get("tickets")){
-
+                        tickets += ticket+",";
                     }
+                    tickets = tickets.substring(0, tickets.length()-1);
                 }
                 if(purchaseMap.containsKey("giftCards") && ((List)purchaseMap.get("giftCards")).size() > 0){    //  giftCards 유효성 검사
                     for(Object giftCard : (List)purchaseMap.get("giftCards")){
-
+                        giftCards += giftCard+",";
                     }
+                    giftCards = giftCards.substring(0, giftCards.length()-1);
                 }
 
-                Payment.builder().build();
-
+                paymentRepository.save(
+                    Payment.builder().accountId(((Account)session.getAttribute("account")).getAccountId())
+                            .receiverName(purchase.getBuyerName())
+                            .receiverPhone(purchase.getBuyerTel())
+                            .paymentMethod(purchase.getPayMethod())
+                            .paymentAmount(purchase.getAmount())
+                            .giftCardIds(giftCards)
+                            .movieCouponIds(movieCoupons)
+                            .ticketIds(tickets)
+                            .build()
+                );
                 //end of getPurchase
             }else{
                 returnMap.put("result", "0");    //  IamPort Server에 해당 Data가 없을 경우

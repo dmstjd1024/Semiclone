@@ -1,6 +1,7 @@
 package com.semiclone.springboot;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
@@ -270,12 +272,12 @@ public class TicketRestControllerTest {
         System.out.println(ticketRepository.save(ticket));
     }
 
-    //@Test
+    @Test
     public void HttpClientTest() throws Exception {
 
         String API_URL = "https://api.iamport.kr";
-        String api_key = "";
-        String api_secret = "";
+        String api_key = "9412212325207428";
+        String api_secret = "PMPPj0OrmSrYllpBBnqN3ofIGu07GgYv3OlmOaOa2g9oCyZeVp1ZOhIuLICrZBX3pipdseovvxT76Tm2";
         HttpClient client = HttpClientBuilder.create().build();
         Gson gson = new Gson();
     
@@ -308,7 +310,7 @@ public class TicketRestControllerTest {
         
         
 		if(token != null) {
-			String path = "/payments/"+"";
+			String path = "/payments/"+"imp_541789576970";
 
             HttpGet getRequest = new HttpGet(API_URL+path);
 			getRequest.addHeader("Accept", "application/json");
@@ -325,9 +327,17 @@ public class TicketRestControllerTest {
 			String responsed = handlers.handleResponse(responses);
 			
 			Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
-			IamportResponse<Purchase> payment = gson.fromJson(responsed, listTypes);
-            
-            System.out.println(payment.getResponse().getBuyerTel());
+			IamportResponse<Purchase> paymentData = gson.fromJson(responsed, listTypes);
+            Purchase purchase = paymentData.getResponse();
+
+            System.out.println("\n=================================================");
+            System.out.println("buyerName : "+purchase.getBuyerName());
+            System.out.println("buyerTel : "+purchase.getBuyerTel());
+            System.out.println("payMethod : "+purchase.getPayMethod());
+            System.out.println("amount : "+purchase.getAmount());
+            System.out.println("status : "+purchase.getStatus());
+            System.out.println("=================================================\n");
+
 
        }
     }
@@ -362,11 +372,15 @@ public class TicketRestControllerTest {
         // paymentRepository.save(payment);
     }
 
-    @Test
-    public void subStringTest() throws Exception {
-        String test = "test yest,aest,";
-        System.out.println("변경 전 : "+test);
-        System.out.println("변경 후 : "+test.substring(0, test.length()-1));
+    //@Test
+    public void paymentTest() throws Exception {
+        String giftCards = "";
+        String movieCoupons = "";
+        String tickets = "";
+        Payment payment = Payment.builder().accountId("1").receiverName("1").receiverPhone("1").paymentMethod("1")
+                        .paymentAmount(BigDecimal.valueOf(1)).giftCardIds(giftCards)
+                        .movieCouponIds(movieCoupons).ticketIds(tickets).build();
+        paymentRepository.save(payment);
     }
 
 }
