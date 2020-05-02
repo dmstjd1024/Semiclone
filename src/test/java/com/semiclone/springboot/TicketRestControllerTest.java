@@ -1,6 +1,7 @@
 package com.semiclone.springboot;
 
 import java.lang.reflect.Type;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
-import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.domain.payment.Payment;
+import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
@@ -21,7 +23,6 @@ import com.semiclone.springboot.web.dto.AuthData;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.IamportResponse;
 import com.semiclone.springboot.web.dto.MovieDto;
-import com.semiclone.springboot.web.dto.Payment;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -35,10 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -58,6 +56,9 @@ public class TicketRestControllerTest {
 
     @Autowired
     private TicketRepository ticketRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     //@Test
     public void joinQueryTest() throws Exception {
@@ -327,25 +328,46 @@ public class TicketRestControllerTest {
 			ResponseHandler<String> handlers = new BasicResponseHandler();
 			String responsed = handlers.handleResponse(responses);
 			
-			Type listTypes = new TypeToken<IamportResponse<Payment>>(){}.getType();
-			IamportResponse<Payment> payment = gson.fromJson(responsed, listTypes);
+			//Type listTypes = new TypeToken<IamportResponse<Payment>>(){}.getType();
+			//IamportResponse<Payment> payment = gson.fromJson(responsed, listTypes);
             
             System.out.println("\n==========================================================");
             System.out.println("==========================================================");
-            System.out.println(payment.getResponse().getBuyerName());
+            //System.out.println(payment.getResponse().getBuyerName());
             System.out.println("==========================================================\n");
 	
 
        }
     }
 
-    @Test
+    //@Test
     public void rownumTest() throws Exception {
         String sort = "reservation_rate";
         // List<Movie> moviesList = movieRepository.findMoviesRankBySort(sort);
         // for(Movie movie : moviesList){
         //     System.out.println(movie);
         // }
+    }
+
+    //@Test
+    public void mapContainsTest() throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("test", "test");
+        map.put("test1", "test1");
+        System.out.println("\nmap.containsKey(\"key\") Test Result");
+        System.out.println("Key=test : "+map.containsKey("test"));
+        System.out.println("Key=null : "+map.containsKey("null"));
+        System.out.println("Test End\n");
+    }
+
+    @Test
+    public void dateTest() throws Exception {
+        System.out.println("\n===========================================");
+        System.out.println(new Date(System.currentTimeMillis()));
+        Payment payment = Payment.builder().accountId("test").paymentStatus("1234")
+        .depositeBank("bank").depositorName("name").paymentMethod("card")
+        .paymentAmount(1000).receiverName("123").receiverPhone("01012341234").build();
+        paymentRepository.save(payment);
     }
 
 }

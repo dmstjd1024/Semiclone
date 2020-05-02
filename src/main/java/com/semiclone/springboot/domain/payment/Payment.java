@@ -1,15 +1,10 @@
 package com.semiclone.springboot.domain.payment;
 
-import java.sql.Date;
+import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,9 +16,10 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;    //  결제 고유번호
-
+    
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
-    private Date purchaseDate;    //  결제 날짜
+    private Date purchaseDate = new Date(System.currentTimeMillis());    //  결제 날짜
 
     @Column(nullable = false)
     private String receiverName;    //  수취인 이름
@@ -52,5 +48,24 @@ public class Payment {
     private long gitfcardId;    //  기프트카드 고유번호
     private long movieCouponId;    //  영화관람권 고유번호
     private long ticketId;    //  티켓 고유번호
+
+    @Builder
+    public Payment(String receiverName, String receiverPhone, int paymentAmount, 
+                    String accountId, String paymentMethod, String paymentStatus, 
+                    String depositorName, String depositeBank, long giftCardId,
+                    long movieCouponId, long ticketId) {
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.paymentAmount = paymentAmount;
+        this.accountId = accountId;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+        this.depositorName = depositorName;
+        this.depositeBank = depositeBank;
+        this.gitfcardId = giftCardId;
+        this.movieCouponId = movieCouponId;
+        this.ticketId = ticketId;
+
+    }
 
 }//end of class

@@ -17,6 +17,7 @@ import com.semiclone.springboot.domain.coupon.MovieCouponRepository;
 import com.semiclone.springboot.domain.giftcard.GiftCardRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
@@ -784,10 +785,25 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getUserService
 
-    public Map<String, Object> addPurchase(Map<String, Object> payment, HttpSession session) throws Exception {
+    public Map<String, Object> addPurchase(Map<String, Object> purchase, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
+        Payment payment = new Payment();
 
-        // Test
+        if(purchase.containsKey("imp_uid")){
+            System.out.println(purchase.get("imp_uid"));
+            if(purchase.containsKey("movieCoupons")){    //  movieCoupons 유효성 검사
+                
+            }
+            if(purchase.containsKey("tickets")){    //  tickets 유효성 검사
+                
+            }
+            if(purchase.containsKey("giftCards")){    //  giftCards 유효성 검사
+                
+            }
+        }else{
+            returnMap.put("result", "0");    //  imp_uid가 Map에 없을 경우
+        }
+        
 
         return returnMap;
     }//end of addPurchase

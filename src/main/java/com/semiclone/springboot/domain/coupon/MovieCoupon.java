@@ -19,7 +19,7 @@ public class MovieCoupon {
     private int id; //영화관람권 고유번호
 
     @Column(nullable = false)
-    private String accountId;
+    private String accountId;    //  사용자 아이디
 
     @Column(nullable = false)
     private int movieCouponPrice = 5000;

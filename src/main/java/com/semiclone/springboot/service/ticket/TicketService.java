@@ -16,6 +16,6 @@ public interface TicketService {
 
     public Map<String, Object> getUserService(String accountId, HttpSession session) throws Exception;
 
-    public Map<String, Object> addPurchase(Map<String, Object> payment, HttpSession session) throws Exception;
+    public Map<String, Object> addPurchase(Map<String, Object> purchase, HttpSession session) throws Exception;
 
 }//end of interface
