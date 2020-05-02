@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,5 +43,20 @@ public class GiftCard {
 
     @Column(nullable = false)
     private String giftCardImage;    //  기프트카드 이미지
+
+    @Builder
+    public GiftCard(String giftCardName, int giftCardBalance, char giftCardState,
+                    String accountId, String giftCardImage){
+        this.giftCardName = giftCardName;
+        this.giftCardBalance = giftCardBalance;
+        this.giftCardState = giftCardState;
+        this.accountId = accountId;
+        this.giftCardImage = giftCardImage;
+
+        Date date = new Date(System.currentTimeMillis());
+        date.setYear(date.getYear()+5);
+        this.giftCardEndDate = date;
+
+    }
 
 }//end of class
