@@ -115,13 +115,13 @@ public class TicketServiceImpl implements TicketService{
     public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, String group) throws Exception{
         
         /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
-        if(movieId == 123890){
+        if(movieId == null || movieId == 123890){
             movieId = null;
         }
-        if(cinemaId == 123890){
+        if(cinemaId  == null || cinemaId == 123890){
             cinemaId = null;
         }
-        if(date == 123890){
+        if(date  == null || date == 123890){
             date = null;
         }
         if(group.equals("123890")){
