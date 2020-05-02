@@ -8,7 +8,7 @@ public interface TicketService {
 
     public Map<String, Object> getScreensMap() throws Exception;
 
-    public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception;
+    public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, String group) throws Exception;
 
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception;
 

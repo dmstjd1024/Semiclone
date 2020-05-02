@@ -32,12 +32,15 @@ public class MovieCoupon {
     private char movieCouponState = 1;
 
     @Builder
-    public MovieCoupon(int id, String accountId, int movieCouponPrice, Date movieCouponEndDate, char movieCouponState) {
+    public MovieCoupon(int id, String accountId, int movieCouponPrice, char movieCouponState) {
         this.id = id;
         this.accountId = accountId;
         this.movieCouponPrice = movieCouponPrice;
-        this.movieCouponEndDate = movieCouponEndDate;
         this.movieCouponState = movieCouponState;
+
+        Date date = new Date(System.currentTimeMillis());
+        date.setYear(date.getYear()+2);
+        this.movieCouponEndDate = date;
     }
 
 }

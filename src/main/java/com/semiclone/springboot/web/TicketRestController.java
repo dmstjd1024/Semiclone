@@ -35,9 +35,8 @@ public class TicketRestController {
             notes = "Parameter Value (Null = 123890) / 모든 Value가 null일 경우 : 모든 정보 가져오기")
     @GetMapping(value = "/screens/info")
     public Map<String, Object> screens(@RequestParam("movieId") Long movieId, @RequestParam("cinemaId") Long cinemaId, 
-                                        @RequestParam("date") Long date, @RequestParam("timeTableId") Long timeTableId, 
-                                        @RequestParam("group") String group) throws Exception {
-        return ticketService.getScreensInfoMap(movieId, cinemaId, date, timeTableId, group);
+                                        @RequestParam("date") Long date, @RequestParam("group") String group) throws Exception {
+        return ticketService.getScreensInfoMap(movieId, cinemaId, date, group);
     }
 
     @ApiOperation(value = "좌석 선택 :: Seats(좌석), Ticket(티켓)")

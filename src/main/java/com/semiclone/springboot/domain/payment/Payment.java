@@ -39,33 +39,23 @@ public class Payment {
     @Column(nullable = false)
     private String paymentStatus;    //  결제 상태
 
-    @Column(nullable = false)
-    private String depositorName;    //  예금자 성명
-
-    @Column(nullable = false)
-    private String depositeBank;    //  예금 은행
-
-    private long gitfcardId;    //  기프트카드 고유번호
-    private long movieCouponId;    //  영화관람권 고유번호
-    private long ticketId;    //  티켓 고유번호
+    private String gitfCardIds;    //  기프트카드 고유번호
+    private String movieCouponIds;    //  영화관람권 고유번호
+    private String ticketIds;    //  티켓 고유번호
 
     @Builder
     public Payment(String receiverName, String receiverPhone, int paymentAmount, 
                     String accountId, String paymentMethod, String paymentStatus, 
-                    String depositorName, String depositeBank, long giftCardId,
-                    long movieCouponId, long ticketId) {
+                    String giftCardIds, String movieCouponIds, String ticketIds) {
         this.receiverName = receiverName;
         this.receiverPhone = receiverPhone;
         this.paymentAmount = paymentAmount;
         this.accountId = accountId;
         this.paymentMethod = paymentMethod;
         this.paymentStatus = paymentStatus;
-        this.depositorName = depositorName;
-        this.depositeBank = depositeBank;
-        this.gitfcardId = giftCardId;
-        this.movieCouponId = movieCouponId;
-        this.ticketId = ticketId;
-
+        this.gitfCardIds = giftCardIds;
+        this.movieCouponIds = movieCouponIds;
+        this.ticketIds = ticketIds;
     }
 
 }//end of class
