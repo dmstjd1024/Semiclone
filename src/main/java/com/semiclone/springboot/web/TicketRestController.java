@@ -2,6 +2,8 @@ package com.semiclone.springboot.web;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import com.semiclone.springboot.service.ticket.TicketService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,15 +56,15 @@ public class TicketRestController {
 
     @ApiOperation(value = "기프트콘, 포인트 정보 가져오기 :: GiftCard(기프트콘), User(사용자)")
     @GetMapping(value = "/user/service")
-    public Map<String, Object> service(@RequestParam("accountid") String accountId) throws Exception {
-        return ticketService.getUserService(accountId);
+    public Map<String, Object> service(@RequestParam("accountid") String accountId, HttpSession session) throws Exception {
+        return ticketService.getUserService(accountId, session);
     }
 
     @ApiOperation(value = "티켓 결제 :: 추가완료 시 1 return / 실패 시 0 return",
             notes = "구현 중...")
     @PostMapping(value = "/payment")
-    public Map<String, Object> payment(@RequestBody Map<String, Object> payment) throws Exception {
-        return ticketService.addPurchase(payment);
+    public Map<String, Object> payment(@RequestBody Map<String, Object> payment, HttpSession session) throws Exception {
+        return ticketService.addPurchase(payment, session);
     }
 
 }//end of class

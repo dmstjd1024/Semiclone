@@ -19,32 +19,23 @@ public class MovieCoupon {
     private int id; //영화관람권 고유번호
 
     @Column(nullable = false)
-    private String screenState;
-
-    @Column(nullable = false)
     private String accountId;
 
     @Column(nullable = false)
-    private int movieCouponPrice;
-
-    @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
-    private Date movieCouponStartDate;
+    private int movieCouponPrice = 5000;
 
     @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date movieCouponEndDate;
 
     @Column(nullable = false)
-    private char movieCouponState;
+    private char movieCouponState = 1;
 
     @Builder
-    public MovieCoupon(int id, String screenState, String accountId, int movieCouponPrice, Date movieCouponStartDate, Date movieCouponEndDate, char movieCouponState) {
+    public MovieCoupon(int id, String accountId, int movieCouponPrice, Date movieCouponEndDate, char movieCouponState) {
         this.id = id;
-        this.screenState = screenState;
         this.accountId = accountId;
         this.movieCouponPrice = movieCouponPrice;
-        this.movieCouponStartDate = movieCouponStartDate;
         this.movieCouponEndDate = movieCouponEndDate;
         this.movieCouponState = movieCouponState;
     }
