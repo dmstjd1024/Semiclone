@@ -1,5 +1,6 @@
 package com.semiclone.springboot.service.ticket;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Random;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.account.Account;
 import com.semiclone.springboot.domain.account.AccountRepository;
 import com.semiclone.springboot.domain.cinema.Cinema;
@@ -26,7 +28,20 @@ import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
+import com.semiclone.springboot.web.dto.TimeTableDto;
+import com.semiclone.springboot.web.dto.iamport.AccessToken;
+import com.semiclone.springboot.web.dto.iamport.AuthData;
+import com.semiclone.springboot.web.dto.iamport.IamportResponse;
+import com.semiclone.springboot.web.dto.iamport.Purchase;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +112,7 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getScreensMap
 
-    public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, Long timeTableId, String group) throws Exception{
+    public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, String group) throws Exception{
         
         /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
         if(movieId == 123890){
@@ -109,15 +124,12 @@ public class TicketServiceImpl implements TicketService{
         if(date == 123890){
             date = null;
         }
-        if(timeTableId == 123890){
-            timeTableId = null;
-        }
         if(group.equals("123890")){
             group = "0";
         }
 
         /* 모든 Param이 null일 때 전체값 return */
-        if(movieId == null && cinemaId == null && date == null && timeTableId == null && group.equals("")){
+        if(movieId == null && cinemaId == null && date == null && group.equals("")){
             return this.getScreensMap();
         }
 
@@ -130,7 +142,7 @@ public class TicketServiceImpl implements TicketService{
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
         /* 영화만 선택했을 때 */ 
-        if(movieId != null && cinemaId == null && date == null && timeTableId == null){
+        if(movieId != null && cinemaId == null && date == null){
 
             /* Cinemas */
             List<Long> list = new ArrayList<Long>();
@@ -191,7 +203,7 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 극장만 선택했을 때 */
-        if(movieId == null && cinemaId != null && date == null && timeTableId == null){
+        if(movieId == null && cinemaId != null && date == null){
             /* Moives */
             List<Long> movieIdList = new ArrayList<Long>();
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
@@ -244,7 +256,7 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 날짜만 선택했을 때 */
-        if(movieId == null && cinemaId == null && date != null && timeTableId == null){
+        if(movieId == null && cinemaId == null && date != null){
             /* Moives */
             List<MovieDto> moviesList = new ArrayList<MovieDto>();
             for(Movie movie : movieRepository.findAll()){
@@ -303,7 +315,7 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 영화, 극장이 선택되었을 때 */
-        if(movieId != null && cinemaId != null && date == null && timeTableId == null){
+        if(movieId != null && cinemaId != null && date == null){
             /* Cinemas */
             List<Long> list = new ArrayList<Long>();
             for(Long obj : timeTableRepository.findScreenIdByMovieId(movieId)){
@@ -397,7 +409,7 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 영화, 날짜가 선택되었을 때 */
-        if(movieId != null && cinemaId == null && date != null && timeTableId == null){
+        if(movieId != null && cinemaId == null && date != null){
             /* Moives */
             List<MovieDto> movieList = new ArrayList<MovieDto>();
             for(Movie movie : movieRepository.findAll()){
@@ -474,7 +486,7 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 극장, 날짜가 선택되었을 때 */
-        if(movieId == null && cinemaId != null && date != null && timeTableId == null){
+        if(movieId == null && cinemaId != null && date != null){
 
             /* Moives */
             List<Long> movieIdList = new ArrayList<Long>();
@@ -568,10 +580,10 @@ public class TicketServiceImpl implements TicketService{
         }
         
         /* 영화, 극장, 날짜가 선택되었을 때 */
-        if(movieId != null && cinemaId != null && date != null && timeTableId == null){
+        if(movieId != null && cinemaId != null && date != null){
             /* Moives */
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
- 
+
             List<MovieDto> movieList = new ArrayList<MovieDto>();
             for(Movie movie : movieRepository.findAll()){
                 movieList.add(new MovieDto(movie));
@@ -649,8 +661,15 @@ public class TicketServiceImpl implements TicketService{
             /* 극장별 날짜,영화에 해당되는 상영 시간표 */
             List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
             for(Long screenId : screenIdList){
-                List<TimeTable> lists = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
-                if(lists.size() != 0){
+                System.out.println("/////////////////"+screenId);
+                List<TimeTableDto> lists = new ArrayList<TimeTableDto>();;
+                for(TimeTable timeTable : timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date)){
+                    TimeTableDto timeTableDto = new TimeTableDto(timeTable);
+                    timeTableDto.setEmptySeat(ticketRepository.findAllByTimeTableId(timeTable.getId()).size());
+                    lists.add(timeTableDto);
+                }
+
+                if(lists.size() > 0){
                     Map<String, Object> screensMap = new HashMap<String, Object>();
                     screensMap.put("screen", screenRepository.findOneById(screenId));
                     screensMap.put("timeTables", lists);
@@ -785,26 +804,99 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getUserService
 
-    public Map<String, Object> addPurchase(Map<String, Object> purchase, HttpSession session) throws Exception {
+    public Map<String, Object> addPurchase(Map<String, Object> purchaseMap, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
-        Payment payment = new Payment();
 
-        if(purchase.containsKey("imp_uid")){
-            System.out.println(purchase.get("imp_uid"));
-            if(purchase.containsKey("movieCoupons")){    //  movieCoupons 유효성 검사
+        if(purchaseMap.containsKey("imp_uid")){
+            
+            String API_URL = "https://api.iamport.kr";
+            String api_key = "";
+            String api_secret = "";
+            HttpClient client = HttpClientBuilder.create().build();
+            Gson gson = new Gson();
+        
+            /* getToken */
+            AuthData authData = new AuthData(api_key, api_secret);	
+            String authJsonData = gson.toJson(authData);
+            
+                StringEntity data = new StringEntity(authJsonData);
                 
-            }
-            if(purchase.containsKey("tickets")){    //  tickets 유효성 검사
+                HttpPost postRequest = new HttpPost(API_URL+"/users/getToken");
+                postRequest.setHeader("Accept", "application/json");
+                postRequest.setHeader("Connection","keep-alive");
+                postRequest.setHeader("Content-Type", "application/json");
                 
-            }
-            if(purchase.containsKey("giftCards")){    //  giftCards 유효성 검사
+                postRequest.setEntity(data);
                 
-            }
+                HttpResponse response = client.execute(postRequest);
+                
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : "
+                    + response.getStatusLine().getStatusCode());
+                }
+                
+                ResponseHandler<String> handler = new BasicResponseHandler();
+                String body = handler.handleResponse(response);
+                Type listType = new TypeToken<IamportResponse<AccessToken>>(){}.getType();
+                IamportResponse<AccessToken> auth = gson.fromJson(body, listType);
+            
+            String token = auth.getResponse().getToken();
+           
+            /* getPurchase
+             * IamPort Server에서 Data 가져오기 : 안전한 데이터
+             */
+            if(token != null) {
+                String path = "/payments/"+purchaseMap.get("imp_uid");
+
+                HttpGet getRequest = new HttpGet(API_URL+path);
+                getRequest.addHeader("Accept", "application/json");
+                getRequest.addHeader("Authorization", token);
+
+                HttpResponse responses = client.execute(getRequest);
+
+                if (responses.getStatusLine().getStatusCode() != 200) {
+                    throw new RuntimeException("Failed : HTTP error code : "
+                    + responses.getStatusLine().getStatusCode());
+                }
+                
+                ResponseHandler<String> handlers = new BasicResponseHandler();
+                String responsed = handlers.handleResponse(responses);
+                
+                Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
+                IamportResponse<Purchase> purchase = gson.fromJson(responsed, listTypes);
+                
+                System.out.println(purchase.getResponse().getBuyerTel());
+
+                String movieCoupons = "";
+                String tickets = "";
+                String giftCards = "";
+                if(purchaseMap.containsKey("movieCoupons") && ((List)purchaseMap.get("movieCoupons")).size() > 0){    //  movieCoupons 유효성 검사
+                    for(Object movieCoupon : (List)purchaseMap.get("movieCoupons")){
+                        movieCoupons += movieCoupon+",";
+                    }
+                    movieCoupons.substring(0, movieCoupons.length()-1);
+                }
+                if(purchaseMap.containsKey("tickets") && ((List)purchaseMap.get("tickets")).size() > 0){    //  tickets 유효성 검사
+                    for(Object ticket : (List)purchaseMap.get("tickets")){
+
+                    }
+                }
+                if(purchaseMap.containsKey("giftCards") && ((List)purchaseMap.get("giftCards")).size() > 0){    //  giftCards 유효성 검사
+                    for(Object giftCard : (List)purchaseMap.get("giftCards")){
+
+                    }
+                }
+
+                Payment.builder().build();
+
+                //end of getPurchase
+            }else{
+                returnMap.put("result", "0");    //  IamPort Server에 해당 Data가 없을 경우
+            }//end of token Validation Check
         }else{
             returnMap.put("result", "0");    //  imp_uid가 Map에 없을 경우
-        }
-        
-
+        }//end of imp_uid Validation Check
+    
         return returnMap;
     }//end of addPurchase
 

@@ -1,11 +1,11 @@
-package com.semiclone.springboot.web.dto;
+package com.semiclone.springboot.web.dto.iamport;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Payment {
+public class Purchase {
 	@SerializedName("imp_uid")
 	String imp_uid;
 	

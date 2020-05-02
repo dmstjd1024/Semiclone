@@ -1,4 +1,4 @@
-package com.semiclone.springboot.web.dto;
+package com.semiclone.springboot.web.dto.iamport;
 
 import lombok.Getter;
 import lombok.ToString;

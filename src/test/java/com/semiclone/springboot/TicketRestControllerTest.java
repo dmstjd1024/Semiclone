@@ -1,7 +1,6 @@
 package com.semiclone.springboot;
 
 import java.lang.reflect.Type;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,17 +11,17 @@ import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieRepository;
-import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
-import com.semiclone.springboot.web.dto.AccessToken;
-import com.semiclone.springboot.web.dto.AuthData;
 import com.semiclone.springboot.web.dto.CinemaDto;
-import com.semiclone.springboot.web.dto.IamportResponse;
 import com.semiclone.springboot.web.dto.MovieDto;
+import com.semiclone.springboot.web.dto.iamport.AccessToken;
+import com.semiclone.springboot.web.dto.iamport.AuthData;
+import com.semiclone.springboot.web.dto.iamport.IamportResponse;
+import com.semiclone.springboot.web.dto.iamport.Purchase;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -280,8 +279,8 @@ public class TicketRestControllerTest {
         HttpClient client = HttpClientBuilder.create().build();
         Gson gson = new Gson();
     
-        AuthData authData = new AuthData(api_key, api_secret);
-				
+        /* getToken */
+        AuthData authData = new AuthData(api_key, api_secret);	
 		String authJsonData = gson.toJson(authData);
 		
 			StringEntity data = new StringEntity(authJsonData);
@@ -304,13 +303,10 @@ public class TicketRestControllerTest {
             String body = handler.handleResponse(response);
 			Type listType = new TypeToken<IamportResponse<AccessToken>>(){}.getType();
             IamportResponse<AccessToken> auth = gson.fromJson(body, listType);
-            System.out.println("\n=============================================================");
-            System.out.println(auth.getResponse().getToken());
-            System.out.println("=============================================================\n");
-
         
         String token = auth.getResponse().getToken();
-		
+        
+        
 		if(token != null) {
 			String path = "/payments/"+"";
 
@@ -328,14 +324,10 @@ public class TicketRestControllerTest {
 			ResponseHandler<String> handlers = new BasicResponseHandler();
 			String responsed = handlers.handleResponse(responses);
 			
-			//Type listTypes = new TypeToken<IamportResponse<Payment>>(){}.getType();
-			//IamportResponse<Payment> payment = gson.fromJson(responsed, listTypes);
+			Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
+			IamportResponse<Purchase> payment = gson.fromJson(responsed, listTypes);
             
-            System.out.println("\n==========================================================");
-            System.out.println("==========================================================");
-            //System.out.println(payment.getResponse().getBuyerName());
-            System.out.println("==========================================================\n");
-	
+            System.out.println(payment.getResponse().getBuyerTel());
 
        }
     }
@@ -360,14 +352,21 @@ public class TicketRestControllerTest {
         System.out.println("Test End\n");
     }
 
-    @Test
+    //@Test
     public void dateTest() throws Exception {
-        System.out.println("\n===========================================");
-        System.out.println(new Date(System.currentTimeMillis()));
-        Payment payment = Payment.builder().accountId("test").paymentStatus("1234")
-        .depositeBank("bank").depositorName("name").paymentMethod("card")
-        .paymentAmount(1000).receiverName("123").receiverPhone("01012341234").build();
-        paymentRepository.save(payment);
+        // System.out.println("\n===========================================");
+        // System.out.println(new Date(System.currentTimeMillis()));
+        // Payment payment = Payment.builder().accountId("test").paymentStatus("1234")
+        // .depositeBank("bank").depositorName("name").paymentMethod("card")
+        // .paymentAmount(1000).receiverName("123").receiverPhone("01012341234").build();
+        // paymentRepository.save(payment);
+    }
+
+    @Test
+    public void subStringTest() throws Exception {
+        String test = "test yest,aest,";
+        System.out.println("변경 전 : "+test);
+        System.out.println("변경 후 : "+test.substring(0, test.length()-1));
     }
 
 }
