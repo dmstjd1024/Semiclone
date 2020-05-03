@@ -617,10 +617,10 @@ public class OnloadRestController{
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
         /* Table Ticket에 Data가 없을 경우에만 실행 */
-        if(ticketRepository.count()==0){
+        if(ticketRepository.count() > 0){
             System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
-                int timeTableCount = 10;    //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
+                int timeTableCount = (int)timeTableRepository.count(); //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
                 for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
     
                     Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
@@ -634,9 +634,9 @@ public class OnloadRestController{
                     }
                 }
             System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
-        }else{
-            System.out.println("Table Ticket(티켓) Data가 이미 있습니다. (현재 : "+ticketRepository.count()+"개)");
-        }
+         }else{
+             System.out.println("Table Ticket(티켓) Data가 이미 있습니다. (현재 : "+ticketRepository.count()+"개)");
+         }
 
         /*  DB Table COLUMN 개수 화면에 출력   */
         String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 
