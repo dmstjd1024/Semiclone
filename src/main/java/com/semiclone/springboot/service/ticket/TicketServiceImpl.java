@@ -73,7 +73,7 @@ public class TicketServiceImpl implements TicketService{
 
         /* Moives */
         List<MovieDto> movieList = new ArrayList<MovieDto>();
-        for(Movie obj : movieRepository.findAll()){
+        for(Movie obj : movieRepository.findAllOrderByMovieTitle()){
             MovieDto movieDto = new MovieDto(obj);
             movieDto.setIsVailable(true);
             movieList.add(movieDto);
@@ -137,10 +137,13 @@ public class TicketServiceImpl implements TicketService{
         }
 
         /* 정렬방법 세팅 */
+        List<Movie> movieOrderList;
         if(group.equals("") || group == null || group.equals("0")){
-            group = "0";    //  0 : 예매율순
+            group = "movieTitle";    //  0 : 가나다순
+            movieOrderList = movieRepository.findAllOrderByMovieTitle();
         }else{
-            group = "1";    //  1 : 가나다순
+            group = "reservationRate";    //  1 : 예매율순
+            movieOrderList = movieRepository.findAllOrderByReservationRate();
         }
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -220,7 +223,7 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 movieList.add(new MovieDto(movie));
             }
 
@@ -262,7 +265,7 @@ public class TicketServiceImpl implements TicketService{
         if(movieId == null && cinemaId == null && date != null){
             /* Moives */
             List<MovieDto> moviesList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 moviesList.add(new MovieDto(movie));
             }
 
@@ -369,7 +372,7 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 movieList.add(new MovieDto(movie));
             }
 
@@ -415,7 +418,7 @@ public class TicketServiceImpl implements TicketService{
         if(movieId != null && cinemaId == null && date != null){
             /* Moives */
             List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 movieList.add(new MovieDto(movie));
             }
 
@@ -504,7 +507,7 @@ public class TicketServiceImpl implements TicketService{
             movieIdList.sort(null);
             
             List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 movieList.add(new MovieDto(movie));
             }
 
@@ -588,7 +591,7 @@ public class TicketServiceImpl implements TicketService{
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
 
             List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(Movie movie : movieRepository.findAll()){
+            for(Movie movie : movieOrderList){
                 movieList.add(new MovieDto(movie));
             }
 
