@@ -73,7 +73,7 @@ public class TicketServiceImpl implements TicketService{
 
         /* Moives */
         List<MovieDto> movieList = new ArrayList<MovieDto>();
-        for(Movie obj : movieRepository.findAllOrderByMovieTitle()){
+        for(Movie obj : movieRepository.findAllOrderByReservationRate()){
             MovieDto movieDto = new MovieDto(obj);
             movieDto.setIsVailable(true);
             movieList.add(movieDto);
@@ -139,11 +139,12 @@ public class TicketServiceImpl implements TicketService{
         /* 정렬방법 세팅 */
         List<Movie> movieOrderList;
         if(group.equals("") || group == null || group.equals("0")){
-            group = "movieTitle";    //  0 : 가나다순
-            movieOrderList = movieRepository.findAllOrderByMovieTitle();
-        }else{
-            group = "reservationRate";    //  1 : 예매율순
+            group = "movieTitle";    //  0 : 예매율순
             movieOrderList = movieRepository.findAllOrderByReservationRate();
+        }else{
+            group = "reservationRate";    //  1 : 가나다순
+            movieOrderList = movieRepository.findAllOrderByMovieTitle();
+            
         }
 
         Map<String, Object> returnMap = new HashMap<String, Object>();

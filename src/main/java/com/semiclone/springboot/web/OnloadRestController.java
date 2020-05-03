@@ -422,6 +422,8 @@ public class OnloadRestController{
         /*   
         *   극장별 상영시간표 크롤링 
         */
+    boolean screenAndTimeTable = false;    //  상영관, 상영 시간표 크롤링 여부
+    if(screenAndTimeTable){    
         boolean saveTimetable = false;
         int screenTableCount = (int)screenRepository.count();
         int timeTableTableCount = (int)timeTableRepository.count();
@@ -587,6 +589,7 @@ public class OnloadRestController{
             saveTimetable = true;    //  Screen정보 저장 후 Timetable 작업을 위한 용도
 
         }//end of for  ::  상영관 테이블, 시간표 테이블 데이터 추가 용도
+    }
 
         /* DB TABLE SEAT INSERT
          * 좌석 label = A, B, C, D, E (행)
@@ -622,15 +625,16 @@ public class OnloadRestController{
 
                 int timeTableCount = (int)timeTableRepository.count(); //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
                 for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
-    
-                    Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
-                    for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
-                        ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
-                                                    .screenId(screenId)
-                                                    .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
-                                                    .timeTableId((long)timeTableId)
-                                                    .ticketPrice(5000)
-                                                    .ticketState('0').build());
+                    if(ticketRepository.findAllByTimeTableId((long)timeTableId).size() == 0){
+                        Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
+                        for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
+                            ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
+                                                        .screenId(screenId)
+                                                        .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
+                                                        .timeTableId((long)timeTableId)
+                                                        .ticketPrice(5000)
+                                                        .ticketState('0').build());
+                        }
                     }
                 }
             System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
