@@ -23,7 +23,7 @@ public class Ticket {
     private Long seatId;    //  좌석 고유번호
 
     @Column(nullable = false)
-    private Long screenid;    //  상영관 고유번호
+    private Long screenId;    //  상영관 고유번호
 
     @Column(nullable = false)
     private Long movieId;    //  영화 고유번호
@@ -44,7 +44,7 @@ public class Ticket {
     @Builder
     public Ticket(Long seatId, Long screenId, Long movieId, Long timeTableId, int ticketPrice, char ticketState){
         this.seatId = seatId;
-        this.screenid = screenId;
+        this.screenId = screenId;
         this.movieId = movieId;
         this.timeTableId = timeTableId;
         this.ticketPrice = ticketPrice;

@@ -16,13 +16,16 @@ import com.semiclone.springboot.domain.account.Account;
 import com.semiclone.springboot.domain.account.AccountRepository;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
+import com.semiclone.springboot.domain.coupon.MovieCoupon;
 import com.semiclone.springboot.domain.coupon.MovieCouponRepository;
+import com.semiclone.springboot.domain.giftcard.GiftCard;
 import com.semiclone.springboot.domain.giftcard.GiftCardRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.seat.Seat;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
@@ -691,14 +694,53 @@ public class TicketServiceImpl implements TicketService{
        
         List<Ticket> ticketsList = ticketRepository.findAllByTimeTableId(timeTableId);
         List<Object> list = new ArrayList<Object>();
-        for(Ticket ticket : ticketsList){
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("ticket", ticket);
-            map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
-            list.add(map);
+
+        List<Seat> seatsList = seatRepository.findByScreenId(
+                ((Ticket)((List)ticketRepository.findAllByTimeTableId(timeTableId)).get(0)).getScreenId());
+        List<String> seatRowList = new ArrayList<String>();
+        for(Seat seat : seatsList){
+            String seatRow = seat.getSeatNo().substring(0,1);
+            if(!seatRowList.contains(seatRow)){
+                seatRowList.add(seatRow);
+            }
         }
-        String screensJson = new Gson().toJson(list);
-        returnMap.put("seats", new Gson().fromJson(screensJson, list.getClass()));
+        
+        Map<String, Object> tempMap = new HashMap<String, Object>();
+        for(String seatRow : seatRowList){
+            
+            List<Long> seatIdList = new ArrayList<Long>();
+            for(Seat seat : seatsList){
+                String seatRows = seat.getSeatNo().substring(0,1);
+                if(seatRows.equals(seatRow)){
+                    seatIdList.add(seat.getId());
+                }
+            }
+            tempMap.put(seatRow, seatIdList);
+        }
+        
+        List tempList = new ArrayList();
+        for(String seatRow : seatRowList){
+            List<Object> lists = new ArrayList<Object>();
+            for(Object seatId : (List)tempMap.get(seatRow)){
+                
+                for(Ticket ticket : ticketsList){
+                    if(seatId == ticket.getSeatId()){                            
+                        
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        map.put("ticket", ticket);
+                        map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
+                        lists.add(map);
+                        
+                    }
+                }
+                
+            }
+            tempMap.replace(seatRow, (List)tempMap.get(seatRow), lists);
+            tempList.add(tempMap.get(seatRow));
+        }
+
+        String screensJson = new Gson().toJson(tempList);
+        returnMap.put("seats", new Gson().fromJson(screensJson, tempList.getClass()));
 
         return returnMap;
     }//end of getSeatsMap
@@ -717,10 +759,10 @@ public class TicketServiceImpl implements TicketService{
          * 결제대기, 구매완료, 그 외 잘못된 요청일 경우 로직 종류 후 0 return
          * 잘못된 요청에 대비한 Null Check 완료
          */
-        if(ticketState == '1'){    //  예매진행
+        if(ticketState == '0'){    //  예매진행
             if((List)tickets.get("tickets") != null){    //  ticketId Null Check
                 for(Object ticketId : (List)tickets.get("tickets")){
-                    if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '0'){
+                    if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '1'){
                         transaction = true;
                     }else{    //  
                         transaction = false;
@@ -732,7 +774,7 @@ public class TicketServiceImpl implements TicketService{
                 transaction = false;
                 returnMap.put("result", "0");
             }
-        }else if(ticketState == '0'){    //  예매취소
+        }else if(ticketState == '1'){    //  예매취소
             if(tickets.get("ticketTokens") != null){    //  토큰 유효성 검사
                 ticketsList = new ArrayList();
                 for(Object token : (List)tickets.get("ticketTokens")){
@@ -864,20 +906,29 @@ public class TicketServiceImpl implements TicketService{
                 String tickets = "";
                 String giftCards = "";
                 if(purchaseMap.containsKey("movieCoupons") && ((List)purchaseMap.get("movieCoupons")).size() > 0){    //  movieCoupons 유효성 검사
-                    for(Object movieCoupon : (List)purchaseMap.get("movieCoupons")){
-                        movieCoupons += movieCoupon+",";
+                    for(Object movieCouponId : (List)purchaseMap.get("movieCoupons")){
+                        movieCoupons += movieCouponId+",";
+                        MovieCoupon movieCoupon = movieCouponRepository.findOneById((long)movieCouponId);
+                        movieCoupon.setMovieCouponState('0');
+                        movieCouponRepository.save(movieCoupon);
                     }
                     movieCoupons = movieCoupons.substring(0, movieCoupons.length()-1);
                 }
                 if(purchaseMap.containsKey("tickets") && ((List)purchaseMap.get("tickets")).size() > 0){    //  tickets 유효성 검사
-                    for(Object ticket : (List)purchaseMap.get("tickets")){
-                        tickets += ticket+",";
+                    for(Object ticketId : (List)purchaseMap.get("tickets")){
+                        tickets += ticketId+",";
+                        Ticket ticket = ticketRepository.findOneById((long)ticketId);
+                        ticket.setTicketState('2');
+                        ticketRepository.save(ticket);
                     }
                     tickets = tickets.substring(0, tickets.length()-1);
                 }
                 if(purchaseMap.containsKey("giftCards") && ((List)purchaseMap.get("giftCards")).size() > 0){    //  giftCards 유효성 검사
-                    for(Object giftCard : (List)purchaseMap.get("giftCards")){
-                        giftCards += giftCard+",";
+                    for(Object giftCardId : (List)purchaseMap.get("giftCards")){
+                        giftCards += giftCardId+",";
+                        GiftCard giftCard = giftCardRepository.findOneById((long)giftCardId);
+                        ////////////////////////////////////////////////////
+
                     }
                     giftCards = giftCards.substring(0, giftCards.length()-1);
                 }

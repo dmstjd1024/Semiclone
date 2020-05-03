@@ -620,10 +620,10 @@ public class OnloadRestController{
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
         /* Table Ticket에 Data가 없을 경우에만 실행 */
-        if(ticketRepository.count() > 0){
+        if(ticketRepository.count() == 0){
             System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
-                int timeTableCount = (int)timeTableRepository.count(); //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
+                int timeTableCount = 10; //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
                 for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
                     if(ticketRepository.findAllByTimeTableId((long)timeTableId).size() == 0){
                         Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
