@@ -633,7 +633,7 @@ public class OnloadRestController{
                                                         .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
                                                         .timeTableId((long)timeTableId)
                                                         .ticketPrice(5000)
-                                                        .ticketState('0').build());
+                                                        .ticketState('1').build());
                         }
                     }
                 }

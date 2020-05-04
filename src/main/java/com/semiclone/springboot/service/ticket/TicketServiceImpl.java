@@ -1,7 +1,6 @@
 package com.semiclone.springboot.service.ticket;
 
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.semiclone.springboot.config.IamPortConfig;
 import com.semiclone.springboot.domain.account.Account;
 import com.semiclone.springboot.domain.account.AccountRepository;
 import com.semiclone.springboot.domain.cinema.Cinema;
@@ -29,6 +29,8 @@ import com.semiclone.springboot.domain.seat.Seat;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
+import com.semiclone.springboot.domain.tickethistory.TicketHisotryRepository;
+import com.semiclone.springboot.domain.tickethistory.TicketHistory;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
@@ -68,6 +70,8 @@ public class TicketServiceImpl implements TicketService{
     private final GiftCardRepository giftCardRepository;
     private final MovieCouponRepository movieCouponRepository;
     private final PaymentRepository paymentRepository;
+    private final TicketHisotryRepository ticketHisotryRepository;
+    private final IamPortConfig iamPortConfig;
 
     //Method
     /* 모든 영화, 극장, 날짜 리스트 return */
@@ -851,11 +855,15 @@ public class TicketServiceImpl implements TicketService{
         accountTest.setAccountId("admin");
         session.setAttribute("account", accountTest);
 
+        //System.out.println(iamPortConfig.getApiKey());
+        // System.out.println(iamPortConfig.getRestApIKey());
+        // System.out.println(iamPortConfig.getRestScretKey());
+
         if(purchaseMap.containsKey("imp_uid")){
             
             String API_URL = "https://api.iamport.kr";
-            String api_key = "";
-            String api_secret = "";
+            String api_key = iamPortConfig.getApikey();
+            String api_secret = iamPortConfig.getApisecret();
             HttpClient client = HttpClientBuilder.create().build();
             Gson gson = new Gson();
         
@@ -924,15 +932,6 @@ public class TicketServiceImpl implements TicketService{
                     }
                     movieCoupons = movieCoupons.substring(0, movieCoupons.length()-1);
                 }
-                if(purchaseMap.containsKey("tickets") && ((List)purchaseMap.get("tickets")).size() > 0){    //  tickets 유효성 검사
-                    for(Object ticketId : (List)purchaseMap.get("tickets")){
-                        tickets += ticketId+",";
-                        Ticket ticket = ticketRepository.findOneById((long)ticketId);
-                        ticket.setTicketState('2');
-                        ticketRepository.save(ticket);
-                    }
-                    tickets = tickets.substring(0, tickets.length()-1);
-                }
                 boolean everythingsOk = true;
                 if(purchaseMap.containsKey("giftCards") && ((List)purchaseMap.get("giftCards")).size() > 0){    //  giftCards 유효성 검사
                     for(Object giftCardInfo : (List)purchaseMap.get("giftCards")){
@@ -962,19 +961,37 @@ public class TicketServiceImpl implements TicketService{
                         everythingsOk = false;
                     }
                 }
+                if(purchaseMap.containsKey("tickets") && ((List)purchaseMap.get("tickets")).size() > 0){    //  tickets 유효성 검사
+                    for(Object ticketId : (List)purchaseMap.get("tickets")){
+                        tickets += ticketId+",";
+                        if(everythingsOk){ 
+                            Ticket ticket = ticketRepository.findOneById((long)ticketId);
+
+                            ticketHisotryRepository.save(
+                                TicketHistory.builder().seatId((long)ticket.getSeatId())
+                                                        .screenId((long)ticket.getScreenId())
+                                                        .movieId((long)ticket.getMovieId())
+                                                        .ticketPrice(ticket.getTicketPrice())
+                                                        .accountId(ticket.getAccountId()).build());
+                            ticketRepository.delete(ticket);
+                        }
+                    }
+                    tickets = tickets.substring(0, tickets.length()-1);
+                }
 
                 if(everythingsOk){    //  기프트카드, 포인트 잔액 유효성 검사에 성공했을 경우
                     paymentRepository.save(
-                        Payment.builder().accountId(((Account)session.getAttribute("account")).getAccountId())
-                                .receiverName(purchase.getBuyerName())
-                                .receiverPhone(purchase.getBuyerTel())
-                                .paymentMethod(purchase.getPayMethod())
-                                .paymentAmount(purchase.getAmount())
-                                .giftCardIds(giftCards)
-                                .movieCouponIds(movieCoupons)
-                                .ticketIds(tickets)
-                                .build()
+                            Payment.builder().accountId(((Account)session.getAttribute("account")).getAccountId())
+                                            .receiverName(purchase.getBuyerName())
+                                            .receiverPhone(purchase.getBuyerTel())
+                                            .paymentMethod(purchase.getPayMethod())
+                                            .paymentAmount(purchase.getAmount())
+                                            .giftCardIds(giftCards)
+                                            .movieCouponIds(movieCoupons)
+                                            .ticketIds(tickets)
+                                            .build()
                     );
+
                     returnMap.put("result", "1");
                 }else{
                     returnMap.put("result", "0");    //  기프트카드, 포인트 잔액조회 검사에서 실패했을 경우

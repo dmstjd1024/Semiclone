@@ -6,13 +6,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class TicketHistory {
 
@@ -21,15 +21,27 @@ public class TicketHistory {
     private Long Id;    // 영화기록 고유번호
 
     @Column(nullable = false)
-    private long seatId;    //  좌석 고유번호
+    private Long seatId;    //  좌석 고유번호
 
     @Column(nullable = false)
-    private long screenId;    //  상영관 고유번호
+    private Long screenId;    //  상영관 고유번호
 
     @Column(nullable = false)
-    private long movieId;    //  영화 고유번호
+    private Long movieId;    //  영화 고유번호
 
     @Column(nullable = false)
     private int ticketPrice;    //  티켓 가격
+
+    @Column(nullable = false)
+    private String accountId;    //  사용자 아이디
+
+    @Builder
+    public TicketHistory(Long seatId, Long screenId, Long movieId, int ticketPrice, String accountId){
+        this.seatId = seatId;
+        this.screenId = screenId;
+        this.movieId = movieId;
+        this.ticketPrice = ticketPrice;
+        this.accountId = accountId;
+    }
 
 }//end of class

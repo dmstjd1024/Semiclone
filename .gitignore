@@ -36,5 +36,5 @@ src/main/resources/application-db.yml
 bin/main/application-db.yml
 
 ### apiKey ###
-src/main/resources/apiKey.yml
-bin/main/apiKey.yml
+src/main/resources/iamport.yml
+bin/main/iamport.yml
