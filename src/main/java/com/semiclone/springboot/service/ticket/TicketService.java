@@ -12,7 +12,7 @@ public interface TicketService {
 
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception;
 
-    public Map<String, Object> updateTicketState(Map<String, Object> tickets) throws Exception;
+    public Map<String, Object> updateTicketState(Map<String, Object> tickets, HttpSession session) throws Exception;
 
     public Map<String, Object> getUserService(String accountId, HttpSession session) throws Exception;
 
