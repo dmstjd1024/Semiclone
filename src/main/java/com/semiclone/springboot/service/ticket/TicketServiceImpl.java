@@ -855,12 +855,10 @@ public class TicketServiceImpl implements TicketService{
         accountTest.setAccountId("admin");
         session.setAttribute("account", accountTest);
 
-        //System.out.println(iamPortConfig.getApiKey());
-        // System.out.println(iamPortConfig.getRestApIKey());
-        // System.out.println(iamPortConfig.getRestScretKey());
-
         if(purchaseMap.containsKey("imp_uid")){
             
+            //////////////////////////////////////// IamPortAPI  ////////////////////////////////////////
+            //참고 : https://github.com/iamport/iamport-rest-client-java-hc/tree/master/src/main/java/com/siot/IamportRestHttpClientJava
             String API_URL = "https://api.iamport.kr";
             String api_key = iamPortConfig.getApikey();
             String api_secret = iamPortConfig.getApisecret();
@@ -919,6 +917,8 @@ public class TicketServiceImpl implements TicketService{
                 Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
                 IamportResponse<Purchase> purchaseData = gson.fromJson(responsed, listTypes);
                 Purchase purchase = purchaseData.getResponse();
+
+                //////////////////////////////////////// IamPortAPI  ////////////////////////////////////////
 
                 String movieCoupons = "";
                 String tickets = "";
