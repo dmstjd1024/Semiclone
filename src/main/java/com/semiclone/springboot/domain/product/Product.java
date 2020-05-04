@@ -30,6 +30,10 @@ public class Product {
     private int category;
     @Column(nullable = false)
     private String kind;
+    @Column
+    private int discount;
+    @Column
+    private int discount_price;
     @Column(nullable = false)
     private Long sales; // 판매량
 
