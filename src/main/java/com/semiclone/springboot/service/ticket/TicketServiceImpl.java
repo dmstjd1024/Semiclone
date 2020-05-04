@@ -746,13 +746,18 @@ public class TicketServiceImpl implements TicketService{
     }//end of getSeatsMap
 
     /* Ticket 상태값 변경 :: 예매 결제 ~ 결제 취소에서 사용 */
-    public Map<String, Object> updateTicketState(Map<String, Object> tickets) throws Exception {
+    public Map<String, Object> updateTicketState(Map<String, Object> tickets, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
         char ticketState = ((String)tickets.get("state")).charAt(0);
         boolean transaction = false;
         String ticketToken = null;
         List ticketsList = null;
         
+        /* 테스트용 세션 처리 */
+        Account account = new Account();
+        account.setAccountId("admin");
+        session.setAttribute("account", account);
+
         /*  
          * Ticket 유효성 체크
          * 요청한 Tickets가 예매가능 상태면 로직 처리 후 1 return
@@ -788,7 +793,7 @@ public class TicketServiceImpl implements TicketService{
                 if(ticketsList.size() > 0){    //  tickets List Null Check
                     tickets.put("tickets", ticketsList);
                     transaction = true;
-                }else{    //  tickets Lis 값이 없을 경우
+                }else{    //  tickets List 값이 없을 경우
                     returnMap.put("result", "0");
                     transaction = false;
                 }
@@ -809,8 +814,10 @@ public class TicketServiceImpl implements TicketService{
                     ticketToken = (new Random().nextInt(99999)+100000)+""+System.currentTimeMillis();
                     ticketTokens.add(ticketToken);
                     ticket.setTicketToken(ticketToken);
+                    ticket.setAccountId(((Account)session.getAttribute("account")).getAccountId());
                 }else if(ticketState == '0'){    //  예매취소 시 토큰 DELETE
                     ticket.setTicketToken(null);
+                    ticket.setAccountId(null);
                 }
                 ticketRepository.save(ticket);
             }
@@ -835,13 +842,14 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of getUserService
 
+    @Transactional
     public Map<String, Object> addPurchase(Map<String, Object> purchaseMap, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
 
         /* 테스트용 session */
-        Account account = new Account();
-        account.setAccountId("admin");
-        session.setAttribute("account", account);
+        Account accountTest = new Account();
+        accountTest.setAccountId("admin");
+        session.setAttribute("account", accountTest);
 
         if(purchaseMap.containsKey("imp_uid")){
             
@@ -867,8 +875,10 @@ public class TicketServiceImpl implements TicketService{
                 HttpResponse response = client.execute(postRequest);
                 
                 if (response.getStatusLine().getStatusCode() != 200) {
-                    throw new RuntimeException("Failed : HTTP error code : "
-                    + response.getStatusLine().getStatusCode());
+                    // throw new RuntimeException("Failed : HTTP error code : "
+                    // + response.getStatusLine().getStatusCode());
+                    returnMap.put("result", "0");
+                    return returnMap;
                 }
                 
                 ResponseHandler<String> handler = new BasicResponseHandler();
@@ -923,27 +933,52 @@ public class TicketServiceImpl implements TicketService{
                     }
                     tickets = tickets.substring(0, tickets.length()-1);
                 }
+                boolean everythingsOk = true;
                 if(purchaseMap.containsKey("giftCards") && ((List)purchaseMap.get("giftCards")).size() > 0){    //  giftCards 유효성 검사
-                    for(Object giftCardId : (List)purchaseMap.get("giftCards")){
-                        giftCards += giftCardId+",";
-                        GiftCard giftCard = giftCardRepository.findOneById((long)giftCardId);
-                        ////////////////////////////////////////////////////
-
+                    for(Object giftCardInfo : (List)purchaseMap.get("giftCards")){
+                        Map<String, Object> map = (Map)giftCardInfo;
+                        giftCards += map.get("giftCardId");
+                        GiftCard giftCard = giftCardRepository.findOneById((long)map.get("giftCardId"));
+                        int useMoney = (int)map.get("useMoney");
+                        int balance = giftCard.getGiftCardBalance();
+                        if(balance >= useMoney){
+                            giftCard.setGiftCardBalance((balance-useMoney));
+                            giftCardRepository.save(giftCard);
+                        }else{
+                            everythingsOk = false;
+                            break;
+                        }
                     }
                     giftCards = giftCards.substring(0, giftCards.length()-1);
                 }
+                if(purchaseMap.containsKey("point") && ((List)purchaseMap.get("point")).size() > 0){    //  point 유효성 검사
+                    Account account = accountRepository.findByAccountId(((Account)session.getAttribute("account")).getAccountId());
+                    int usePoint = (int)((List)purchaseMap.get("point")).get(0);
+                    int point = account.getPoint();
+                    if(point >= usePoint){
+                        account.setPoint((point-usePoint));
+                        accountRepository.save(account);
+                    }else{
+                        everythingsOk = false;
+                    }
+                }
 
-                paymentRepository.save(
-                    Payment.builder().accountId(((Account)session.getAttribute("account")).getAccountId())
-                            .receiverName(purchase.getBuyerName())
-                            .receiverPhone(purchase.getBuyerTel())
-                            .paymentMethod(purchase.getPayMethod())
-                            .paymentAmount(purchase.getAmount())
-                            .giftCardIds(giftCards)
-                            .movieCouponIds(movieCoupons)
-                            .ticketIds(tickets)
-                            .build()
-                );
+                if(everythingsOk){    //  기프트카드, 포인트 잔액 유효성 검사에 성공했을 경우
+                    paymentRepository.save(
+                        Payment.builder().accountId(((Account)session.getAttribute("account")).getAccountId())
+                                .receiverName(purchase.getBuyerName())
+                                .receiverPhone(purchase.getBuyerTel())
+                                .paymentMethod(purchase.getPayMethod())
+                                .paymentAmount(purchase.getAmount())
+                                .giftCardIds(giftCards)
+                                .movieCouponIds(movieCoupons)
+                                .ticketIds(tickets)
+                                .build()
+                    );
+                    returnMap.put("result", "1");
+                }else{
+                    returnMap.put("result", "0");    //  기프트카드, 포인트 잔액조회 검사에서 실패했을 경우
+                }
                 //end of getPurchase
             }else{
                 returnMap.put("result", "0");    //  IamPort Server에 해당 Data가 없을 경우

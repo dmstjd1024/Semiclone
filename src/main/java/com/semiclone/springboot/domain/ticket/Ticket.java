@@ -17,7 +17,7 @@ public class Ticket {
     private Long id;    //  티켓 고유번호
 
     @Column
-    private Long accountId;
+    private String accountId;
 
     @Column(nullable = false)
     private Long seatId;    //  좌석 고유번호
@@ -57,6 +57,10 @@ public class Ticket {
 
     public void setTicketToken(String ticketToken){
         this.ticketToken = ticketToken;
+    }
+
+    public void setAccountId(String accountId){
+        this.accountId = accountId;
     }
 
 }//end of class
