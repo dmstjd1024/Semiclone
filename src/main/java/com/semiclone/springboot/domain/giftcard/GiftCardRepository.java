@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 @DynamicUpdate
 public interface GiftCardRepository extends JpaRepository<GiftCard, Long>{
 
-    @Query("SELECT g FROM GiftCard g WHERE account_id = ?1")
+    @Query("SELECT g FROM GiftCard g WHERE account_id = ?1 AND giftCardState = 0")
     List<GiftCard> findAllByAccountId(String accountId);
 
     @Query("SELECT g FROM GiftCard g WHERE id = ?1")

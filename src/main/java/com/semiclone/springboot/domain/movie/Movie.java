@@ -3,14 +3,17 @@ package com.semiclone.springboot.domain.movie;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import javax.persistence.*;
 import java.sql.Clob;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 public class Movie {
 
@@ -34,7 +37,7 @@ public class Movie {
     private String movieTime;    // 영화 상영시간
 
     @Column(nullable = false)
-    private String movieImage;    // 영화 포스터
+    private String movieImage;    // 영화 이미지 경로
 
     @Column(length = 20, nullable = false)
     private String movieDrector;    // 영화 감독

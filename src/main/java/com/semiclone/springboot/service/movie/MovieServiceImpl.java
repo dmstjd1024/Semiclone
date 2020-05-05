@@ -7,7 +7,9 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.semiclone.springboot.domain.movie.Movie;
+import com.semiclone.springboot.domain.movie.MovieMapping;
 import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.web.dto.MovieDetailDto;
 
 import org.springframework.stereotype.Service;
 
@@ -25,9 +27,9 @@ public class MovieServiceImpl implements MovieService{
         List<Movie> moviesList = new ArrayList<Movie>();
 
         if(sort.equals("") || sort == null || sort.equals("123890")){
-            moviesList = movieRepository.findAllOrderByMovieTitle();
+            moviesList = movieRepository.findAllByOrderByReservationRateDesc(Movie.class);
         }else{
-            moviesList = movieRepository.findAllOrderByMovieTitle();
+            moviesList = movieRepository.findAllByOrderByMovieTitleAsc(Movie.class);
         }
 
         List<Movie> returnList = new ArrayList<Movie>();
@@ -36,16 +38,16 @@ public class MovieServiceImpl implements MovieService{
                 returnList.add(moviesList.get(i));
             }
         }
-        String moviesJson = new Gson().toJson(returnList);
-        returnMap.put("movies", new Gson().fromJson(moviesJson, returnList.getClass()));
+        returnMap.put("movies", new Gson().fromJson(new Gson().toJson(returnList), returnList.getClass()));
 
         return returnMap;
     }//end of getMoviesMap
 
     public Map<String, Object> getMovieDetailMap(Long movieId) throws Exception {
+       
+        MovieDetailDto movie = new MovieDetailDto(movieRepository.findOneById(movieId));
+
         Map<String, Object> returnMap = new HashMap<String, Object>();
-        
-        Movie movie = movieRepository.findMovieById(movieId);
         returnMap.put("movie", new Gson().fromJson(new Gson().toJson(movie), Movie.class));
 
         return returnMap;
