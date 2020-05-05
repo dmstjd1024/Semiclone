@@ -756,7 +756,7 @@ public class TicketServiceImpl implements TicketService{
         boolean transaction = false;
         String ticketToken = null;
         List ticketsList = null;
-        
+
         /* 테스트용 세션 처리 */
         Account account = new Account();
         account.setAccountId("admin");
@@ -787,7 +787,7 @@ public class TicketServiceImpl implements TicketService{
             if(tickets.get("ticketTokens") != null){    //  토큰 유효성 검사
                 ticketsList = new ArrayList();
                 for(Object token : (List)tickets.get("ticketTokens")){
-                    List list = ticketRepository.findIdByTicketToken((String)token);
+                    List list = ticketRepository.findIdByTicketToken(String.valueOf(token));
                     if(list.size() != 0){    //  ticketId 유효성 체크
                         ticketsList.add(list.get(0));
                     }else{    //  ticketId 값이 없을 경우
@@ -814,12 +814,12 @@ public class TicketServiceImpl implements TicketService{
                 ticket = ticketRepository.findOneById((long)((int)ticketId));
 
                 ticket.setTicketState(ticketState);
-                if(ticketState == '1'){    //  예매진행 시 토큰 INSERT
+                if(ticketState == '0'){    //  예매진행 시 토큰 INSERT
                     ticketToken = (new Random().nextInt(99999)+100000)+""+System.currentTimeMillis();
                     ticketTokens.add(ticketToken);
                     ticket.setTicketToken(ticketToken);
                     ticket.setAccountId(((Account)session.getAttribute("account")).getAccountId());
-                }else if(ticketState == '0'){    //  예매취소 시 토큰 DELETE
+                }else if(ticketState == '1'){    //  예매취소 시 토큰 DELETE
                     ticket.setTicketToken(null);
                     ticket.setAccountId(null);
                 }
