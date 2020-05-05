@@ -119,13 +119,13 @@ public class TicketServiceImpl implements TicketService{
     public Map<String, Object> getScreensInfoMap(Long movieId, Long cinemaId, Long date, String group) throws Exception{
         
         /* Test용 로직 :: Swagger UI에서 Param값에 null 지원을 안하므로, 로직으로 null 처리*/
-        if(movieId == null || movieId == 123890){
+        if(movieId == null | movieId == 123890){
             movieId = null;
         }
-        if(cinemaId  == null || cinemaId == 123890){
+        if(cinemaId  == null | cinemaId == 123890){
             cinemaId = null;
         }
-        if(date  == null || date == 123890){
+        if(date  == null | date == 123890){
             date = null;
         }
         if(group.equals("123890")){
@@ -139,7 +139,7 @@ public class TicketServiceImpl implements TicketService{
 
         /* 정렬방법 세팅 */
         List<MovieMapping> movieOrderList = null;
-        if(group.equals("") || group == null || group.equals("0")){
+        if(group.equals("") | group == null | group.equals("0")){
             movieOrderList = movieRepository.findAllByOrderByReservationRateDesc(MovieMapping.class);    //  0 : 예매율순
         }else{
             movieOrderList = movieRepository.findAllByOrderByMovieTitleAsc(MovieMapping.class);    //  1 : 가나다순
@@ -150,30 +150,8 @@ public class TicketServiceImpl implements TicketService{
         if(movieId != null && cinemaId == null && date == null){
 
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long screenId : timeTableRepository.findScreenIdByMovieId(movieId)){
-                Long cineId = screenRepository.findCinemaIdById(screenId);
-                if(!list.contains(cineId)){
-                    list.add(cineId);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(String cinemaArea : cinemaRepository.findCinemaArea()){
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        if(list.contains(cinemaDto.getId())){
-                            cinemaDto.setIsVailable(true);
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                cinemasMap.put("cinemaArea", cinemaArea);
-                cinemasMap.put("cinemaList", cinemaList);
-                cinemasList.add(cinemasMap);
-            }
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByMovieId(movieId);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
@@ -193,29 +171,17 @@ public class TicketServiceImpl implements TicketService{
         /* 극장만 선택했을 때 */
         if(movieId == null && cinemaId != null && date == null){
             /* Moives */
-            List<Long> movieIdList = new ArrayList<Long>();
+            List<Long> movieIdsList = new ArrayList<Long>();
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
             for(Long screenId : screenIdList){
                 for(Long id : timeTableRepository.findMovieIdByScreenId(screenId)){
-                    if(!movieIdList.contains(id)){
-                        movieIdList.add(id);
+                    if(!movieIdsList.contains(id)){
+                        movieIdsList.add(id);
                     }
                 }
             }
-            movieIdList.sort(null);
-            
-            List<MovieDto> moviesList = new ArrayList<MovieDto>();
-            for(MovieMapping movie : movieOrderList){
-                moviesList.add(new MovieDto(movie));
-            }
-
-            for(Long id : movieIdList){
-                for(MovieDto movieDto : moviesList){
-                    if(movieDto.getId() == id){
-                        movieDto.setIsVailable(true);
-                    }
-                }
-            }
+            movieIdsList.sort(null);
+            List<MovieDto> moviesList = this.getMoviesList(movieIdsList, movieOrderList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
@@ -243,46 +209,12 @@ public class TicketServiceImpl implements TicketService{
         /* 날짜만 선택했을 때 */
         if(movieId == null && cinemaId == null && date != null){
             /* Moives */
-            List<MovieDto> moviesList = new ArrayList<MovieDto>();
-            for(MovieMapping movie : movieOrderList){
-                moviesList.add(new MovieDto(movie));
-            }
-
-            for(Long id : timeTableRepository.findMovieIdByDate(date)){
-                for(MovieDto movieDto : moviesList){
-                    if(movieDto.getId() == id){
-                        movieDto.setIsVailable(true);
-                    }
-                }
-            }
-
+            List<Long> movieIdsList = timeTableRepository.findMovieIdByDate(date);
+            List<MovieDto> moviesList = this.getMoviesList(movieIdsList, movieOrderList);
+            
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByDate(date)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(String cinemaArea : cinemaRepository.findCinemaArea()){
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        for(Long cineId : list){
-                            if(cinemaDto.getCinemaArea().equals(cinemaArea) && (cinemaDto.getId() == cineId)){
-                                cinemaDto.setIsVailable(true);
-                            }
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                cinemasMap.put("cinemaArea", cinemaArea);
-                cinemasMap.put("cinemaList", cinemaList);
-                cinemasList.add(cinemasMap);
-            }
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByDate(date);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
 
             returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
             returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
@@ -291,57 +223,21 @@ public class TicketServiceImpl implements TicketService{
         /* 영화, 극장이 선택되었을 때 */
         if(movieId != null && cinemaId != null && date == null){
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByMovieId(movieId)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(Object cinemaArea : cinemaRepository.findCinemaArea()){
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea.toString())){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        for(Long cineId : list){
-                            if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && (cinemaDto.getId() == cineId)){
-                                cinemaDto.setIsVailable(true);
-                            }
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                cinemasMap.put("cinemaArea", cinemaArea.toString());
-                cinemasMap.put("cinemaList", cinemaList);
-                cinemasList.add(cinemasMap);
-            }
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByMovieId(movieId);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
 
             /* Moives */
-            List<Long> movieIdList = new ArrayList<Long>();
+            List<Long> movieIdsList = new ArrayList<Long>();
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
             for(Long screenId : screenIdList){
                 for(Long id : timeTableRepository.findMovieIdByScreenId(screenId)){
-                    if(!movieIdList.contains(id)){
-                        movieIdList.add(id);
+                    if(!movieIdsList.contains(id)){
+                        movieIdsList.add(id);
                     }
                 }
             }
-            movieIdList.sort(null);
-            
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(MovieMapping movie : movieOrderList){
-                movieList.add(new MovieDto(movie));
-            }
-
-            for(Long id : movieIdList){
-                for(MovieDto movieDto : movieList){
-                    if(movieDto.getId() == id){
-                        movieDto.setIsVailable(true);
-                    }
-                }
-            }
+            movieIdsList.sort(null);
+            List<MovieDto> moviesList = this.getMoviesList(movieIdsList, movieOrderList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
@@ -363,73 +259,33 @@ public class TicketServiceImpl implements TicketService{
             }
 
             returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
-            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(movieList), movieList.getClass()));
+            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
             returnMap.put("dates", new Gson().fromJson(new Gson().toJson(datesList), datesList.getClass()));
         }
 
         /* 영화, 날짜가 선택되었을 때 */
         if(movieId != null && cinemaId == null && date != null){
-            /* Moives */
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(MovieMapping movie : movieOrderList){
-                movieList.add(new MovieDto(movie));
-            }
-
-            for(Long id : timeTableRepository.findMovieIdByDate(date)){
-                    for(MovieDto movieDto : movieList){
-                        if(movieDto.getId() == id){
-                            movieDto.setIsVailable(true);
-                        }
-                    }
-            }
+            /* Moives */          
+            List<Long> movieIdsList = timeTableRepository.findMovieIdByDate(date);
+            List<MovieDto> moviesList = this.getMoviesList(movieIdsList, movieOrderList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+            List<Long> dateList = timeTableRepository.findDateByMovieId(movieId);
             for(Long dates : timeTableRepository.findDate()){
                 Map<String, Object> map = new HashMap<String, Object>();
+                boolean same = dateList.contains(dates) ? true : false;
                 map.put("date", dates);
-                map.put("isVailable", false);
+                map.put("isVailable", same);
                 datesList.add(map);
-            }
-            
-            for(Long dates : timeTableRepository.findDateByMovieId(movieId)){
-                for(Map<String, Object> map : datesList){
-                    if((long)map.get("date") == dates){
-                        map.replace("isVailable", false, true);
-                    }
-                }
             }
 
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(String cinemaArea : cinemaRepository.findCinemaArea()){
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        for(Long cineId : list){
-                            if(cinemaDto.getCinemaArea().equals(cinemaArea) && (cinemaDto.getId() == cineId)){
-                                cinemaDto.setIsVailable(true);
-                            }
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                cinemasMap.put("cinemaArea", cinemaArea);
-                cinemasMap.put("cinemaList",  cinemaList);
-                cinemasList.add(cinemasMap);
-            }
-
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
+  
             returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
-            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(movieList), movieList.getClass()));
+            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
             returnMap.put("dates", new Gson().fromJson(new Gson().toJson(datesList), datesList.getClass()));
         }
 
@@ -437,57 +293,21 @@ public class TicketServiceImpl implements TicketService{
         if(movieId == null && cinemaId != null && date != null){
 
             /* Moives */
-            List<Long> movieIdList = new ArrayList<Long>();
+            List<Long> movieIdsList = new ArrayList<Long>();
             List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
             for(Long screenId : screenIdList){
                 for(Long id : timeTableRepository.findMovieIdByScreenIdAndDate(screenId, date)){
-                    if(!movieIdList.contains(id)){
-                        movieIdList.add(id);
+                    if(!movieIdsList.contains(id)){
+                        movieIdsList.add(id);
                     }
                 }
             }
-            movieIdList.sort(null);
-            
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
-            for(MovieMapping movie : movieOrderList){
-                movieList.add(new MovieDto(movie));
-            }
-
-            for(Long id : movieIdList){
-                for(MovieDto movieDto : movieList){
-                    if(movieDto.getId() == id){
-                        movieDto.setIsVailable(true);
-                    }
-                }                
-            }
+            movieIdsList.sort(null);
+            List<MovieDto> moviesList = this.getMoviesList(movieIdsList, movieOrderList);
 
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByDate(date)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(String cinemaArea : cinemaRepository.findCinemaArea()){
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        for(Long cineId : list){
-                            if(cinemaDto.getCinemaArea().equals(cinemaArea) && (cinemaDto.getId() == cineId)){
-                                cinemaDto.setIsVailable(true);
-                            }
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                cinemasMap.put("cinemaArea", cinemaArea);
-                cinemasMap.put("cinemaList", cinemaList);
-                cinemasList.add(cinemasMap);
-            }
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByDate(date);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
@@ -509,54 +329,24 @@ public class TicketServiceImpl implements TicketService{
             }
 
             returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
-            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(movieList), movieList.getClass()));
+            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
             returnMap.put("dates", new Gson().fromJson(new Gson().toJson(datesList), datesList.getClass()));
         }
         
         /* 영화, 극장, 날짜가 선택되었을 때 */
         if(movieId != null && cinemaId != null && date != null){
             /* Moives */
-            List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
-
-            List<MovieDto> movieList = new ArrayList<MovieDto>();
+            List<MovieDto> moviesList = new ArrayList<MovieDto>();
             for(MovieMapping movie : movieOrderList){
-                movieList.add(new MovieDto(movie));
+                MovieDto movieDto = new MovieDto(movie);
+                boolean same = (movieDto.getId() == movieId) ? true : false;
+                movieDto.setIsVailable(same);
+                moviesList.add(movieDto);
             }
 
-            for(MovieDto movieDto : movieList){
-                if(movieDto.getId() == movieId){
-                    movieDto.setIsVailable(true);
-                }
-            }
-            
             /* Cinemas */
-            List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
-            list.sort(null);    //  리스트 정렬
-
-            List<Object> cinemasList = new ArrayList<Object>();
-            for(Object cinemaArea : cinemaRepository.findCinemaArea()){
-                Map<String, Object> cinemasMap = new HashMap<String, Object>();
-                List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-                for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea.toString())){
-                    //for(CinemaDto cinemaDto : cinemaList){
-                        CinemaDto cinemaDto = new CinemaDto(cinema);
-                        for(Long cineId : list){
-                            if(cinemaDto.getCinemaArea().equals(cinemaArea.toString()) && (cinemaDto.getId() == cineId)){
-                                cinemaDto.setIsVailable(true);
-                            }
-                        }
-                        cinemaList.add(cinemaDto);
-                }
-                cinemasMap.put("cinemaArea", cinemaArea.toString());
-                cinemasMap.put("cinemaList", cinemaList);
-                cinemasList.add(cinemasMap);
-            }
+            List<Long> screenIdsList = timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date);
+            List<Map<String, Object>> cinemasList = this.getCinemasList(screenIdsList);
 
             /* Dates */
             List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
@@ -567,11 +357,9 @@ public class TicketServiceImpl implements TicketService{
                 datesList.add(map);
             }
             
+            List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
             for(Long id : screenIdList){
                 for(Long dates : timeTableRepository.findDateByScreenIdAndMovieId(id, movieId)){
-                    // if(!datesList.contains(dates)){
-                    //     datesList.add(dates);
-                    // }
                     for(Map<String, Object> map : datesList){
                         if((long)map.get("date") == dates){
                             map.replace("isVailable", false, true);
@@ -600,7 +388,7 @@ public class TicketServiceImpl implements TicketService{
             }  
 
             returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
-            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(movieList), movieList.getClass()));
+            returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
             returnMap.put("dates", new Gson().fromJson(new Gson().toJson(datesList), datesList.getClass()));
             returnMap.put("showtimes", new Gson().fromJson(new Gson().toJson(screensList), screensList.getClass()));
         }
@@ -622,7 +410,6 @@ public class TicketServiceImpl implements TicketService{
         
         Map<String, Object> tempMap = new HashMap<String, Object>();
         for(String seatRow : seatRowList){
-            
             List<Long> seatIdList = new ArrayList<Long>();
             for(Seat seat : seatsList){
                 String seatRows = seat.getSeatNo().substring(0,1);
@@ -914,5 +701,86 @@ public class TicketServiceImpl implements TicketService{
     
         return returnMap;
     }//end of addPurchase
+
+    /**
+     * 모든 영화관을 지역별로 분류하고, 검색조건과 일치하는지 true/false 값을 주는 로직 
+     * @param screenIdsList    검색조건에 맞는 상영관 고유번호 리스트
+     *                                 영화관을 찾기 위한 키(Key)
+     * @return    지역별 영화관 리스트
+     */
+    public List<Map<String, Object>> getCinemasList(List<Long> screenIdsList) throws Exception {
+
+        /* 영화관 고유번호 리스트(중복제거) :: 검색조건에 맞는 영화관 리스트*/
+        List<Long> cinemaIdsList = new ArrayList<Long>();
+        for(Long screenId : screenIdsList){
+            Long cinemaId = screenRepository.findCinemaIdById(screenId);
+            if(!cinemaIdsList.contains(cinemaId)){    //  중복이 아닌 경우
+                cinemaIdsList.add(cinemaId);
+            }
+        }
+        cinemaIdsList.sort(null);
+
+        List<Map<String, Object>> cinemasList = new ArrayList< Map<String, Object>>();
+        for(String cinemaArea : cinemaRepository.findCinemaArea()){
+            List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
+            for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
+                    CinemaDto cinemaDto = new CinemaDto(cinema);                     
+                    if(cinemaIdsList.contains(cinemaDto.getId())){    //  해당 영화관이 검색조건과 일치하는 경우
+                        cinemaDto.setIsVailable(true);
+                    }
+                    cinemaList.add(cinemaDto);
+            }
+            Map<String, Object> cinemasMap = new HashMap<String, Object>();
+            cinemasMap.put("cinemaArea", cinemaArea);
+            cinemasMap.put("cinemaList", cinemaList);
+            cinemasList.add(cinemasMap);
+        }
+
+        return cinemasList;
+
+    }//end of getCinemasList
+
+    /**
+     * 정렬된 모든 영화를 검색조건과 비교하여 true/false 값을 주는 로직
+     * @param movieIdsList    검색조건에 만족하는 영화 고유번호 리스트
+     * @param movieOrderList    정렬조건에 만족하는 모든 영화 리스트
+     * @return    정렬되고 검색비교가 완료된 영화 리스트
+     */
+    public List<MovieDto> getMoviesList(List<Long> movieIdsList, List<MovieMapping> movieOrderList) throws Exception {
+
+        List<MovieDto> moviesList = new ArrayList<MovieDto>();
+        for(MovieMapping movie : movieOrderList){
+            MovieDto movieDto = new MovieDto(movie);
+            boolean same = movieIdsList.contains(movieDto.getId()) ? true : false;
+            movieDto.setIsVailable(same);
+            moviesList.add(movieDto);
+        }
+
+        return moviesList;
+
+    }//end of getMoviesList
+
+    public List<Map<String, Object>> getDatesList(List<Long> screenIdsList, List<Long> dateList) throws Exception {
+        List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
+        // for(Long dates : timeTableRepository.findDate()){
+        //     Map<String, Object> map = new HashMap<String, Object>();
+        //     map.put("date", dates);
+        //     map.put("isVailable", false);
+        //     datesList.add(map);
+        // }
+        
+        // for(Long id : screenIdsList){
+        //     for(Long dates : timeTableRepository.findDateByScreenId(id)){
+        //         for(Map<String, Object> map : datesList){
+        //             if((long)map.get("date") == dates){
+        //                 map.replace("isVailable", false, true);
+        //             }
+        //         }
+        //     }
+        // }
+
+        return datesList;
+
+    }//end of getDatesList
 
 }//end of class
