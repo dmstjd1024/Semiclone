@@ -422,6 +422,8 @@ public class OnloadRestController{
         /*   
         *   극장별 상영시간표 크롤링 
         */
+    boolean screenAndTimeTable = false;    //  상영관, 상영 시간표 크롤링 여부
+    if(screenAndTimeTable){    
         boolean saveTimetable = false;
         int screenTableCount = (int)screenRepository.count();
         int timeTableTableCount = (int)timeTableRepository.count();
@@ -587,6 +589,7 @@ public class OnloadRestController{
             saveTimetable = true;    //  Screen정보 저장 후 Timetable 작업을 위한 용도
 
         }//end of for  ::  상영관 테이블, 시간표 테이블 데이터 추가 용도
+    }
 
         /* DB TABLE SEAT INSERT
          * 좌석 label = A, B, C, D, E (행)
@@ -617,26 +620,27 @@ public class OnloadRestController{
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
         /* Table Ticket에 Data가 없을 경우에만 실행 */
-        if(ticketRepository.count()==0){
+        if(ticketRepository.count() == 0){
             System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
-                int timeTableCount = 10;    //  상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
+                int timeTableCount = (int)timeTableRepository.count(); // 상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
                 for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
-    
-                    Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
-                    for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
-                        ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
-                                                    .screenId(screenId)
-                                                    .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
-                                                    .timeTableId((long)timeTableId)
-                                                    .ticketPrice(5000)
-                                                    .ticketState('0').build());
+                    if(ticketRepository.findAllByTimeTableId((long)timeTableId).size() == 0){
+                        Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
+                        for(int count=0; count<seatRepository.countByScreenId(screenId); count++){
+                            ticketRepository.save(Ticket.builder().seatId(seatRepository.findByScreenId(screenId).get(count).getId())
+                                                        .screenId(screenId)
+                                                        .movieId(timeTableRepository.findById((long)timeTableId).get().getMovieId())
+                                                        .timeTableId((long)timeTableId)
+                                                        .ticketPrice(5000)
+                                                        .ticketState('1').build());
+                        }
                     }
                 }
             System.out.println("Table Ticket(티켓)에 Data 작업 완료...\n");
-        }else{
-            System.out.println("Table Ticket(티켓) Data가 이미 있습니다. (현재 : "+ticketRepository.count()+"개)");
-        }
+         }else{
+             System.out.println("Table Ticket(티켓) Data가 이미 있습니다. (현재 : "+ticketRepository.count()+"개)");
+         }
 
         /*  DB Table COLUMN 개수 화면에 출력   */
         String resultMessage = "<p>TABLE CINEMA row = "+cinemaRepository.count()+"개\t(정상 출력값 : 174개)</p>" 

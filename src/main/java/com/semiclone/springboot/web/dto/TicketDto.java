@@ -11,7 +11,7 @@ public class TicketDto {
 
     private Long id;    //  티켓 고유번호
     private Long seatId;    //  좌석 고유번호
-    private Long screenid;    //  상영관 고유번호
+    private Long screenId;    //  상영관 고유번호
     private Long movieId;    //  영화 고유번호
     private Long timeTableId;    //  시간표 고유번호
     private int ticketPrice;    //  티켓 가격
@@ -20,7 +20,7 @@ public class TicketDto {
     public TicketDto(Ticket ticket){
         this.id = ticket.getId();
         this.seatId = ticket.getSeatId();
-        this.screenid = ticket.getScreenid();
+        this.screenId = ticket.getScreenId();
         this.movieId = ticket.getMovieId();
         this.timeTableId = ticket.getTimeTableId();
         this.ticketPrice = ticket.getTicketPrice();

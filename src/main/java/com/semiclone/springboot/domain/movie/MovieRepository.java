@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
    
+    @Query("SELECT m FROM Movie m WHERE movieTitle = ?1")
     List<Movie> findByMovieTitle(String movieTitle);
 
     @Query("SELECT m FROM Movie m WHERE id = ?1")
@@ -14,5 +15,11 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     @Query("SELECT m FROM Movie m WHERE id = ?1")
     Movie findOneById(Long movieId);
+
+    @Query("SELECT m FROM Movie m ORDER BY movieTitle ASC")
+    List<Movie> findAllOrderByMovieTitle();
+
+    @Query("SELECT m FROM Movie m ORDER BY reservationRate DESC")
+    List<Movie> findAllOrderByReservationRate();
 
 }//end of interface

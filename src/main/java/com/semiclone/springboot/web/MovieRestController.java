@@ -13,7 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
-@Api(tags = "ShowTime REST API")
+@Api(tags = "Movie REST API")
 @RestController
 @RequestMapping("movies")
 @RequiredArgsConstructor
