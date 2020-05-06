@@ -54,6 +54,15 @@ public class GiftShopController {
         return "giftshop/product-detail";
     }
 
+    @GetMapping("/purchase-confirm")
+    public String purchaseConfirm(Model model){
+
+        return "";
+    }
+
+
+
+
 
 
 /*    @PostMapping("/purchase-confirm") //결제하기 클릭 시
