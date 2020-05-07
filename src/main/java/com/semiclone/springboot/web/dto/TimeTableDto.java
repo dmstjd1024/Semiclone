@@ -17,6 +17,7 @@ public class TimeTableDto {
     private Long startTime;    //  상영 시작시간
     private Long endTime;    //  상영 종료시간
     private int emptySeat;    //  남은 좌석수
+    private Long cinemaId;
 
     public TimeTableDto(TimeTable timeTable){
         this.id = timeTable.getId();
@@ -26,6 +27,7 @@ public class TimeTableDto {
         this.date = timeTable.getDate();
         this.startTime = timeTable.getStartTime();
         this.endTime = timeTable.getEndTime();
+        this.cinemaId = timeTable.getCinemaId();
     }
     
     public void setEmptySeat(int emptySeat){

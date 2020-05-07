@@ -522,7 +522,7 @@ public class OnloadRestController{
                                                                     List<Screen> screens = screenRepository.findByName(name);
                                                                     Long screenId = null;
                                                                     if(  screens.size() > 0 ){
-                                                                        screenId = (long)screens.get(0).getId();    //  극장 고유번호
+                                                                        screenId = (long)screens.get(0).getId();    //  상영관 고유번호
                                                                     }
 
                                                                     /* 영화 고유번호 */
@@ -532,11 +532,13 @@ public class OnloadRestController{
                                                                         movieId = (long)movie.getId();    //  영화 고유번호
                                                                     }
 
+                                                                    Long cinemaId = screenRepository.findCinemaIdById(screenId);    //  극장 고유번호
+
                                                                     /* DB TABLE TIMETABLE INSERT */
                                                                     if(timeTableRepository.findByScreenIdAndMovieIdAndTurningNoAndDateAndStartTimeAndEndTime(
                                                                             screenId, movieId, turningNo, date, startTime, endTime).size() == 0){
                                                                         timeTableRepository.save(TimeTable.builder().screenId(screenId).movieId(movieId).turningNo(turningNo)
-                                                                                                        .date(date).startTime(startTime).endTime(endTime).build());
+                                                                                                        .date(date).startTime(startTime).endTime(endTime).cinemaId(cinemaId).build());
                                                                     }
 
                                                                 }else{

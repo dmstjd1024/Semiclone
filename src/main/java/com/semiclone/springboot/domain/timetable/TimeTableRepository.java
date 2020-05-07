@@ -25,7 +25,7 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT movieId FROM TimeTable WHERE screenId = ?1 GROUP BY movieId")
     List<Long> findMovieIdByScreenId(Long screenId);
 
-    @Query("SELECT date FROM TimeTable WHERE screenId = ?1")
+    @Query("SELECT date FROM TimeTable WHERE screenId = ?1 GROUP BY date")
     List<Long> findDateByScreenId(Long screenId);
 
     @Query("SELECT movieId FROM TimeTable WHERE date = ?1 GROUP BY movieId")
@@ -48,5 +48,28 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
 
     TimeTable findOneById(Long timeTableId);
 
+    @Query("SELECT movieId FROM TimeTable WHERE cinemaId = ?1 GROUP BY movieId")
+    List<Long> findMovieIdByCinemaId(Long cinemaId);
+
+    @Query("SELECT date FROM TimeTable WHERE cinemaId = ?1 GROUP BY date")
+    List<Long> findDateByCinemaId(Long cinemaId);
+
+    @Query("SELECT date FROM TimeTable WHERE cinemaId = ?1 AND movieId = ?2 GROUP BY date")
+    List<Long> findDateByCinemaIdAndMovieId(Long cinemaId, Long movieId);
+
+    @Query("SELECT movieId FROM TimeTable WHERE cinemaId = ?1 AND date = ?2 GROUP BY movieId")
+    List<Long> findMovieIdByCinemaIdAndDate(Long cinemaId, Long date);
+
+    @Query("SELECT cinemaId FROM TimeTable WHERE movieId = ?1 GROUP BY cinemaId")
+    List<Long> findCinemaIdByMovieId(Long movieId);
+
+    @Query("SELECT cinemaId FROM TimeTable WHERE date = ?1 GROUP BY cinemaId")
+    List<Long> findCinemaIdIdByDate(Long date);
+
+    @Query("SELECT cinemaId FROM TimeTable WHERE movieId = ?1 AND date = ?2 GROUP BY cinemaId")
+    List<Long> findCinemaIdIdByMovieIdAndDate(Long movieId, Long date);
+
+    @Query("SELECT movieId FROM TimeTable WHERE movieId = ?1")
+    List<Long> findMovieIdByMovieDi(Long movieId);
 
 }//end of interface

@@ -20,6 +20,10 @@ public class MovieDto {
         this.movieImage = movieMapping.getMovieImage();
     }
     
+    public boolean getIsvailable(){
+        return this.isAvailable;
+    }
+
     public void setIsVailable(boolean isAvailable){
         this.isAvailable = isAvailable;
     }

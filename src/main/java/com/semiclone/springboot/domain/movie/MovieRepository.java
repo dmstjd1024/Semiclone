@@ -13,6 +13,10 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     <T> List<T> findAllByOrderByMovieTitleAsc(Class<T> type);
 
     <T> List<T> findAllByOrderByReservationRateDesc(Class<T> type);
+
+    <T> List<T> findTop10ByOrderByMovieTitleAsc(Class<T> type);
+
+    <T> List<T> findTop10ByOrderByReservationRateDesc(Class<T> type);
     
     <T> List<T> findAllBy(Class<T> type);
 
