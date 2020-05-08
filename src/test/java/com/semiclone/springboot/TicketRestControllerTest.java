@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
+import com.semiclone.springboot.domain.movie.MovieMapping;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.payment.PaymentRepository;
@@ -19,6 +20,7 @@ import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
+import com.semiclone.springboot.web.dto.MovieDetailDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 import com.semiclone.springboot.web.dto.iamport.AccessToken;
 import com.semiclone.springboot.web.dto.iamport.AuthData;
@@ -109,9 +111,9 @@ public class TicketRestControllerTest {
         }
         movieIdList.sort(null);
         
-        List<MovieDto> movieList = new ArrayList<MovieDto>();
+        List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
         for(Long id : movieIdList){
-            movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+            movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
         }
         String moviesJson = new Gson().toJson(movieList);
 
@@ -132,9 +134,9 @@ public class TicketRestControllerTest {
     //@Test
     public void dateOnlyTest(){
         /* Moives */
-        List<MovieDto> movieList = new ArrayList<MovieDto>();
+        List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
         for(Long id : timeTableRepository.findMovieIdByDate((long)20200422)){
-                movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+                movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
         }
         String moviesJson = new Gson().toJson(movieList);
 
@@ -188,9 +190,9 @@ public class TicketRestControllerTest {
         }
         movieIdList.sort(null);
         
-        List<MovieDto> movieList = new ArrayList<MovieDto>();
+        List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
         for(Long id : movieIdList){
-            movieList.add(new MovieDto(movieRepository.findMovieById(id)));
+            movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
         }
         String moviesJson = new Gson().toJson(movieList);
 
@@ -272,7 +274,7 @@ public class TicketRestControllerTest {
         System.out.println(ticketRepository.save(ticket));
     }
 
-    @Test
+    //@Test
     public void HttpClientTest() throws Exception {
 
         String API_URL = "https://api.iamport.kr";
@@ -381,6 +383,15 @@ public class TicketRestControllerTest {
                         .paymentAmount(BigDecimal.valueOf(1)).giftCardIds(giftCards)
                         .movieCouponIds(movieCoupons).ticketIds(tickets).build();
         paymentRepository.save(payment);
+    }
+
+    @Test
+    public void nativeQueryTest() throws Exception {
+        List<MovieMapping> list = movieRepository.findAllBy(MovieMapping.class);
+        for(MovieMapping abc : list){
+            System.out.println(abc.getId());
+        }
+        //System.out.println(movieRepository.findOneByMovieTitle("킹덤").getMovieTitle());
     }
 
 }

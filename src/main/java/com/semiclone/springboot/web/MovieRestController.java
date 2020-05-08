@@ -2,6 +2,9 @@ package com.semiclone.springboot.web;
 
 import java.util.Map;
 
+import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.timetable.TimeTable;
+import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.service.movie.MovieService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +31,9 @@ public class MovieRestController {
     }
 
     @ApiOperation(value = "영화 상세정보 :: Movie(영화)")
-    @GetMapping(value = "detail")
+    @GetMapping(value = "/detail")
     public Map<String, Object> movies(@RequestParam("movieId") Long movieId) throws Exception {
         return movieService.getMovieDetailMap(movieId);
     }
-
-
 
 }//end of class

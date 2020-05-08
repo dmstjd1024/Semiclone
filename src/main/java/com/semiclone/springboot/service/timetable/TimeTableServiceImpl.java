@@ -14,7 +14,7 @@ import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
-import com.semiclone.springboot.web.dto.MovieDto;
+import com.semiclone.springboot.web.dto.MovieDetailDto;
 
 import org.springframework.stereotype.Service;
 
@@ -32,44 +32,41 @@ public class TimeTableServiceImpl implements TimeTableService {
 
     /* 극장 리스트 */
     public Map<String, Object> getCinemas() throws Exception {
-        Map<String, Object> returnMap = new HashMap<String, Object>();
+        
         /* Cinemas */
         List<Object> cinemasList = new ArrayList<Object>();
-        for(Object cinemaArea : cinemaRepository.findCinemaArea()){
-
+        for(String cinemaArea : cinemaRepository.findCinemaArea()){
             List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-            Map<String, Object> cinemasMap = new HashMap<String, Object>();
-            for(Object obj : cinemaRepository.findAllByCinemaArea(cinemaArea.toString())){
+            for(Object obj : cinemaRepository.findAllByCinemaArea(cinemaArea)){
                 cinemaList.add(new CinemaDto((Cinema)obj));
             }
-            String cinemasJson = new Gson().toJson(cinemaList);
-
-            cinemasMap.put("cinemaArea", cinemaArea.toString());
-            cinemasMap.put("cinemaList", new Gson().fromJson(cinemasJson, cinemaList.getClass()));
+            Map<String, Object> cinemasMap = new HashMap<String, Object>();
+            cinemasMap.put("cinemaArea", cinemaArea);
+            cinemasMap.put("cinemaList", cinemaList);
             cinemasList.add(cinemasMap);
         }
-        returnMap.put("cinemas", cinemasList);
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        returnMap.put("cinemas", new Gson().fromJson(new Gson().toJson(cinemasList), cinemasList.getClass()));
 
         return returnMap;
     }//end of getCinemas
     
     /* 영화 리스트 */
     public Map<String, Object> getMovies() throws Exception {
-        Map<String, Object> returnMap = new HashMap<String, Object>();
-
-        List<MovieDto> movieList = new ArrayList<MovieDto>();
+        
+        List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
         for(Movie obj : movieRepository.findAll()){
-            movieList.add(new MovieDto(obj));
+            movieList.add(new MovieDetailDto(obj));
         }
-        String moviesJson = new Gson().toJson(movieList);
-        returnMap.put("movies", new Gson().fromJson(moviesJson, movieList.getClass()));
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        returnMap.put("movies", new Gson().fromJson(new Gson().toJson(movieList), movieList.getClass()));
 
         return returnMap;
     }//end of getMovies
 
     /* 극장별 상영시간표 */
     public Map<String, Object> getTimeTablesByCinemaId(Long cinemaId, Long date) throws Exception {
-        Map<String, Object> returnMap = new HashMap<String, Object>();
+        
         List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
 
         if(date == 123890){    //  테스트용 null값
@@ -117,8 +114,9 @@ public class TimeTableServiceImpl implements TimeTableService {
             moviesMap.put("screens", screensList);
             timeTablesList.add(moviesMap);
         }
-        String cinemasJson = new Gson().toJson(timeTablesList);
-        returnMap.put("showtimes", new Gson().fromJson(cinemasJson, timeTablesList.getClass()));
+        
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        returnMap.put("showtimes", new Gson().fromJson(new Gson().toJson(timeTablesList), timeTablesList.getClass()));
 
         return returnMap;
     }//end of getTimeTablesByCinemaId
@@ -179,8 +177,8 @@ public class TimeTableServiceImpl implements TimeTableService {
             cinemasMap.put("screens", screensList);
             timeTablesList.add(cinemasMap);
         }
-        String moviessJson = new Gson().toJson(timeTablesList);
-        returnMap.put("showtimes", new Gson().fromJson(moviessJson, timeTablesList.getClass()));
+
+        returnMap.put("showtimes", new Gson().fromJson(new Gson().toJson(timeTablesList), timeTablesList.getClass()));
 
         return returnMap;
     }//end of getTimeTablesByMovieId
