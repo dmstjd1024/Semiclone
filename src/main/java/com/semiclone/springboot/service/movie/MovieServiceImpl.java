@@ -1,6 +1,5 @@
 package com.semiclone.springboot.service.movie;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +7,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
+import com.semiclone.springboot.web.dto.MovieDetailDto;
 
 import org.springframework.stereotype.Service;
 
@@ -20,35 +20,30 @@ public class MovieServiceImpl implements MovieService{
     private final MovieRepository movieRepository;
 
     public Map<String, Object> getMoviesMap(String sort) throws Exception {
-        Map<String, Object> returnMap = new HashMap<String, Object>();
-
-        List<Movie> moviesList = new ArrayList<Movie>();
-
+        
+        List<Movie> moviesList = null;
         if(sort.equals("") || sort == null || sort.equals("123890")){
-            moviesList = movieRepository.findAllOrderByMovieTitle();
+            moviesList = movieRepository.findTop10ByOrderByReservationRateDesc(Movie.class);
         }else{
-            moviesList = movieRepository.findAllOrderByMovieTitle();
+            moviesList = movieRepository.findTop10ByOrderByMovieTitleAsc(Movie.class);
         }
 
-        List<Movie> returnList = new ArrayList<Movie>();
-        if(moviesList.size() >= 10){
-            for(int i=0; i<10; i++){
-                returnList.add(moviesList.get(i));
-            }
-        }
-        String moviesJson = new Gson().toJson(returnList);
-        returnMap.put("movies", new Gson().fromJson(moviesJson, returnList.getClass()));
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        returnMap.put("movies", new Gson().fromJson(new Gson().toJson(moviesList), moviesList.getClass()));
 
         return returnMap;
+
     }//end of getMoviesMap
 
     public Map<String, Object> getMovieDetailMap(Long movieId) throws Exception {
+       
+        MovieDetailDto movie = new MovieDetailDto(movieRepository.findOneById(movieId));
+
         Map<String, Object> returnMap = new HashMap<String, Object>();
-        
-        Movie movie = movieRepository.findMovieById(movieId);
         returnMap.put("movie", new Gson().fromJson(new Gson().toJson(movie), Movie.class));
 
         return returnMap;
+
     }//end of getMovieDetailMap
 
 }//end of class

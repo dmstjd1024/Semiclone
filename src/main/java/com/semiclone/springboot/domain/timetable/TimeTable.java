@@ -39,14 +39,18 @@ public class TimeTable {
     @Column(length = 10, nullable = false)
     private Long endTime;    //  상영 종료시간
 
+    @Column(nullable = false)
+    private Long cinemaId;    //  극장 고유번호
+
     @Builder
-    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime){
+    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime, Long cinemaId){
         this.screenId = screenId;
         this.movieId = movieId;
         this.turningNo = turningNo;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.cinemaId = cinemaId;
     }
 
 }//end of class

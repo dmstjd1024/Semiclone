@@ -393,7 +393,7 @@ public class OnloadRestController{
                     Float reservationRate = Float.valueOf(reservation.substring(0, reservation.length()-1)).floatValue();
    
                     /* DB INSERT */
-                    if(movieRepository.findByMovieTitle(movieDetail.select(".title > strong").text()).size() == 0){
+                    if(movieRepository.findOneByMovieTitle(movieDetail.select(".title > strong").text()) != null){
                         movieRepository.save(Movie.builder()
                                                     .movieRating(movieRating)
                                                     .movieTitle(movieDetail.select(".title > strong").text())
@@ -522,21 +522,23 @@ public class OnloadRestController{
                                                                     List<Screen> screens = screenRepository.findByName(name);
                                                                     Long screenId = null;
                                                                     if(  screens.size() > 0 ){
-                                                                        screenId = (long)screens.get(0).getId();    //  극장 고유번호
+                                                                        screenId = (long)screens.get(0).getId();    //  상영관 고유번호
                                                                     }
 
                                                                     /* 영화 고유번호 */
-                                                                    List<Movie> movies = movieRepository.findByMovieTitle(movieTitle);
+                                                                    Movie movie = movieRepository.findOneByMovieTitle(movieTitle);
                                                                     Long movieId = null;
-                                                                    if(  movies.size() > 0 ){
-                                                                        movieId = (long)movies.get(0).getId();    //  영화 고유번호
+                                                                    if(  movie != null ){
+                                                                        movieId = (long)movie.getId();    //  영화 고유번호
                                                                     }
+
+                                                                    Long cinemaId = screenRepository.findCinemaIdById(screenId);    //  극장 고유번호
 
                                                                     /* DB TABLE TIMETABLE INSERT */
                                                                     if(timeTableRepository.findByScreenIdAndMovieIdAndTurningNoAndDateAndStartTimeAndEndTime(
                                                                             screenId, movieId, turningNo, date, startTime, endTime).size() == 0){
                                                                         timeTableRepository.save(TimeTable.builder().screenId(screenId).movieId(movieId).turningNo(turningNo)
-                                                                                                        .date(date).startTime(startTime).endTime(endTime).build());
+                                                                                                        .date(date).startTime(startTime).endTime(endTime).cinemaId(cinemaId).build());
                                                                     }
 
                                                                 }else{
