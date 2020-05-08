@@ -5,9 +5,8 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
+@Getter @Setter @EqualsAndHashCode(of = "id")
+@Builder @AllArgsConstructor @NoArgsConstructor
 public class Account{
 
     @Id
