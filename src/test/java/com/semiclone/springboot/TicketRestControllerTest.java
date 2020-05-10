@@ -25,6 +25,7 @@ import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
+import com.semiclone.springboot.web.dto.TicketBySeatDto;
 import com.semiclone.springboot.web.dto.iamport.AccessToken;
 import com.semiclone.springboot.web.dto.iamport.AuthData;
 import com.semiclone.springboot.web.dto.iamport.IamportResponse;
@@ -419,13 +420,14 @@ public class TicketRestControllerTest {
 
     @Test
     public void timeTableTest() throws Exception {
-        Long timeTableId = (long)1;
+        Long timeTableId = (long)13252235;
 
         for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, "A")){
             System.out.println(ticket.getId());
             System.out.println(ticket.getTicketPrice());
             System.out.println(ticket.getTicketState());
             System.out.println(ticket.getSeatId());
+            new TicketBySeatDto(ticket);
         }
         
     }

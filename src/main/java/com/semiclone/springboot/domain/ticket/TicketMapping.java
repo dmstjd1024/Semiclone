@@ -2,9 +2,10 @@ package com.semiclone.springboot.domain.ticket;
 
 public interface TicketMapping {
 
-    Long getId();
+    Long getTicketId();
     int getTicketPrice();
     char getTicketState();
-    Long getSeatId();
+    String getSeatNo();
+    String getSeatName();
 
 }

@@ -150,14 +150,13 @@ public class TicketServiceImpl implements TicketService{
 
         List<Object> seatsList = new ArrayList<Object>();
         for(String seatRow : seatRepository.findSeatRowsByScreenId(timeTableRepository.findScreenIdById(timeTableId))){
-            List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
-            for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){                       
-                Map<String, Object> map = new HashMap<String, Object>();
-                map.put("ticket", new TicketBySeatDto(ticket));
-                map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
-                lists.add(map);         
+            Map<String, Object> seatsMap = new HashMap<String, Object>();
+            List<TicketBySeatDto> ticketsList = new ArrayList<TicketBySeatDto>();
+            for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){
+                ticketsList.add(new TicketBySeatDto(ticket));
             }
-            seatsList.add(lists);
+            seatsMap.put(seatRow, ticketsList);
+            seatsList.add(seatsMap);
         }
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -189,13 +188,21 @@ public class TicketServiceImpl implements TicketService{
                     transaction = true;
                 }else{
                     transaction = false;
+                    returnMap.put("result", "500");
                     break;
                 }
             }         
         }else if((List)tickets.get("tickets") != null && ticketState == '1'){    // 예매취소
-            transaction = true;
+            for(Object ticketId : (List)tickets.get("tickets")){
+                if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '0'){
+                    transaction = true;
+                }else{
+                    transaction = false;
+                    returnMap.put("result", "500");
+                }
+            }
         }else{    //  잘못된 요청
-            returnMap.put("result", "0");
+            returnMap.put("result", "400");
         }//end of Ticket Validation Check
 
         /* Ticket 유효성 검사가 모두 완료되고, 안전한 값일 때 DB 로직 실행 */
@@ -211,7 +218,7 @@ public class TicketServiceImpl implements TicketService{
                 }
                 //ticketRepository.save(ticket);
             }
-            returnMap.put("result", "1");
+            returnMap.put("result", "200");
         }
         
         return returnMap;
@@ -351,14 +358,9 @@ public class TicketServiceImpl implements TicketService{
                         tickets += ticketId+",";
                         if(everythingsOk){ 
                             Ticket ticket = ticketRepository.findOneById((long)ticketId);
+                            ticket.setTicketState('2');
+                            ticketRepository.save(ticket);
 
-                            ticketHisotryRepository.save(
-                                TicketHistory.builder().seatId((long)ticket.getSeatId())
-                                                        .screenId((long)ticket.getScreenId())
-                                                        .movieId((long)ticket.getMovieId())
-                                                        .ticketPrice(ticket.getTicketPrice())
-                                                        .accountId(ticket.getAccountId()).build());
-                            ticketRepository.delete(ticket);
                         }
                     }
                     tickets = tickets.substring(0, tickets.length()-1);

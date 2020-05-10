@@ -9,16 +9,18 @@ import lombok.ToString;
 @ToString
 public class TicketBySeatDto {
 
-    private Long id;    //  티켓 고유번호
-    private Long seatId;    //  좌석 고유번호
+    private Long ticketId;    //  티켓 고유번호
     private int ticketPrice;    //  티켓 가격
     private char ticketState;    //  티켓 진행상태
+    private String seatNo;    // 좌석 번호
+    private String seatName;    // 좌석 이름
 
     public TicketBySeatDto(TicketMapping ticket){
-        this.id = ticket.getId();
-        this.seatId = ticket.getSeatId();
+        this.ticketId = ticket.getTicketId();
         this.ticketPrice = ticket.getTicketPrice();
         this.ticketState = ticket.getTicketState();
+        this.seatNo = ticket.getSeatNo();
+        this.seatName = ticket.getSeatName();
     }
 
-}
+}//end of class
