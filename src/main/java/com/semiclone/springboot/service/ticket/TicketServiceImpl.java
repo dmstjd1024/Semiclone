@@ -147,8 +147,7 @@ public class TicketServiceImpl implements TicketService{
     /* 좌석 행별로 분류된 티켓 */
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception {
 
-        List<Seat> seatList = seatRepository.findByScreenId(
-                ((Ticket)((List)ticketRepository.findAllByTimeTableId(timeTableId)).get(0)).getScreenId());
+        List<Seat> seatList = seatRepository.findByScreenId(ticketRepository.findScreenIdByTimeTableId(timeTableId));
         List<String> seatRowList = new ArrayList<String>();
         for(Seat seat : seatList){
             String seatRow = seat.getSeatNo().substring(0,1);
@@ -196,10 +195,8 @@ public class TicketServiceImpl implements TicketService{
     /* Ticket 상태값 변경 :: 예매 결제 ~ 결제 취소에서 사용 */
     public Map<String, Object> updateTicketState(Map<String, Object> tickets, HttpSession session) throws Exception {
         Map<String, Object> returnMap = new HashMap<String, Object>();
-        char ticketState = ((String)tickets.get("state")).charAt(0);
+        char ticketState = (String.valueOf(tickets.get("state"))).charAt(0);
         boolean transaction = false;
-        String ticketToken = null;
-        List ticketsList = null;
 
         /* 테스트용 세션 처리 */
         Account account = new Account();
@@ -228,24 +225,14 @@ public class TicketServiceImpl implements TicketService{
                 returnMap.put("result", "0");
             }
         }else if(ticketState == '1'){    // 예매취소
-            if(tickets.get("ticketTokens") != null){    // 토큰 유효성 검사
-                ticketsList = new ArrayList();
-                for(Object token : (List)tickets.get("ticketTokens")){
-                    List list = ticketRepository.findIdByTicketToken(String.valueOf(token));
-                    if(list.size() != 0){    // ticketId 유효성 체크
-                        ticketsList.add(list.get(0));
-                    }else{    //  ticketId 값이 없을 경우
-                        break;
-                    }
-                }
-                if(ticketsList.size() > 0){    // tickets List Null Check
-                    tickets.put("tickets", ticketsList);
+            
+                if((List)tickets.get("tickets") != null){    // tickets List Null Check
                     transaction = true;
                 }else{    // tickets List 값이 없을 경우
                     returnMap.put("result", "0");
                     transaction = false;
                 }
-            }
+            
         }else{    //  잘못된 요청
             returnMap.put("result", "0");
         }//end of Ticket Validation Check
@@ -253,24 +240,17 @@ public class TicketServiceImpl implements TicketService{
         /* Ticket 유효성 검사가 모두 완료되고, 안전한 값일 때 DB 로직 실행 */
         if(transaction){    //  정상요청일 경우에 로직 실행
             Ticket ticket = null;
-            List<String> ticketTokens = new ArrayList<String>();
             for(Object ticketId : (List)tickets.get("tickets")){
                 ticket = ticketRepository.findOneById((long)((int)ticketId));
-
                 ticket.setTicketState(ticketState);
                 if(ticketState == '0'){    //  예매진행 시 토큰 INSERT
-                    ticketToken = (new Random().nextInt(99999)+100000)+""+System.currentTimeMillis();
-                    ticketTokens.add(ticketToken);
-                    ticket.setTicketToken(ticketToken);
                     ticket.setAccountId(((Account)session.getAttribute("account")).getAccountId());
-                }else if(ticketState == '1'){    //  예매취소 시 토큰 DELETE
-                    ticket.setTicketToken(null);
+                }else if(ticketState == '1'){ 
                     ticket.setAccountId(null);
                 }
-                ticketRepository.save(ticket);
+                //ticketRepository.save(ticket);
             }
             returnMap.put("result", "1");
-            returnMap.put("ticketTokens", ticketTokens);    //  결제 취소를 진행할 때, ticketId 대신에 ticketToken 사용
         }
         
         return returnMap;

@@ -14,5 +14,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT id FROM Ticket WHERE ticketToken = ?1")
     List<Integer> findIdByTicketToken(String ticketToken);
+
+    @Query("SELECT screenId FROM Ticket WHERE timeTableId = ?1 GROUP BY screenId")
+    Long findScreenIdByTimeTableId(Long timeTableId);
     
 }//end of interface

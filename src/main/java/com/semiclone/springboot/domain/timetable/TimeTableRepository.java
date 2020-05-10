@@ -25,9 +25,6 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT movieId FROM TimeTable WHERE screenId = ?1 GROUP BY movieId")
     List<Long> findMovieIdByScreenId(Long screenId);
 
-    @Query("SELECT date FROM TimeTable WHERE screenId = ?1 GROUP BY date")
-    List<Long> findDateByScreenId(Long screenId);
-
     @Query("SELECT movieId FROM TimeTable WHERE date = ?1 GROUP BY movieId")
     List<Long> findMovieIdByDate(Long date);
 
@@ -71,5 +68,7 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
 
     @Query("SELECT movieId FROM TimeTable WHERE movieId = ?1")
     List<Long> findMovieIdByMovieDi(Long movieId);
+
+    TimeTable findFirstByCinemaIdOrderByDate(Long cinemaId);
 
 }//end of interface

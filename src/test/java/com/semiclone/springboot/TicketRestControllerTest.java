@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -21,7 +23,6 @@ import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
-import com.semiclone.springboot.web.dto.MovieDto;
 import com.semiclone.springboot.web.dto.iamport.AccessToken;
 import com.semiclone.springboot.web.dto.iamport.AuthData;
 import com.semiclone.springboot.web.dto.iamport.IamportResponse;
@@ -120,11 +121,11 @@ public class TicketRestControllerTest {
         /* Dates */
         List<Long> datesList = new ArrayList<Long>();
         for(Long id : screenIdList){
-            for(Long dates : timeTableRepository.findDateByScreenId(id)){
-                if(!datesList.contains(dates)){
-                    datesList.add(dates);
-                }
-            }
+            // for(Long dates : timeTableRepository.findDateByScreenId(id)){
+            //     if(!datesList.contains(dates)){
+            //         datesList.add(dates);
+            //     }
+            // }
         }
         String datesJson = new Gson().toJson(datesList);
         System.out.println(moviesJson);
@@ -385,13 +386,41 @@ public class TicketRestControllerTest {
         paymentRepository.save(payment);
     }
 
-    @Test
+    //@Test
     public void nativeQueryTest() throws Exception {
         List<MovieMapping> list = movieRepository.findAllBy(MovieMapping.class);
         for(MovieMapping abc : list){
             System.out.println(abc.getId());
         }
         //System.out.println(movieRepository.findOneByMovieTitle("킹덤").getMovieTitle());
+    }
+
+    //@Test
+    public void timerTest() throws Exception {
+        Timer timer = new Timer();
+        TimerTask t = new TimerTask(){
+        
+            @Override
+            public void run() {
+                System.out.println("Hello, World");
+                
+            }
+        };
+        System.out.println("테스트 시작");
+
+        timer.schedule(t, 1000);
+        Thread.sleep(100);
+    }
+
+    @Test
+    public void timeTableTest() throws Exception {
+        Long screenId = (long)1;
+        System.out.println("\n======================================================");
+        System.out.println(timeTableRepository.findFirstByCinemaIdOrderByDate(screenId));
+        System.out.println("======================================================\n");
+        // for(Long l : timeTableRepository.findFirstByScreenIdOrderByDate(screenId)){
+        //     System.out.println(l);
+        // }
     }
 
 }

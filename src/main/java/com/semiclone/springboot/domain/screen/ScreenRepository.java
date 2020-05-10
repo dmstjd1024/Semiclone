@@ -14,7 +14,7 @@ public interface ScreenRepository extends JpaRepository<Screen, Long> {
     @Query("SELECT cinemaId FROM Screen WHERE id = ?1")
     Long findCinemaIdById(Long id);
 
-    @Query("SELECT id FROM Screen WHERE cinemaId = ?1 ORDER BY id")
+    @Query("SELECT id FROM Screen WHERE cinemaId = ?1 ORDER BY id ASC")
     List<Long> findIdByCinemaId(Long cinemaId);
 
 }//end of interface
