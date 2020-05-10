@@ -20,6 +20,7 @@ import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
+import com.semiclone.springboot.domain.ticket.TicketMapping;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
@@ -420,9 +421,12 @@ public class TicketRestControllerTest {
     public void timeTableTest() throws Exception {
         Long timeTableId = (long)1;
 
-        // for(Ticket ticket : ticketRepository.test(timeTableId, "A")){
-        //     System.out.println(ticket.getId());
-        // }
+        for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, "A")){
+            System.out.println(ticket.getId());
+            System.out.println(ticket.getTicketPrice());
+            System.out.println(ticket.getTicketState());
+            System.out.println(ticket.getSeatId());
+        }
         
     }
 

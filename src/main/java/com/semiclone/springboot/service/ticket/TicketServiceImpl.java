@@ -28,6 +28,7 @@ import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.Seat;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
+import com.semiclone.springboot.domain.ticket.TicketMapping;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.tickethistory.TicketHisotryRepository;
 import com.semiclone.springboot.domain.tickethistory.TicketHistory;
@@ -35,6 +36,7 @@ import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
+import com.semiclone.springboot.web.dto.TicketBySeatDto;
 import com.semiclone.springboot.web.dto.TimeTableDto;
 import com.semiclone.springboot.web.dto.iamport.AccessToken;
 import com.semiclone.springboot.web.dto.iamport.AuthData;
@@ -149,9 +151,9 @@ public class TicketServiceImpl implements TicketService{
         List<Object> seatsList = new ArrayList<Object>();
         for(String seatRow : seatRepository.findSeatRowsByScreenId(timeTableRepository.findScreenIdById(timeTableId))){
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
-            for(Ticket ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){                       
+            for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){                       
                 Map<String, Object> map = new HashMap<String, Object>();
-                map.put("ticket", ticket);
+                map.put("ticket", new TicketBySeatDto(ticket));
                 map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
                 lists.add(map);         
             }
