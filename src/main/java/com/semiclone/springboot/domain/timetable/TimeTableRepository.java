@@ -71,4 +71,7 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
 
     TimeTable findFirstByCinemaIdOrderByDate(Long cinemaId);
 
+    @Query("SELECT screenId FROM TimeTable WHERE id = ?1")
+    Long findScreenIdById(Long timeTableId);
+
 }//end of interface

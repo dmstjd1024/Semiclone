@@ -98,7 +98,6 @@ public class TicketServiceImpl implements TicketService{
         List<Map<String, Object>> cinemasList = null;
         List<Map<String, Object>> datesList = null;
         List<Map<String, Object>> screensList = null;
-        List<MovieMapping> sortedMovieList = null;
 
         if(movieId != null && cinemaId == null && date == null){    // 선택한 영화의 상영극장&상영날짜
             cinemasList = this.getCinemasList(timeTableRepository.findCinemaIdByMovieId(movieId));
@@ -147,43 +146,16 @@ public class TicketServiceImpl implements TicketService{
     /* 좌석 행별로 분류된 티켓 */
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception {
 
-        List<Seat> seatList = seatRepository.findByScreenId(ticketRepository.findScreenIdByTimeTableId(timeTableId));
-        List<String> seatRowList = new ArrayList<String>();
-        for(Seat seat : seatList){
-            String seatRow = seat.getSeatNo().substring(0,1);
-            if(!seatRowList.contains(seatRow)){
-                seatRowList.add(seatRow);
-            }
-        }
-        
-        Map<String, Object> tempMap = new HashMap<String, Object>();
-        for(String seatRow : seatRowList){
-            List<Long> seatIdList = new ArrayList<Long>();
-            for(Seat seat : seatList){
-                String seatRows = seat.getSeatNo().substring(0,1);
-                if(seatRows.equals(seatRow)){
-                    seatIdList.add(seat.getId());
-                }
-            }
-            tempMap.put(seatRow, seatIdList);
-        }
-        
         List<Object> seatsList = new ArrayList<Object>();
-        List<Ticket> ticketsList = ticketRepository.findAllByTimeTableId(timeTableId);
-        for(String seatRow : seatRowList){
+        for(String seatRow : seatRepository.findSeatRowsByScreenId(timeTableRepository.findScreenIdById(timeTableId))){
             List<Map<String, Object>> lists = new ArrayList<Map<String, Object>>();
-            for(Object seatId : (List)tempMap.get(seatRow)){ 
-                for(Ticket ticket : ticketsList){
-                    if(seatId == ticket.getSeatId()){                                
-                        Map<String, Object> map = new HashMap<String, Object>();
-                        map.put("ticket", ticket);
-                        map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
-                        lists.add(map);
-                    }
-                }
+            for(Ticket ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){                       
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put("ticket", ticket);
+                map.put("seat", seatRepository.findOneById(ticket.getSeatId()));
+                lists.add(map);         
             }
-            tempMap.replace(seatRow, (List)tempMap.get(seatRow), lists);
-            seatsList.add(tempMap.get(seatRow));
+            seatsList.add(lists);
         }
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -209,30 +181,17 @@ public class TicketServiceImpl implements TicketService{
          * 결제대기, 구매완료, 그 외 잘못된 요청일 경우 로직 종류 후 0 return
          * 잘못된 요청에 대비한 Null Check 완료
          */
-        if(ticketState == '0'){    //  예매진행
-            if((List)tickets.get("tickets") != null){    // ticketId Null Check
-                for(Object ticketId : (List)tickets.get("tickets")){
-                    if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '1'){
-                        transaction = true;
-                    }else{    //  
-                        transaction = false;
-                        returnMap.put("result", "0");
-                        break;
-                    }
-                }         
-            }else{    // ticketId 값이 없을 경우
-                transaction = false;
-                returnMap.put("result", "0");
-            }
-        }else if(ticketState == '1'){    // 예매취소
-            
-                if((List)tickets.get("tickets") != null){    // tickets List Null Check
+        if((List)tickets.get("tickets") != null && ticketState == '0'){    //  예매진행
+            for(Object ticketId : (List)tickets.get("tickets")){
+                if(ticketRepository.findOneById((long)((int)ticketId)).getTicketState() == '1'){
                     transaction = true;
-                }else{    // tickets List 값이 없을 경우
-                    returnMap.put("result", "0");
+                }else{
                     transaction = false;
+                    break;
                 }
-            
+            }         
+        }else if((List)tickets.get("tickets") != null && ticketState == '1'){    // 예매취소
+            transaction = true;
         }else{    //  잘못된 요청
             returnMap.put("result", "0");
         }//end of Ticket Validation Check

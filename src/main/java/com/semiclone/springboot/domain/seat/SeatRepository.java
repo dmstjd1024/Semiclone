@@ -13,4 +13,10 @@ public interface SeatRepository extends JpaRepository<Seat, Long>{
 
     List<Seat> findByScreenId(Long screenId);
 
+    @Query("SELECT SUBSTRING(seatNo,1,1) FROM Seat WHERE screenId = ?1 GROUP BY SUBSTRING(seatNo,1,1)")
+    List<String> findSeatRowsByScreenId(Long screenId);
+
+    @Query("SELECT SUBSTRING(seatNo,1,1) FROM Seat WHERE id = ?1")
+    String findSeatRowById(Long seatId);
+
 }//end of interface

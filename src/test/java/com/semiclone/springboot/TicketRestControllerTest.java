@@ -18,6 +18,7 @@ import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.payment.Payment;
 import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
@@ -63,6 +64,9 @@ public class TicketRestControllerTest {
 
     @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
+    private SeatRepository seatRepository;
 
     //@Test
     public void joinQueryTest() throws Exception {
@@ -414,13 +418,12 @@ public class TicketRestControllerTest {
 
     @Test
     public void timeTableTest() throws Exception {
-        Long screenId = (long)1;
-        System.out.println("\n======================================================");
-        System.out.println(timeTableRepository.findFirstByCinemaIdOrderByDate(screenId));
-        System.out.println("======================================================\n");
-        // for(Long l : timeTableRepository.findFirstByScreenIdOrderByDate(screenId)){
-        //     System.out.println(l);
+        Long timeTableId = (long)1;
+
+        // for(Ticket ticket : ticketRepository.test(timeTableId, "A")){
+        //     System.out.println(ticket.getId());
         // }
+        
     }
 
 }
