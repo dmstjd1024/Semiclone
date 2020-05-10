@@ -211,9 +211,9 @@ public class TicketServiceImpl implements TicketService{
             for(Object ticketId : (List)tickets.get("tickets")){
                 ticket = ticketRepository.findOneById((long)((int)ticketId));
                 ticket.setTicketState(ticketState);
-                if(ticketState == '0'){    //  예매진행 시 토큰 INSERT
+                if(ticketState == '0'){    //  예매진행
                     ticket.setAccountId(((Account)session.getAttribute("account")).getAccountId());
-                }else if(ticketState == '1'){ 
+                }else if(ticketState == '1'){     // 예매취소
                     ticket.setAccountId(null);
                 }
                 //ticketRepository.save(ticket);
@@ -224,18 +224,19 @@ public class TicketServiceImpl implements TicketService{
         return returnMap;
     }//end of updateTicketState
 
+    /* 로그인 유저의 기프트카드, 포인트, 영화관람권 정보 */
     public Map<String, Object> getUserService(String accountId, HttpSession session) throws Exception {
+
         Map<String, Object> returnMap = new HashMap<String, Object>();
-
-        String giftCardJson = new Gson().toJson(giftCardRepository.findAllByAccountId(accountId));
-        String accountJson = new Gson().toJson(accountRepository.findByAccountId(accountId));
-        String movieCouponsJson = new Gson().toJson(movieCouponRepository.findByAccountId(accountId));
-
-        returnMap.put("giftCards", new Gson().fromJson(giftCardJson, List.class));
-        returnMap.put("account", new Gson().fromJson(accountJson, Account.class));
-        returnMap.put("movieCoupons", new Gson().fromJson(movieCouponsJson, List.class));
+        returnMap.put("giftCards", new Gson().fromJson(
+                new Gson().toJson(giftCardRepository.findAllByAccountId(accountId)), List.class));
+        returnMap.put("account", new Gson().fromJson(
+                new Gson().toJson(accountRepository.findByAccountId(accountId)), Account.class));
+        returnMap.put("movieCoupons", new Gson().fromJson(
+                new Gson().toJson(movieCouponRepository.findByAccountId(accountId)), List.class));
 
         return returnMap;
+
     }//end of getUserService
 
     @Transactional

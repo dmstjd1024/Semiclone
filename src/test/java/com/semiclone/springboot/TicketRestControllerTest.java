@@ -20,12 +20,10 @@ import com.semiclone.springboot.domain.payment.PaymentRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
 import com.semiclone.springboot.domain.seat.SeatRepository;
 import com.semiclone.springboot.domain.ticket.Ticket;
-import com.semiclone.springboot.domain.ticket.TicketMapping;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
-import com.semiclone.springboot.web.dto.TicketBySeatDto;
 import com.semiclone.springboot.web.dto.iamport.AccessToken;
 import com.semiclone.springboot.web.dto.iamport.AuthData;
 import com.semiclone.springboot.web.dto.iamport.IamportResponse;
@@ -39,7 +37,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -416,20 +413,6 @@ public class TicketRestControllerTest {
 
         timer.schedule(t, 1000);
         Thread.sleep(100);
-    }
-
-    @Test
-    public void timeTableTest() throws Exception {
-        Long timeTableId = (long)13252235;
-
-        for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, "A")){
-            System.out.println(ticket.getId());
-            System.out.println(ticket.getTicketPrice());
-            System.out.println(ticket.getTicketState());
-            System.out.println(ticket.getSeatId());
-            new TicketBySeatDto(ticket);
-        }
-        
     }
 
 }
