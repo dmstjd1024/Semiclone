@@ -2,9 +2,6 @@ package com.semiclone.springboot.web;
 
 import java.util.Map;
 
-import com.semiclone.springboot.domain.screen.ScreenRepository;
-import com.semiclone.springboot.domain.timetable.TimeTable;
-import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.service.movie.MovieService;
 
 import org.springframework.web.bind.annotation.GetMapping;

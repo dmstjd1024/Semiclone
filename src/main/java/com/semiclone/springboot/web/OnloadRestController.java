@@ -270,6 +270,8 @@ public class OnloadRestController{
         *   2. 영화상세 페이지에서 DB Table Movie의 정보를 얻는다.
         *   3. DB Table Movie에 Data INSERT
         */
+    boolean movieStart = false;
+    if(movieStart){
         int movieTableCount = (int)movieRepository.count();
         System.out.println("Table Movie(영화) Data 넣는 중... (시작 Data 개수 : "+movieTableCount+"개)");
 
@@ -418,7 +420,7 @@ public class OnloadRestController{
         }//end of while 
         System.out.println("Table Movie(영화) Data 작업 완료... (총 "+
                 (movieRepository.count()-movieTableCount)+"개 등록완료, 현재 Data : "+movieRepository.count()+"개)\n");
-
+    }
         /*   
         *   극장별 상영시간표 크롤링 
         */
@@ -622,11 +624,11 @@ public class OnloadRestController{
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
         /* Table Ticket에 Data가 없을 경우에만 실행 */
-        if(ticketRepository.count() == 0){
+        if(ticketRepository.count() > 0){
             System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
                 int timeTableCount = (int)timeTableRepository.count(); // 상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
-                for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
+                for(int timeTableId=12773; timeTableId<=timeTableCount; timeTableId++){
                     if(ticketRepository.findAllByTimeTableId((long)timeTableId).size() == 0){
                         Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
                         for(int count=0; count<seatRepository.countByScreenId(screenId); count++){

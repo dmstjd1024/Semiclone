@@ -26,7 +26,8 @@ public interface TicketService {
     public List<MovieDto> getMoviesList(List<Long> movieIdsList, String group) throws Exception;
 
     public Map<String, Object> getReturnJsonMap(List<MovieDto> moviesList, List<Map<String, Object>> cinemasList, 
-            List<Map<String, Object>> datesList, List<Map<String, Object>> screensList) throws Exception;
+                                                List<Map<String, Object>> datesList, List<Map<String, Object>> screensList, 
+                                                List<Map<String, Object>> seatsList) throws Exception;
 
     public List<Map<String, Object>> getDatesList(List<Long> selectionList) throws Exception;
     

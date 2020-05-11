@@ -35,7 +35,7 @@ public class TimeTableServiceImpl implements TimeTableService {
         
         List<Map<String, Object>> cinemasList = ticketService.getCinemasList(null);    // Cinemas
 
-        return ticketService.getReturnJsonMap(null, cinemasList, null, null);
+        return ticketService.getReturnJsonMap(null, cinemasList, null, null, null);
 
     }//end of getCinemas
     
@@ -66,12 +66,10 @@ public class TimeTableServiceImpl implements TimeTableService {
             List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
             for(Long screenId : screenIdsList){
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
-                if(list.size() != 0){
-                    Map<String, Object> screensMap = new HashMap<String, Object>();
-                    screensMap.put("screen", screenRepository.findOneById(screenId));
-                    screensMap.put("timeTables", list);
-                    screensList.add(screensMap);
-                }
+                Map<String, Object> screensMap = new HashMap<String, Object>();
+                screensMap.put("screen", screenRepository.findOneById(screenId));
+                screensMap.put("timeTables", list);
+                screensList.add(screensMap);
             }
             Map<String, Object> moviesMap = new HashMap<String, Object>();
             moviesMap.put("movie", movieRepository.findOneById(movieId));
@@ -97,39 +95,22 @@ public class TimeTableServiceImpl implements TimeTableService {
         }
 
         /* 날짜 정보가 없을 경우 영화, 지역을 포함한 날짜의 1번 레코드로 초기화 */
-        List<Long> screenIdList = new ArrayList<Long>();
-        for(Long cinemaId : cinemaRepository.findIdsByCinemaArea(cinemaArea)){
-            for(Long screenId : screenRepository.findIdByCinemaId(cinemaId)){
-                if(!screenIdList.contains(screenId)){
-                    screenIdList.add(screenId);
-                }
-            }
-        }
         if(date == null || date == 0){
-            List<Long> datesList = new ArrayList<Long>();
-            for(Long screenId : screenIdList){
-                for(Long dateInfo : timeTableRepository.findDateByScreenIdAndMovieId(screenId, movieId)){
-                    if(!datesList.contains(dateInfo)){
-                        datesList.add(dateInfo);
-                    }
-                }
-            }
-            datesList.sort(null);
-            date = datesList.get(0);
+            date = timeTableRepository.findDateByCinemaAreaAndMovieId(cinemaArea, movieId).get(0);
         }
-
+        
         /* 영화별 지역, 날짜에 해당되는 상영 시간표 */
         List<Object> timeTablesList = new ArrayList<Object>();
         for(Long cinemaId : cinemaRepository.findIdListByCinemaArea(cinemaArea)){
+            
             List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
-            for(Long screenId : timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date)){
+            for(Long screenId : timeTableRepository.findScreenIdByMovieIdAndDateAndCinemaId(movieId, date, cinemaId)){
+                System.out.println(screenId);
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
-                if(list.size() != 0){
-                    Map<String, Object> screensMap = new HashMap<String, Object>();
-                    screensMap.put("screen", screenRepository.findOneById(screenId));
-                    screensMap.put("timeTables", list);
-                    screensList.add(screensMap);
-                }
+                Map<String, Object> screensMap = new HashMap<String, Object>();
+                screensMap.put("screen", screenRepository.findOneById(screenId));
+                screensMap.put("timeTables", list);
+                screensList.add(screensMap);
             }
             Map<String, Object> cinemasMap = new HashMap<String, Object>();
             cinemasMap.put("cinemaName", cinemaRepository.findCinemaNameById(cinemaId));
@@ -141,6 +122,7 @@ public class TimeTableServiceImpl implements TimeTableService {
         returnMap.put("showtimes", new Gson().fromJson(new Gson().toJson(timeTablesList), timeTablesList.getClass()));
 
         return returnMap;
+
     }//end of getTimeTablesByMovieId
 
 }//end of class

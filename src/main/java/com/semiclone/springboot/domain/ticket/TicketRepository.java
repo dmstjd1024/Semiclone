@@ -11,6 +11,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findAllByTimeTableId(Long timeTableId);
 
     Ticket findOneById(Long ticketId);
+
+    @Query("SELECT ticketState FROM Ticket WHERE id = ?1")
+    char findTicketStateById(Long ticketId);
                                                                                     
     @Query("SELECT t.id AS ticketId, t.ticketState AS ticketState, "+ 
             "t.ticketPrice AS ticketPrice, s.seatNo AS seatNo, s.seatName AS seatName "+ 
