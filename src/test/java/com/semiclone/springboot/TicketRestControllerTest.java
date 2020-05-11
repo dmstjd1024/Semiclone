@@ -203,12 +203,12 @@ public class TicketRestControllerTest {
 
         /* Cinemas */
         List<Long> list = new ArrayList<Long>();
-        for(Long obj : timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date)){
-            Long id = screenRepository.findCinemaIdById(obj);
-            if(!list.contains(id)){
-                list.add(id);
-            }
-        }
+        // for(Long obj : timeTableRepository.findScreenIdByMovieIdAndDate(movieId, date)){
+        //     Long id = screenRepository.findCinemaIdById(obj);
+        //     if(!list.contains(id)){
+        //         list.add(id);
+        //     }
+        // }
         list.sort(null);    //  리스트 정렬
 
         List<Object> cinemasList = new ArrayList<Object>();
