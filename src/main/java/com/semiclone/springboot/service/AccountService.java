@@ -63,4 +63,8 @@ public class AccountService implements UserDetailsService {
         SecurityContextHolder.getContext().setAuthentication(token);
 
     }
+
+    public void editMyInfo(Account account){
+        accountRepository.save(account);
+    }
 }

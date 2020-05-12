@@ -7,13 +7,11 @@ import com.semiclone.springboot.service.AccountService;
 import com.semiclone.springboot.support.SignUpFormValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
-import java.security.Principal;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,12 +21,12 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final SignUpFormValidator signUpFormValidator;
 
-    @GetMapping("/sign-up")
+    @GetMapping("/sign-up")//회원가입
     public String signUp() {
         return "account/sign-up";
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/sign-up") //회원가입
     public String signUpSubmit(@Valid SignUpForm signUpForm, Errors errors) {
 
         signUpFormValidator.validate(signUpForm, errors);
@@ -43,15 +41,6 @@ public class AccountController {
 
     }
 
-    @GetMapping("/mycgv")
-    public String myPage(Model model, Principal principal) {
-
-        Account account = accountRepository.findByAccountId(principal.getName());
-
-        model.addAttribute("user", account);
-
-        return "user/mypage";
-    }
 
 
 
