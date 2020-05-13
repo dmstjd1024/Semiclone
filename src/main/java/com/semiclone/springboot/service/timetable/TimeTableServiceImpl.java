@@ -105,7 +105,6 @@ public class TimeTableServiceImpl implements TimeTableService {
             
             List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
             for(Long screenId : timeTableRepository.findScreenIdByMovieIdAndDateAndCinemaId(movieId, date, cinemaId)){
-                System.out.println(screenId);
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
                 screensMap.put("screen", screenRepository.findOneById(screenId));

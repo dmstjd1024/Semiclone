@@ -19,6 +19,7 @@ public class MovieServiceImpl implements MovieService{
 
     private final MovieRepository movieRepository;
 
+    /* 예매율순, 가나다순 랭킹10위 영화리스트 */
     public Map<String, Object> getMoviesMap(String sort) throws Exception {
         
         List<Movie> moviesList = null;
@@ -35,6 +36,7 @@ public class MovieServiceImpl implements MovieService{
 
     }//end of getMoviesMap
 
+    /* 영화상세 정보 */
     public Map<String, Object> getMovieDetailMap(Long movieId) throws Exception {
        
         MovieDetailDto movie = new MovieDetailDto(movieRepository.findOneById(movieId));

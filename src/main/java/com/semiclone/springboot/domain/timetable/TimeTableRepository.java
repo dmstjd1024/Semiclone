@@ -19,26 +19,11 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT date FROM TimeTable WHERE movieId = ?1 GROUP BY date")
     List<Long> findDateByMovieId(Long movieId);
 
-    @Query("SELECT screenId FROM TimeTable WHERE movieId = ?1 GROUP BY screenId")
-    List<Long> findScreenIdByMovieId(Long movieId);
-
-    @Query("SELECT movieId FROM TimeTable WHERE screenId = ?1 GROUP BY movieId")
-    List<Long> findMovieIdByScreenId(Long screenId);
-
     @Query("SELECT movieId FROM TimeTable WHERE date = ?1 GROUP BY movieId")
     List<Long> findMovieIdByDate(Long date);
 
-    @Query("SELECT screenId FROM TimeTable WHERE date = ?1 GROUP BY screenId")
-    List<Long> findScreenIdByDate(Long date);
-
-    @Query("SELECT date FROM TimeTable WHERE screenId = ?1 AND movieId = ?2 GROUP BY date")
-    List<Long> findDateByScreenIdAndMovieId(Long screenId, Long movieId);
-
     @Query("SELECT screenId FROM TimeTable WHERE movieId = ?1 AND date = ?2 AND cinemaId = ?3 GROUP BY screenId")
     List<Long> findScreenIdByMovieIdAndDateAndCinemaId(Long movieId, Long date,Long cinemaId);
-
-    @Query("SELECT movieId FROM TimeTable WHERE screenId = ?1 AND date = ?2")
-    List<Long> findMovieIdByScreenIdAndDate(Long screenId, Long date);
 
     @Query("SELECT t FROM TimeTable t WHERE movieId = ?1 AND screenId = ?2 AND date = ?3")
     List<TimeTable> findTimeTableByMovieIdAndScreenIdAndDate(Long movieId, Long screenId, Long date);

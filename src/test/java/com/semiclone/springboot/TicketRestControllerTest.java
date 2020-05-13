@@ -73,12 +73,12 @@ public class TicketRestControllerTest {
         
         /* movieId로 cinemaId 얻는 로직 */
         List<Long> list = new ArrayList<Long>();
-        for(Long obj : timeTableRepository.findScreenIdByMovieId((long)1)){
-            Long cinemaId = screenRepository.findCinemaIdById(obj);
-            if(!list.contains(cinemaId)){
-                list.add(cinemaId);
-            }
-        }
+        // for(Long obj : timeTableRepository.findScreenIdByMovieId((long)1)){
+        //     Long cinemaId = screenRepository.findCinemaIdById(obj);
+        //     if(!list.contains(cinemaId)){
+        //         list.add(cinemaId);
+        //     }
+        // }
         list.sort(null);    //  리스트 정렬
     
         /* Cinemas */
@@ -108,11 +108,11 @@ public class TicketRestControllerTest {
         List<Long> screenIdList = screenRepository.findIdByCinemaId((long)4);
         for(Long screenId : screenRepository.findIdByCinemaId((long)4)){
 
-            for(Long id : timeTableRepository.findMovieIdByScreenId(screenId)){
-                if(!movieIdList.contains(id)){
-                    movieIdList.add(id);
-                }
-            }
+            // for(Long id : timeTableRepository.findMovieIdByScreenId(screenId)){
+            //     if(!movieIdList.contains(id)){
+            //         movieIdList.add(id);
+            //     }
+            // }
         }
         movieIdList.sort(null);
         
@@ -146,12 +146,12 @@ public class TicketRestControllerTest {
         String moviesJson = new Gson().toJson(movieList);
 
         List<Long> list = new ArrayList<Long>();
-            for(Long obj : timeTableRepository.findScreenIdByDate((long)20200422)){
-                Long id = screenRepository.findCinemaIdById(obj);
-                if(!list.contains(id)){
-                    list.add(id);
-                }
-            }
+            // for(Long obj : timeTableRepository.findScreenIdByDate((long)20200422)){
+            //     Long id = screenRepository.findCinemaIdById(obj);
+            //     if(!list.contains(id)){
+            //         list.add(id);
+            //     }
+            // }
             list.sort(null);    //  리스트 정렬
 
             List<Object> cinemasList = new ArrayList<Object>();
@@ -187,11 +187,11 @@ public class TicketRestControllerTest {
         List<Long> movieIdList = new ArrayList<Long>();
         List<Long> screenIdList = screenRepository.findIdByCinemaId(cinemaId);
         for(Long screenId : screenIdList){
-            for(Long id : timeTableRepository.findMovieIdByScreenIdAndDate(screenId, date)){
-                if(!movieIdList.contains(id)){
-                    movieIdList.add(id);
-                }
-            }
+            // for(Long id : timeTableRepository.findMovieIdByScreenIdAndDate(screenId, date)){
+            //     if(!movieIdList.contains(id)){
+            //         movieIdList.add(id);
+            //     }
+            // }
         }
         movieIdList.sort(null);
         
@@ -232,11 +232,11 @@ public class TicketRestControllerTest {
         /* Dates */
         List<Long> datesList = new ArrayList<Long>();
         for(Long id : screenIdList){
-            for(Long dates : timeTableRepository.findDateByScreenIdAndMovieId(id, movieId)){
-                if(!datesList.contains(dates)){
-                    datesList.add(dates);
-                }
-            }
+            // for(Long dates : timeTableRepository.findDateByScreenIdAndMovieId(id, movieId)){
+            //     if(!datesList.contains(dates)){
+            //         datesList.add(dates);
+            //     }
+            // }
         }
         String datesJson = new Gson().toJson(datesList);
 
