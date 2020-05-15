@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -34,7 +35,7 @@ public class PurchaseService {
     @Transactional
     public Map<String, Object> iamport(Map<String, Object> purchaseMap) throws Exception {
 
-        Map<String, Object> returnMap = null;
+        Map<String, Object> returnMap = new HashMap<String, Object>();
 
         if (purchaseMap.containsKey("imp_uid")) {
 
