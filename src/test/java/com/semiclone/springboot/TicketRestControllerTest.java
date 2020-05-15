@@ -1,6 +1,5 @@
 package com.semiclone.springboot;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.semiclone.springboot.domain.cinema.Cinema;
 import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.MovieMapping;
@@ -24,28 +22,28 @@ import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
-import com.semiclone.springboot.web.dto.iamport.AccessToken;
-import com.semiclone.springboot.web.dto.iamport.AuthData;
-import com.semiclone.springboot.web.dto.iamport.IamportResponse;
-import com.semiclone.springboot.web.dto.iamport.Purchase;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@AutoConfigureMockMvc
 public class TicketRestControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
     private TimeTableRepository timeTableRepository;
@@ -67,6 +65,106 @@ public class TicketRestControllerTest {
 
     @Autowired
     private SeatRepository seatRepository;
+
+    @DisplayName("빠른예매 최초 랜더링 테스트")
+    @Test
+    public void screensTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/ticket/screens"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @DisplayName("빠른예매 선택 7가지 경우의 수 테스트")
+    @Test
+    public void screensInfoTest() throws Exception {
+        String url = null;
+
+        url = "/ticket/screens/info?movieId=5&cinemaId=&date=&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        url = "/ticket/screens/info?movieId=&cinemaId=60&date=&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        url = "/ticket/screens/info?movieId=&cinemaId=&date=20200502&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+                
+        url = "/ticket/screens/info?movieId=5&cinemaId=60&date=&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        url = "/ticket/screens/info?movieId=5&cinemaId=&date=20200502&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        url = "/ticket/screens/info?movieId=&cinemaId=60&date=20200502&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        url = "/ticket/screens/info?movieId=5&cinemaId=60&date=20200502&group=";
+        mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        
+    }//end of screensInfoTest
+
+    @Test
+    public void seatsTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/ticket/seats?timeTableId=5"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of seatsTest
+
+    @Test
+    public void ticketStateTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.patch("/ticket/ticketstate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"state\":0, \"tickets\":[1]}"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/ticket/ticketstate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"state\":1, \"tickets\":[1]}"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of ticketStateTest
+
+    @Test
+    public void userServiceTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/ticket/user/service?accountid=admin"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of userServiceTest
+    
+    @Test
+    public void paymentTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/ticket/payment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"imp_uid\":\"imp_541789576970\"}"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of paymentTest
+
+    @Test
+    public void cinemasTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/showtimes/timetables/cinemas"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        
+    }//end of cinemasTest
+
+    @Test
+    public void moviesTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/showtimes/timetables/movies"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of moviesTest
+
+    @Test
+    public void timeTablesTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/showtimes/timetables?cinemaId=5&date=20200502"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of timeTablesTest
+
+    @Test
+    public void timeTablesDataTest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/showtimes/timetables/data?movieId=5&cinemaArea=서울&date=20200502"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }//end of timeTablesDataTest
 
     //@Test
     public void joinQueryTest() throws Exception {
@@ -280,76 +378,6 @@ public class TicketRestControllerTest {
     }
 
     //@Test
-    public void HttpClientTest() throws Exception {
-
-        String API_URL = "https://api.iamport.kr";
-        String api_key = "9412212325207428";
-        String api_secret = "PMPPj0OrmSrYllpBBnqN3ofIGu07GgYv3OlmOaOa2g9oCyZeVp1ZOhIuLICrZBX3pipdseovvxT76Tm2";
-        HttpClient client = HttpClientBuilder.create().build();
-        Gson gson = new Gson();
-    
-        /* getToken */
-        AuthData authData = new AuthData(api_key, api_secret);	
-		String authJsonData = gson.toJson(authData);
-		
-			StringEntity data = new StringEntity(authJsonData);
-			
-			HttpPost postRequest = new HttpPost(API_URL+"/users/getToken");
-			postRequest.setHeader("Accept", "application/json");
-			postRequest.setHeader("Connection","keep-alive");
-			postRequest.setHeader("Content-Type", "application/json");
-			
-			postRequest.setEntity(data);
-			
-			HttpResponse response = client.execute(postRequest);
-			
-			if (response.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-				   + response.getStatusLine().getStatusCode());
-			}
-			
-			ResponseHandler<String> handler = new BasicResponseHandler();
-            String body = handler.handleResponse(response);
-			Type listType = new TypeToken<IamportResponse<AccessToken>>(){}.getType();
-            IamportResponse<AccessToken> auth = gson.fromJson(body, listType);
-        
-        String token = auth.getResponse().getToken();
-        
-        
-		if(token != null) {
-			String path = "/payments/"+"imp_541789576970";
-
-            HttpGet getRequest = new HttpGet(API_URL+path);
-			getRequest.addHeader("Accept", "application/json");
-			getRequest.addHeader("Authorization", token);
-
-			HttpResponse responses = client.execute(getRequest);
-
-			if (responses.getStatusLine().getStatusCode() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-				   + responses.getStatusLine().getStatusCode());
-			}
-			
-			ResponseHandler<String> handlers = new BasicResponseHandler();
-			String responsed = handlers.handleResponse(responses);
-			
-			Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
-			IamportResponse<Purchase> paymentData = gson.fromJson(responsed, listTypes);
-            Purchase purchase = paymentData.getResponse();
-
-            System.out.println("\n=================================================");
-            System.out.println("buyerName : "+purchase.getBuyerName());
-            System.out.println("buyerTel : "+purchase.getBuyerTel());
-            System.out.println("payMethod : "+purchase.getPayMethod());
-            System.out.println("amount : "+purchase.getAmount());
-            System.out.println("status : "+purchase.getStatus());
-            System.out.println("=================================================\n");
-
-
-       }
-    }
-
-    //@Test
     public void rownumTest() throws Exception {
         String sort = "reservation_rate";
         // List<Movie> moviesList = movieRepository.findMoviesRankBySort(sort);
@@ -380,7 +408,7 @@ public class TicketRestControllerTest {
     }
 
     //@Test
-    public void paymentTest() throws Exception {
+    public void paymentTests() throws Exception {
         String giftCards = "";
         String movieCoupons = "";
         String tickets = "";

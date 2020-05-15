@@ -1,6 +1,5 @@
 package com.semiclone.springboot.service.ticket;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.semiclone.springboot.config.IamPortConfig;
 import com.semiclone.springboot.domain.account.Account;
 import com.semiclone.springboot.domain.account.AccountRepository;
 import com.semiclone.springboot.domain.cinema.Cinema;
@@ -35,19 +32,8 @@ import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 import com.semiclone.springboot.web.dto.TicketBySeatDto;
 import com.semiclone.springboot.web.dto.TimeTableDto;
-import com.semiclone.springboot.web.dto.iamport.AccessToken;
-import com.semiclone.springboot.web.dto.iamport.AuthData;
-import com.semiclone.springboot.web.dto.iamport.IamportResponse;
 import com.semiclone.springboot.web.dto.iamport.Purchase;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
