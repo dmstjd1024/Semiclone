@@ -30,6 +30,7 @@ import com.semiclone.springboot.domain.ticket.TicketMapping;
 import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
+import com.semiclone.springboot.service.PurchaseService;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 import com.semiclone.springboot.web.dto.TicketBySeatDto;
@@ -68,7 +69,7 @@ public class TicketServiceImpl implements TicketService{
     private final GiftCardRepository giftCardRepository;
     private final MovieCouponRepository movieCouponRepository;
     private final PaymentRepository paymentRepository;
-    private final IamPortConfig iamPortConfig;
+    private final PurchaseService purchaseService;
 
     //Method
     /* 모든 영화, 극장, 날짜 */
@@ -229,7 +230,11 @@ public class TicketServiceImpl implements TicketService{
         session.setAttribute("account", accountTest);
 
         if(purchaseMap.containsKey("imp_uid")){          
-            Purchase purchase = this.getPurchase(String.valueOf(purchaseMap.get("imp_uid")));
+
+            Map<String, Object> impUid = new HashMap<String, Object>();
+            impUid.put("imp_uid", purchaseMap.get("imp_uid"));
+            Purchase purchase = (Purchase) purchaseService.iamport(impUid).get("purchase");
+            
             String movieCoupons = null;
             String tickets = null;
             String giftCards = null;
@@ -423,71 +428,6 @@ public class TicketServiceImpl implements TicketService{
         }  
 
         return screensList;
-
-    }
-
-    public Purchase getPurchase(String impUid) throws Exception {
-
-        String API_URL = "https://api.iamport.kr";
-        String api_key = iamPortConfig.getApikey();
-        String api_secret = iamPortConfig.getApisecret();
-        HttpClient client = HttpClientBuilder.create().build();
-        Gson gson = new Gson();
-        
-        /* getToken */
-        AuthData authData = new AuthData(api_key, api_secret);	
-        String authJsonData = gson.toJson(authData);
-        
-            StringEntity data = new StringEntity(authJsonData);
-            
-            HttpPost postRequest = new HttpPost(API_URL+"/users/getToken");
-            postRequest.setHeader("Accept", "application/json");
-            postRequest.setHeader("Connection","keep-alive");
-            postRequest.setHeader("Content-Type", "application/json");
-            
-            postRequest.setEntity(data);
-            
-            HttpResponse response = client.execute(postRequest);
-            
-            if (response.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                + response.getStatusLine().getStatusCode());
-            }
-            
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            String body = handler.handleResponse(response);
-            Type listType = new TypeToken<IamportResponse<AccessToken>>(){}.getType();
-            IamportResponse<AccessToken> auth = gson.fromJson(body, listType);
-        
-        String token = auth.getResponse().getToken();
-        
-        /* getPurchase
-        * IamPort Server에서 Data 가져오기 : 안전한 데이터
-        */
-        Purchase purchase = null;
-        if(token != null) {
-            String path = "/payments/"+impUid;
-
-            HttpGet getRequest = new HttpGet(API_URL+path);
-            getRequest.addHeader("Accept", "application/json");
-            getRequest.addHeader("Authorization", token);
-
-            HttpResponse responses = client.execute(getRequest);
-
-            if (responses.getStatusLine().getStatusCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : "
-                + responses.getStatusLine().getStatusCode());
-            }
-            
-            ResponseHandler<String> handlers = new BasicResponseHandler();
-            String responsed = handlers.handleResponse(responses);
-            
-            Type listTypes = new TypeToken<IamportResponse<Purchase>>(){}.getType();
-            IamportResponse<Purchase> purchaseData = gson.fromJson(responsed, listTypes);
-            purchase = purchaseData.getResponse();
-        }
-
-        return purchase;
 
     }
 
