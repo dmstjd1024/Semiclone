@@ -6,6 +6,7 @@ import com.semiclone.springboot.service.ProductService;
 import com.semiclone.springboot.service.PurchaseService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/giftshop")
 @RequiredArgsConstructor
@@ -70,8 +72,10 @@ public class GiftShopController {
     @ApiOperation(value = "결제 :: 추가완료 시 1 return / 실패 시 0 return",
             notes = "Server로 보낼 Data {\"imp_uid\":1234}")
     @PostMapping("/payment")
-    public Map<String, Object> payment(@RequestBody Map<String, Object> purchaseMap, Principal principal) throws Exception{
+    public Map<String, Object> payment(@RequestBody Map<String, Object> purchase, Principal principal) throws Exception{
 
-        return purchaseService.giftshopPurchase(purchaseMap, principal.getName());
+        log.info(purchase.toString());
+
+        return purchaseService.giftshopPurchase(purchase, principal.getName());
     }
 }

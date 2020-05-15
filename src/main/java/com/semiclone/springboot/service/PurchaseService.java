@@ -10,6 +10,7 @@ import com.semiclone.springboot.web.dto.iamport.AuthData;
 import com.semiclone.springboot.web.dto.iamport.IamportResponse;
 import com.semiclone.springboot.web.dto.iamport.Purchase;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PurchaseService {
@@ -108,6 +110,7 @@ public class PurchaseService {
             returnMap.put("result", "0"); // imp_uid가 Map에 없을 경우
         }//end of imp_uid Validation Check
 
+        log.info("iamport() return 값: "+returnMap.toString());
         return returnMap;
 
     }
@@ -205,7 +208,7 @@ public class PurchaseService {
                 returnMap.put("result", "0");
             }
 
-
+            log.info("purchase() return 값: "+returnMap.toString());
         return returnMap;
 
         }

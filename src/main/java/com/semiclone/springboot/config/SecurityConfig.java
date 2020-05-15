@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/**", "/sign-up", "/swagger-ui.html").permitAll()
-                .antMatchers("/mycgv/**").authenticated()
+                .antMatchers("/mycgv/**", "/giftshop/payment").authenticated()
                 .antMatchers("/admin/**, /popcorn-store/create").hasRole("ADMIN")
 //                .antMatchers("/").hasRole("USER")
                 ;
