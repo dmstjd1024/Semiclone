@@ -270,6 +270,8 @@ public class OnloadRestController{
         *   2. 영화상세 페이지에서 DB Table Movie의 정보를 얻는다.
         *   3. DB Table Movie에 Data INSERT
         */
+    boolean movieStart = false;
+    if(movieStart){
         int movieTableCount = (int)movieRepository.count();
         System.out.println("Table Movie(영화) Data 넣는 중... (시작 Data 개수 : "+movieTableCount+"개)");
 
@@ -284,82 +286,26 @@ public class OnloadRestController{
                 
                 /* 영화만 저장 */
                 if(movieDetail.select(".spec > dl").text().substring(0,2).equals("감독")){
-
-                    /* 영화 개봉정보 :: 개봉날짜, 영화 개봉종류 */
+                    
                     String movieRelease = movieDetail.select(".spec > dl > dd:nth-child(11)").text();
-
-                    String releaseDate;
-                    if( movieRelease.length() > 0 ){
-                        releaseDate = movieRelease.substring(0,4) + movieRelease.substring(5,7) + movieRelease.substring(8,10);
-                    }else{
-                        releaseDate = "0";   
-                    }   //  개봉날짜
-
-                    String releaseType;
-                    if( movieRelease.length() > 10 ){
-                        releaseType = movieRelease.substring(10,15);
-                    }else{
-                        releaseType = "(개봉)";
-                    }   //  개봉종류
-                    
-                    /* 영화 주요정보 :: 영화 소개글 */
+                    String releaseDate = (movieRelease.length() > 0) ? movieRelease.substring(0,4) + movieRelease.substring(5,7) + movieRelease.substring(8,10) : "0";
+                    String releaseType = (movieRelease.length() > 10) ? movieRelease.substring(10,15) : "(개봉)";
                     String movieIntro = movieDetail.select(".sect-story-movie").toString();
-                    if( movieIntro.length() > 38 ){
-                        movieIntro = movieIntro.substring(33, movieIntro.length()-8).trim();
-                    }else{
-                        movieIntro = "";
-                    }
-                    
-                    /* 영화 장르 */
+                    movieIntro = (movieIntro.length() > 38) ? movieIntro.substring(33, movieIntro.length()-8).trim() : "";
                     String genre = movieDetail.select(".spec > dl > dt:nth-child(6)").text();
-                    if( genre.length() > 4 ){
-                        genre = genre.substring(5, genre.length());
-                    }else{
-                        genre = "";
-                    }
-
-                    /* 영화 기본정보 :: 영화 배우, 영화 상영시간, 영화 관람등급, 영화 제작국가 */
-                    int movieBaseLocation;
-                    int movieActorLocation;
-                    String actor;
-                    String movieTime;
-                    String movieRating;
-                    String movieCountry;
-                    /*  */
-                    if( movieDetail.select(".spec > dl > dd:nth-child(4)").text().equals("") ){
-                        movieActorLocation = 5;
-                        movieBaseLocation = 9;                       
-                    }else{                     
-                        movieActorLocation = 6;
-                        movieBaseLocation = 10;
-                    }   //  배열 위치
-                        
-                    actor = movieDetail.select(".spec > dl > dd:nth-child("+movieActorLocation+")").text();
-                    
-                    movieRating = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[0].trim();
-                    if(movieRating.equals("12세 이상")){
-                        movieRating = "12";
-                    }else if(movieRating.equals("15세 이상")){
-                        movieRating = "15";
-                    }else if(movieRating.equals("청소년 관람불가")){
-                        movieRating = "19";
-                    }
-
+                    genre = (genre.length() > 4) ? genre.substring(5, genre.length()) : "" ;
+                    int movieBaseLocation = (movieDetail.select(".spec > dl > dd:nth-child(4)").text().equals("")) ? 9 : 10;
+                    int movieActorLocation = (movieDetail.select(".spec > dl > dd:nth-child(4)").text().equals("")) ? 5 : 6;
+                    String actor = movieDetail.select(".spec > dl > dd:nth-child("+movieActorLocation+")").text();
                     int infoLength = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",").length;
-                    if( infoLength < 3 ){
-                        movieTime = "(공백)";
-                        movieCountry = "(공백)";
-                    }else{
-                        movieTime = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[1].trim();
-                        movieCountry = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[2].trim();
-                    }
+                    String movieTime = (infoLength < 3) ? "(공백)" : movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[1].trim();
+                    String movieRating = movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[0].trim();
+                    String movieCountry = (infoLength < 3) ? "(공백)" : movieDetail.select(".spec > dl > dd:nth-child("+movieBaseLocation+")").text().split(",")[2].trim();
+                    movieRating = movieRating.equals("12세 이상") ? "12" : (movieRating.equals("15세 이상") ? "15" : "19");
                     
-
-                    /* 영화 감독 */
                     String movieDrector = "";
                     int actorListNo = 1;
                     while(true){
-
                         /* 영화 감독이 여러명이면.. */
                         if( movieDetail.select(".spec > dl > dd:nth-child(2) > a:nth-child("+actorListNo+")").text() != null
                                     && !movieDetail.select(".spec > dl > dd:nth-child(2) > a:nth-child("+actorListNo+")").text().equals("") ){
@@ -372,23 +318,12 @@ public class OnloadRestController{
                     movieDrector = movieDrector.substring(0, movieDrector.length()-2);
 
                     /* Data 없는 값일 경우 '(공백)' 처리 :: NOT NULL 문제점 해결  */
-                    if( movieRating.equals("") ){
-                        movieRating = "(공백)";
-                    }
-                    if( genre.equals("") ){
-                        genre = "(공백)";
-                    }
-                    if( movieDrector.equals("") ){
-                        movieDrector = "(공백)";
-                    }
-                    if( actor.equals("") ){
-                        actor = "(공백)";
-                    }
-                    if( movieCountry.equals("") ){
-                        movieCountry = "(공백)";
-                    }
+                    movieRating = (movieRating.equals("")) ? "(공백)" : movieRating;
+                    genre = (genre.equals("")) ? "(공백)" : genre;
+                    movieDrector = (movieDrector.equals("")) ? "(공백)" : movieDrector;
+                    actor = (actor.equals("")) ? "(공백)" : actor;
+                    movieCountry = (movieCountry.equals("")) ? "(공백)" : movieCountry;
 
-                    /* 예매율 */
                     String reservation = movieDetail.select(".box-contents > div.score > strong.percent > span").text();
                     Float reservationRate = Float.valueOf(reservation.substring(0, reservation.length()-1)).floatValue();
    
@@ -418,7 +353,7 @@ public class OnloadRestController{
         }//end of while 
         System.out.println("Table Movie(영화) Data 작업 완료... (총 "+
                 (movieRepository.count()-movieTableCount)+"개 등록완료, 현재 Data : "+movieRepository.count()+"개)\n");
-
+    }
         /*   
         *   극장별 상영시간표 크롤링 
         */
@@ -622,11 +557,11 @@ public class OnloadRestController{
          * 모든 TimeTable(시간표)에 총 좌석 수만큼 티켓 생성
          */
         /* Table Ticket에 Data가 없을 경우에만 실행 */
-        if(ticketRepository.count() == 0){
+        if(ticketRepository.count() > 0){
             System.out.println("Table Ticket(티켓)에 Data 넣는 중...");
 
                 int timeTableCount = (int)timeTableRepository.count(); // 상영 시간표 개수 : (티켓 데이터가 방대해서 필요한만큼만 사용)
-                for(int timeTableId=1; timeTableId<=timeTableCount; timeTableId++){
+                for(int timeTableId=12773; timeTableId<=timeTableCount; timeTableId++){
                     if(ticketRepository.findAllByTimeTableId((long)timeTableId).size() == 0){
                         Long screenId = timeTableRepository.findById((long)timeTableId).get().getScreenId();
                         for(int count=0; count<seatRepository.countByScreenId(screenId); count++){

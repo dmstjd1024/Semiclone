@@ -36,10 +36,8 @@ public class Ticket {
     private int ticketPrice = 5000;    //  티켓 가격
 
     @Column(length = 1, nullable = false)
-    @ColumnDefault("0")
-    private char ticketState = '0';    //  티켓 진행상태
-
-    private String ticketToken;
+    @ColumnDefault("1")
+    private char ticketState = '1';    //  티켓 진행상태
 
     @Builder
     public Ticket(Long seatId, Long screenId, Long movieId, Long timeTableId, int ticketPrice, char ticketState){
@@ -53,10 +51,6 @@ public class Ticket {
 
     public void setTicketState(char ticketState){
         this.ticketState = ticketState;
-    }
-
-    public void setTicketToken(String ticketToken){
-        this.ticketToken = ticketToken;
     }
 
     public void setAccountId(String accountId){

@@ -45,9 +45,9 @@ public class TicketRestController {
         return ticketService.getSeatsMap(timeTableId);
     }
 
-    @ApiOperation(value = "티켓 상태 변경 :: 변경완료 시 1 return / 실패 시 0 return",
-            notes = "{\"state\":\"0\", \"tickets\":[1234,5678]} -> 티켓팅 진행시<br>"+
-            "{\"state\":\"1\", \"ticketTokens\":[1234,5678]} -> 티켓팅 실패시")
+    @ApiOperation(value = "Ticketing",
+            notes ="{\"state\":0, \"tickets\":[1234,5678]} -> 티켓팅 시작<br>"+
+            "{\"state\":1, \"tickets\":[1234,5678]} -> 티켓팅 취소")
     @PatchMapping(value = "/ticketstate")
     public Map<String, Object> ticketState(@RequestBody Map<String, Object> tickets, HttpSession session) throws Exception {
         return ticketService.updateTicketState(tickets, session);
