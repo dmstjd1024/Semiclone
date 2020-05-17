@@ -39,7 +39,7 @@ public class MovieServiceImpl implements MovieService{
     /* 영화상세 정보 */
     public Map<String, Object> getMovieDetailMap(Long movieId) throws Exception {
        
-        MovieDetailDto movie = new MovieDetailDto(movieRepository.findOneById(movieId));
+        MovieDetailDto movie = new MovieDetailDto(movieRepository.findMovieById(movieId));
 
         Map<String, Object> returnMap = new HashMap<String, Object>();
         returnMap.put("movie", new Gson().fromJson(new Gson().toJson(movie), Movie.class));

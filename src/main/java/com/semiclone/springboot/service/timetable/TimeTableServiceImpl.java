@@ -14,6 +14,7 @@ import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.service.ticket.TicketService;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
+import com.semiclone.springboot.web.dto.MovieInfoDto;
 
 import org.springframework.stereotype.Service;
 
@@ -67,12 +68,14 @@ public class TimeTableServiceImpl implements TimeTableService {
             for(Long screenId : screenIdsList){
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
-                screensMap.put("screen", screenRepository.findOneById(screenId));
-                screensMap.put("timeTables", list);
-                screensList.add(screensMap);
+                if(list.size() != 0){
+                    screensMap.put("screen", screenRepository.findOneById(screenId));
+                    screensMap.put("timeTables", list);
+                    screensList.add(screensMap);
+                }
             }
             Map<String, Object> moviesMap = new HashMap<String, Object>();
-            moviesMap.put("movie", movieRepository.findOneById(movieId));
+            moviesMap.put("movie", new MovieInfoDto(movieRepository.findOneById(movieId)));
             moviesMap.put("screens", screensList);
             timeTablesList.add(moviesMap);
         }

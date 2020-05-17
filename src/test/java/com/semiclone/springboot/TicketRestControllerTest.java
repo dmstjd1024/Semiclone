@@ -35,8 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -215,9 +213,9 @@ public class TicketRestControllerTest {
         movieIdList.sort(null);
         
         List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
-        for(Long id : movieIdList){
-            movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
-        }
+        // for(Long id : movieIdList){
+        //     movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
+        // }
         String moviesJson = new Gson().toJson(movieList);
 
         /* Dates */
@@ -238,9 +236,9 @@ public class TicketRestControllerTest {
     public void dateOnlyTest(){
         /* Moives */
         List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
-        for(Long id : timeTableRepository.findMovieIdByDate((long)20200422)){
-                movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
-        }
+        // for(Long id : timeTableRepository.findMovieIdByDate((long)20200422)){
+        //         movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
+        // }
         String moviesJson = new Gson().toJson(movieList);
 
         List<Long> list = new ArrayList<Long>();
@@ -294,9 +292,9 @@ public class TicketRestControllerTest {
         movieIdList.sort(null);
         
         List<MovieDetailDto> movieList = new ArrayList<MovieDetailDto>();
-        for(Long id : movieIdList){
-            movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
-        }
+        // for(Long id : movieIdList){
+        //     movieList.add(new MovieDetailDto(movieRepository.findOneById(id)));
+        // }
         String moviesJson = new Gson().toJson(movieList);
 
         /* Cinemas */
@@ -442,6 +440,13 @@ public class TicketRestControllerTest {
 
         timer.schedule(t, 1000);
         Thread.sleep(100);
+    }
+
+    @Test
+    public void movieTest() throws Exception {
+        Long Id = (long)1;
+        
+        System.out.println("movieId --> "+movieRepository.findOneById(Id).getId());
     }
 
     

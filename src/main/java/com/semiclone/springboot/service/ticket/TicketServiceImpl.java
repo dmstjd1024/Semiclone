@@ -407,10 +407,12 @@ public class TicketServiceImpl implements TicketService{
                 timeTableDto.setEmptySeat(ticketRepository.findAllByTimeTableId(timeTable.getId()).size());
                 lists.add(timeTableDto);
             }
-            Map<String, Object> screensMap = new HashMap<String, Object>();
-            screensMap.put("screen", screenRepository.findOneById(screenId));
-            screensMap.put("timeTables", lists);
-            screensList.add(screensMap);
+            if(lists.size() != 0){
+                Map<String, Object> screensMap = new HashMap<String, Object>();
+                screensMap.put("screen", screenRepository.findOneById(screenId));
+                screensMap.put("timeTables", lists);
+                screensList.add(screensMap);
+            }
         }  
 
         return screensList;
