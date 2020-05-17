@@ -10,11 +10,13 @@ import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
+import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.service.ticket.TicketService;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
 import com.semiclone.springboot.web.dto.MovieInfoDto;
+import com.semiclone.springboot.web.dto.TimeTableDto;
 
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,7 @@ public class TimeTableServiceImpl implements TimeTableService {
     private final ScreenRepository screenRepository;
     private final TimeTableRepository timeTableRepository;
     private final TicketService ticketService;
+    private final TicketRepository ticketRepository;
 
     /* 극장 리스트 */
     public Map<String, Object> getCinemas() throws Exception {
@@ -69,8 +72,14 @@ public class TimeTableServiceImpl implements TimeTableService {
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
                 if(list.size() != 0){
+                    List<TimeTableDto> timeTableDtosList = new ArrayList<TimeTableDto>();
+                    for(TimeTable timeTable : list){
+                        TimeTableDto timeTableDto = new TimeTableDto(timeTable);
+                        timeTableDto.setEmptySeat(ticketRepository.countByTimeTableId(timeTableDto.getId()));
+                        timeTableDtosList.add(timeTableDto);
+                    }
                     screensMap.put("screen", screenRepository.findOneById(screenId));
-                    screensMap.put("timeTables", list);
+                    screensMap.put("timeTables", timeTableDtosList);
                     screensList.add(screensMap);
                 }
             }

@@ -20,5 +20,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "FROM Ticket t LEFT OUTER JOIN Seat s ON t.seatId = s.id "+ 
             "WHERE t.timeTableId = ?1 AND SUBSTR(s.seatNo,1,1) = ?2")
     List<TicketMapping> findAllByTimeTableIdAndSeatRow(Long timeTableId, String seatRow);
+
+    Integer countByTimeTableId(Long timeTableId);
     
 }//end of interface
