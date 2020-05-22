@@ -288,6 +288,14 @@ public class TicketServiceImpl implements TicketService{
                                         .build()
                 );
 
+                Long ticketId = (long)((List)purchaseMap.get("tickets")).get(0);
+                Long timeTableId = ticketRepository.findTimeTableIdById(ticketId);
+                int emptySeat = ticketRepository.countByTimeTableIdAndTicketState(timeTableId, '1');
+                TimeTable timeTable = timeTableRepository.findOneById(timeTableId);
+                timeTable.setEmptySeat(emptySeat);
+
+                timeTableRepository.save(timeTable);
+
                 returnMap.put("result", "1");
             }else{
                 returnMap.put("result", "0");    // 기프트카드, 포인트 잔액조회 검사에서 실패했을 경우
@@ -401,16 +409,11 @@ public class TicketServiceImpl implements TicketService{
 
         List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
         for(Long screenId : screenIdList){
-            List<TimeTableDto> lists = new ArrayList<TimeTableDto>();;
-            for(TimeTable timeTable : timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date)){
-                TimeTableDto timeTableDto = new TimeTableDto(timeTable);
-                timeTableDto.setEmptySeat(ticketRepository.findAllByTimeTableId(timeTable.getId()).size());
-                lists.add(timeTableDto);
-            }
-            if(lists.size() != 0){
+            List<TimeTable> timeTablesList = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
+            if(timeTablesList.size() != 0){
                 Map<String, Object> screensMap = new HashMap<String, Object>();
                 screensMap.put("screen", screenRepository.findOneById(screenId));
-                screensMap.put("timeTables", lists);
+                screensMap.put("timeTables", timeTablesList);
                 screensList.add(screensMap);
             }
         }  

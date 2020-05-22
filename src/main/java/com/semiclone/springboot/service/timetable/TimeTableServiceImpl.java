@@ -72,14 +72,8 @@ public class TimeTableServiceImpl implements TimeTableService {
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
                 if(list.size() != 0){
-                    List<TimeTableDto> timeTableDtosList = new ArrayList<TimeTableDto>();
-                    for(TimeTable timeTable : list){
-                        TimeTableDto timeTableDto = new TimeTableDto(timeTable);
-                        timeTableDto.setEmptySeat(ticketRepository.countByTimeTableId(timeTableDto.getId()));
-                        timeTableDtosList.add(timeTableDto);
-                    }
                     screensMap.put("screen", screenRepository.findOneById(screenId));
-                    screensMap.put("timeTables", timeTableDtosList);
+                    screensMap.put("timeTables", list);
                     screensList.add(screensMap);
                 }
             }

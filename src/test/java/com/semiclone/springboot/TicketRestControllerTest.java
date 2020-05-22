@@ -446,7 +446,7 @@ public class TicketRestControllerTest {
     public void movieTest() throws Exception {
         Long Id = (long)1;
         
-        System.out.println("movieId --> "+movieRepository.findOneById(Id).getId());
+        System.out.println("movieId --> "+ticketRepository.findTimeTableIdById(Id));
     }
 
     

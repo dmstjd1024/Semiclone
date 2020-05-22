@@ -42,8 +42,11 @@ public class TimeTable {
     @Column(nullable = false)
     private Long cinemaId;    //  극장 고유번호
 
+    @Column(nullable = false)
+    private int emptySeat;
+
     @Builder
-    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime, Long cinemaId){
+    public TimeTable(Long screenId, Long movieId, int turningNo, Long date, Long startTime, Long endTime, Long cinemaId, int emptySeat){
         this.screenId = screenId;
         this.movieId = movieId;
         this.turningNo = turningNo;
@@ -51,6 +54,11 @@ public class TimeTable {
         this.startTime = startTime;
         this.endTime = endTime;
         this.cinemaId = cinemaId;
+        this.emptySeat = emptySeat;
+    }
+
+    public void setEmptySeat(int emptySeat){
+        this.emptySeat = emptySeat;
     }
 
 }//end of class
