@@ -135,7 +135,7 @@ public class TicketRestControllerTest {
     public void paymentTest() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/ticket/payment")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"imp_uid\":\"imp_541789576970\"}"))
+                .content("{\"tickets\":[1], \"imp_uid\":\"imp_541789576970\"}"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }//end of paymentTest
 

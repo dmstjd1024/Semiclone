@@ -266,7 +266,7 @@ public class TicketServiceImpl implements TicketService{
                 for(Object ticketId : (List)purchaseMap.get("tickets")){
                     tickets += ticketId+",";
                     if(everythingsOk){ 
-                        Ticket ticket = ticketRepository.findOneById((long)ticketId);
+                        Ticket ticket = ticketRepository.findOneById(Long.valueOf(ticketId.toString()));
                         ticket.setTicketState('2');
                         ticketRepository.save(ticket);
 
@@ -288,8 +288,8 @@ public class TicketServiceImpl implements TicketService{
                                         .build()
                 );
 
-                Long ticketId = (long)((List)purchaseMap.get("tickets")).get(0);
-                Long timeTableId = ticketRepository.findTimeTableIdById(ticketId);
+                Integer ticketId = (Integer)((List)purchaseMap.get("tickets")).get(0);
+                Long timeTableId = ticketRepository.findTimeTableIdById(ticketId.longValue());
                 int emptySeat = ticketRepository.countByTimeTableIdAndTicketState(timeTableId, '1');
                 TimeTable timeTable = timeTableRepository.findOneById(timeTableId);
                 timeTable.setEmptySeat(emptySeat);
