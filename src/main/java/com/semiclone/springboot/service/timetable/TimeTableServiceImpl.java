@@ -10,13 +10,11 @@ import com.semiclone.springboot.domain.cinema.CinemaRepository;
 import com.semiclone.springboot.domain.movie.Movie;
 import com.semiclone.springboot.domain.movie.MovieRepository;
 import com.semiclone.springboot.domain.screen.ScreenRepository;
-import com.semiclone.springboot.domain.ticket.TicketRepository;
 import com.semiclone.springboot.domain.timetable.TimeTable;
 import com.semiclone.springboot.domain.timetable.TimeTableRepository;
 import com.semiclone.springboot.service.ticket.TicketService;
 import com.semiclone.springboot.web.dto.MovieDetailDto;
 import com.semiclone.springboot.web.dto.MovieInfoDto;
-import com.semiclone.springboot.web.dto.TimeTableDto;
 
 import org.springframework.stereotype.Service;
 
@@ -32,7 +30,6 @@ public class TimeTableServiceImpl implements TimeTableService {
     private final ScreenRepository screenRepository;
     private final TimeTableRepository timeTableRepository;
     private final TicketService ticketService;
-    private final TicketRepository ticketRepository;
 
     /* 극장 리스트 */
     public Map<String, Object> getCinemas() throws Exception {
@@ -60,29 +57,28 @@ public class TimeTableServiceImpl implements TimeTableService {
     public Map<String, Object> getTimeTablesByCinemaId(Long cinemaId, Long date) throws Exception {
         
         date = (date == 123890) ? null : date;    // 테스트용 null값
-
-        List<Long> screenIdsList = screenRepository.findIdByCinemaId(cinemaId);
         date = (date == null || date == 0) ? timeTableRepository.findFirstByCinemaIdOrderByDate(cinemaId).getDate() : date ;
-                                                      
+
         /* 극장별 날짜,영화에 해당되는 상영 시간표 */
-        List<Object> timeTablesList = new ArrayList<Object>();
-        for(Long movieId : timeTableRepository.findMovieIdByCinemaIdAndDate(cinemaId, date)){
-            List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
-            for(Long screenId : screenIdsList){
-                List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
+        List<Map<String, Object>> timeTablesList = new ArrayList<Map<String, Object>>();
+        List<Long> movieIdsList = timeTableRepository.findMovieIdByCinemaIdAndDate(cinemaId, date);
+        for(Long movieId : movieIdsList){
+            List<Long> screendIdsList = timeTableRepository.findScreenIdByCinemaIdAndDateAndMovieId(cinemaId, date, movieId);
+            int screenIdSize = screendIdsList.size(); 
+            Map[] screensList = new HashMap[screenIdSize];
+            for(int j=0; j<screenIdSize; j++){
+                Long screenId = screendIdsList.get(j);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
-                if(list.size() != 0){
-                    screensMap.put("screen", screenRepository.findOneById(screenId));
-                    screensMap.put("timeTables", list);
-                    screensList.add(screensMap);
-                }
+                screensMap.put("screen", screenRepository.findOneById(screenId));
+                screensMap.put("timeTables", timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date));
+                screensList[j] = screensMap;
             }
             Map<String, Object> moviesMap = new HashMap<String, Object>();
             moviesMap.put("movie", new MovieInfoDto(movieRepository.findOneById(movieId)));
             moviesMap.put("screens", screensList);
             timeTablesList.add(moviesMap);
         }
-        
+ 
         Map<String, Object> returnMap = new HashMap<String, Object>();
         returnMap.put("showtimes", new Gson().fromJson(new Gson().toJson(timeTablesList), timeTablesList.getClass()));
 
@@ -107,10 +103,12 @@ public class TimeTableServiceImpl implements TimeTableService {
         
         /* 영화별 지역, 날짜에 해당되는 상영 시간표 */
         List<Object> timeTablesList = new ArrayList<Object>();
-        for(Long cinemaId : cinemaRepository.findIdListByCinemaArea(cinemaArea)){
+        List<Long> cinemaIdList = cinemaRepository.findIdListByCinemaArea(cinemaArea);
+        for(Long cinemaId : cinemaIdList){
             
             List<Map<String, Object>> screensList = new ArrayList<Map<String, Object>>();
-            for(Long screenId : timeTableRepository.findScreenIdByMovieIdAndDateAndCinemaId(movieId, date, cinemaId)){
+            List<Long> screenIdList = timeTableRepository.findScreenIdByMovieIdAndDateAndCinemaId(movieId, date, cinemaId);
+            for(Long screenId : screenIdList){
                 List<TimeTable> list = timeTableRepository.findTimeTableByMovieIdAndScreenIdAndDate(movieId, screenId, date);
                 Map<String, Object> screensMap = new HashMap<String, Object>();
                 screensMap.put("screen", screenRepository.findOneById(screenId));

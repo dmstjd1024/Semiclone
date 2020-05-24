@@ -31,7 +31,6 @@ import com.semiclone.springboot.service.PurchaseService;
 import com.semiclone.springboot.web.dto.CinemaDto;
 import com.semiclone.springboot.web.dto.MovieDto;
 import com.semiclone.springboot.web.dto.TicketBySeatDto;
-import com.semiclone.springboot.web.dto.TimeTableDto;
 import com.semiclone.springboot.web.dto.iamport.Purchase;
 
 import org.springframework.stereotype.Service;
@@ -131,10 +130,12 @@ public class TicketServiceImpl implements TicketService{
     public Map<String, Object> getSeatsMap(Long timeTableId) throws Exception {
 
         List<Map<String, Object>> seatsList = new ArrayList<Map<String, Object>>();
-        for(String seatRow : seatRepository.findSeatRowsByScreenId(timeTableRepository.findScreenIdById(timeTableId))){
+        List<String> seatRowList = seatRepository.findSeatRowsByScreenId(timeTableRepository.findScreenIdById(timeTableId));
+        for(String seatRow : seatRowList){
             Map<String, Object> seatsMap = new HashMap<String, Object>();
             List<TicketBySeatDto> ticketsList = new ArrayList<TicketBySeatDto>();
-            for(TicketMapping ticket : ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow)){
+            List<TicketMapping> ticketList = ticketRepository.findAllByTimeTableIdAndSeatRow(timeTableId, seatRow);
+            for(TicketMapping ticket : ticketList){
                 ticketsList.add(new TicketBySeatDto(ticket));
             }
             seatsMap.put(seatRow, ticketsList);
@@ -316,9 +317,11 @@ public class TicketServiceImpl implements TicketService{
     public List<Map<String, Object>> getCinemasList(List<Long> cinemaIdsList) throws Exception {
 
         List<Map<String, Object>> cinemasList = new ArrayList< Map<String, Object>>();
-        for(String cinemaArea : cinemaRepository.findCinemaArea()){
+        List<String> cinemaAreaList = cinemaRepository.findCinemaArea();
+        for(String cinemaArea : cinemaAreaList){
             List<CinemaDto> cinemaList = new ArrayList<CinemaDto>();
-            for(Cinema cinema : cinemaRepository.findAllByCinemaArea(cinemaArea)){
+            List<Cinema> cineList = cinemaRepository.findAllByCinemaArea(cinemaArea);
+            for(Cinema cinema : cineList){
                     CinemaDto cinemaDto = new CinemaDto(cinema);              
                     if(cinemaIdsList == null || cinemaIdsList.contains(cinemaDto.getId())){    // 해당 영화관이 검색조건과 일치하는 경우
                         cinemaDto.setIsVailable(true);
@@ -392,7 +395,8 @@ public class TicketServiceImpl implements TicketService{
     public List<Map<String, Object>> getDatesList(List<Long> selectionList) throws Exception {
 
         List<Map<String, Object>> datesList = new ArrayList<Map<String, Object>>();
-        for(Long dates : timeTableRepository.findDate()){
+        List<Long> dateList = timeTableRepository.findDate();
+        for(Long dates : dateList){
             Map<String, Object> map = new HashMap<String, Object>();
             boolean same = (selectionList == null || selectionList.contains(dates)) ? true : false;
             map.put("date", dates);
