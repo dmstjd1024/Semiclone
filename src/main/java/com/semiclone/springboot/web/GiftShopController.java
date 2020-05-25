@@ -11,9 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -69,13 +67,13 @@ public class GiftShopController {
     }
 
 
-    @ApiOperation(value = "결제 :: 추가완료 시 1 return / 실패 시 0 return",
-            notes = "Server로 보낼 Data {\"imp_uid\":1234}")
+    @ApiOperation(value = "",
+            notes = "Server로 보낼 Data {\"imp_uid\":\"imp_541789576970\"}")
     @PostMapping("/payment")
-    public Map<String, Object> payment(@RequestBody Map<String, Object> purchase, Principal principal) throws Exception{
+    public String payment(@RequestBody String imp_uid) throws Exception{
 
-        log.info(purchase.toString());
+        purchaseService.giftshopPurchase(imp_uid);
 
-        return purchaseService.giftshopPurchase(purchase, principal.getName());
+        return "giftshop/success";
     }
 }
