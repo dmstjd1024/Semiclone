@@ -1,6 +1,8 @@
 package com.semiclone.springboot.config;
 
+import com.semiclone.springboot.support.IamportClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -21,4 +23,8 @@ public class IamPortConfig {
     @Value("${apisecret}")
     private String apisecret;
 
+    @Bean
+    public IamportClient iamportClient(){
+        return new IamportClient(apikey, apisecret);
+    }
 }//end of class
