@@ -37,7 +37,7 @@ public class AccountController {
 
         Account account = accountService.processNewAccount(signUpForm);
         accountService.login(account);
-        return "redirect :/";
+        return "redirect:/";
 
     }
 

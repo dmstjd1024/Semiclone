@@ -12,7 +12,7 @@ import java.security.Principal;
 import java.util.List;
 
 @Controller
-@RequestMapping("/giftshop/cart")
+@RequestMapping("/popcorn-store/cart")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -40,7 +40,7 @@ public class CartController {
 
         cartRepository.save(cart);
 
-        return "redirect:/giftshop/cart/list";
+        return "redirect:/popcorn-store/cart/list";
 
     }
 
@@ -54,7 +54,7 @@ public class CartController {
             List<Cart> cartList = cartService.cartList(principal.getName());
 
             model.addAttribute("cartList", cartList);
-            return "giftshop/list";
+            return "popcorn-store/list";
         }
 
     }
@@ -62,13 +62,13 @@ public class CartController {
     @DeleteMapping("/delete")
     public String delete(@RequestParam Long cartId) {
         cartService.deleteProduct(cartId);
-        return "redirect:/giftshop/cart/list";
+        return "redirect:/popcorn-store/cart/list";
     }
 
     @DeleteMapping("/delete-all") // 장바구니 비우기
     public String deleteAll(@RequestParam Long cartId) {
         cartService.deleteCart(cartId);
-        return "redirect:/giftshop/cart/list";
+        return "redirect:/popcorn-store/cart/list";
     }
 
     @PostMapping("/update")
@@ -90,7 +90,7 @@ public class CartController {
         }
 
 
-        return "redirect:/giftshop/cart/list";
+        return "redirect:/popcorn-store/cart/list";
     }
 
 

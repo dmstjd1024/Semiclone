@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.security.Principal;
 
 
-@RequestMapping("/mycgv")
+@RequestMapping("mycgv")
 @RequiredArgsConstructor
 @Controller
 public class MyPageController {

@@ -27,21 +27,22 @@ public class SignUpFormValidator implements Validator {
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "accountId", "NotEmpty");
 
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
+
         if(signUpForm.getAccountId().length() < 3 || signUpForm.getAccountId().length() > 32)
             errors.rejectValue("accountId", "Size.userForm.username");
 
-        if(accountRepository.findByAccountId(signUpForm.getAccountId()) != null)
+        else if(accountRepository.findByAccountId(signUpForm.getAccountId()) != null)
             errors.rejectValue("accountId", "Duplicate.userForm.username");
 
-        if(accountRepository.findByEmail(signUpForm.getEmail()) != null)
+        else if(accountRepository.findByEmail(signUpForm.getEmail()) != null)
             errors.rejectValue("email", "Duplicate.userFrom.email");
 
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "NotEmpty");
 
-        if(signUpForm.getPassword().length() < 7 || signUpForm.getPassword().length() > 32)
+        else if(signUpForm.getPassword().length() < 7 || signUpForm.getPassword().length() > 32)
             errors.rejectValue("password", "Size.userForm.password");
 
-        if(signUpForm.getRetypePassword() != signUpForm.getPassword())
+        else if(signUpForm.getRetypePassword() != signUpForm.getPassword())
             errors.rejectValue("retypePassword", "Equal.userForm.password");
     }
 
