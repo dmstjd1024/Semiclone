@@ -218,9 +218,7 @@ public class TicketServiceImpl implements TicketService{
 
         if(purchaseMap.containsKey("imp_uid")){          
 
-            Map<String, Object> impUid = new HashMap<String, Object>();
-            impUid.put("imp_uid", purchaseMap.get("imp_uid"));
-            Purchase purchase = (Purchase) purchaseService.iamport(impUid).get("purchase");
+            Purchase purchase = purchaseService.iamport(purchaseMap.get("imp_uid").toString());
             
             String movieCoupons = null;
             String tickets = null;
