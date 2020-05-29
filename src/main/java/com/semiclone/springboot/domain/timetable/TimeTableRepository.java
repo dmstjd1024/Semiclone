@@ -2,6 +2,11 @@ package com.semiclone.springboot.domain.timetable;
 
 import java.util.List;
 
+import com.semiclone.springboot.domain.movie.Movie;
+import com.semiclone.springboot.domain.movie.MovieInfo;
+import com.semiclone.springboot.domain.screen.Screen;
+import com.semiclone.springboot.web.dto.MovieInfoDto;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -42,6 +47,13 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT movieId FROM TimeTable WHERE cinemaId = ?1 AND date = ?2 GROUP BY movieId")
     List<Long> findMovieIdByCinemaIdAndDate(Long cinemaId, Long date);
 
+    @Query("SELECT m.id AS id, m.movieRating AS movieRating, m.movieTitle AS movieTitle, m.movieGenre AS movieGenre, "+
+            "m.movieTime AS movieTime, m.releaseDate AS releaseDate, m.releaseType AS releaseType "+
+            "FROM TimeTable t LEFT OUTER JOIN Movie m ON t.movieId = m.id "+
+            "WHERE t.cinemaId = ?1 AND t.date = ?2 "+
+            "GROUP BY t.movieId")
+    List<MovieInfo> findMovieInfoByCinemaIdAndDate(Long cinemaId, Long date);
+
     @Query("SELECT cinemaId FROM TimeTable WHERE movieId = ?1 GROUP BY cinemaId")
     List<Long> findCinemaIdByMovieId(Long movieId);
 
@@ -66,8 +78,11 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, Long>{
     @Query("SELECT screenId FROM TimeTable WHERE cinemaId = ?1 AND date = ?2 GROUP BY screenId ORDER BY screenId ASC")
     List<Long> findIdByCinemaIdAndDateAndMovieId(Long cinemaId, Long date);
 
-    @Query("SELECT screenId FROM TimeTable WHERE cinemaId = ?1 AND date = ?2 AND movieId = ?3 GROUP BY screenId ORDER BY screenId ASC")
-    List<Long> findScreenIdByCinemaIdAndDateAndMovieId(Long cinemaId, Long date, Long movieId);
+    @Query("SELECT s FROM TimeTable t LEFT OUTER JOIN Screen s ON t.screenId = s.id "+
+            "WHERE t.cinemaId = ?1 AND t.date = ?2 AND t.movieId = ?3 "+
+            "GROUP BY t.screenId "+
+            "ORDER BY t.screenId ASC")
+    List<Screen> findScreenByCinemaIdAndDateAndMovieId(Long cinemaId, Long date, Long movieId);
     
 
 }//end of interface
